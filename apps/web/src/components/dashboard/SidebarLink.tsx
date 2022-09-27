@@ -46,6 +46,8 @@ const useStyles = createStyles((theme) => {
         sidebarLink: {
             position: 'relative',
             display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
             alignItems: 'center',
             width: '100%',
             borderRadius: theme.radius.sm,
@@ -54,7 +56,6 @@ const useStyles = createStyles((theme) => {
             paddingRight: theme.spacing.lg,
             cursor: 'pointer',
             transition: '.25s',
-            marginBottom: theme.spacing.sm,
             color: colors.gray[5],
 
             '&:hover': {
@@ -69,18 +70,17 @@ const useStyles = createStyles((theme) => {
                 content: '""',
                 position: 'absolute',
                 right: 0,
-                height: '100%',
-                width: '12px',
+                height: '75%',
+                width: '8px',
                 transition: '.25s',
                 backgroundColor: isDark ? theme.white : '',
-                borderTopLeftRadius: theme.radius.md,
-                borderBottomLeftRadius: theme.radius.md
+                borderTopLeftRadius: theme.radius.sm,
+                borderBottomLeftRadius: theme.radius.sm
             }
         },
         sidebarLinkIcon: {
             width: '24px',
-            height: '24px',
-            marginRight: theme.spacing.xl
+            height: '24px'
         },
         sidebarLinkText: {
             fontWeight: 'bold'

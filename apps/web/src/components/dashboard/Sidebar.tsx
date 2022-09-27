@@ -1,14 +1,11 @@
 import type { DashboardSidebarLinks } from '../../config/types'
 
-import { useNavigate } from 'react-router-dom'
-
-import { createStyles, Title } from '@mantine/core'
+import { createStyles } from '@mantine/core'
 import {
     Alarm,
     CalendarBlank,
     CirclesFour,
     Cloud,
-    House,
     ListChecks,
     Newspaper,
     Notebook,
@@ -65,16 +62,8 @@ const links: DashboardSidebarLinks[] = [
 const DashboardSidebar: React.FC = () => {
     const { classes } = useStyles()
 
-    const navigate = useNavigate()
-
     return (
         <div className={classes.sidebar}>
-            <div className={classes.sidebarTop}>
-                <Title className={classes.sidebarTitle} onClick={() => navigate('/')}>
-                    Cinzal
-                </Title>
-            </div>
-
             <div className={classes.sidebarMiddle}>
                 {links.map((row) => (
                     <DashboardSidebarLink
@@ -114,7 +103,7 @@ const useStyles = createStyles((theme) => {
             left: 0,
             background: isDark ? colors.dark[8] : theme.white,
             borderRight: '1px solid',
-            borderRightColor: isDark ? colors.dark[6] : colors.gray[4],
+            borderRightColor: isDark ? colors.dark[5] : colors.gray[4],
             height: '100vh'
         },
         sidebarTop: {

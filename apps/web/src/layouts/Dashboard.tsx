@@ -27,7 +27,7 @@ const useStyles = createStyles((theme) => {
     return {
         wrapper: {
             display: 'grid',
-            gridTemplateColumns: '300px 1fr',
+            gridTemplateColumns: '150px 1fr',
             minHeight: '100vh',
             backgroundColor: isDark ? colors.dark[7] : colors.gray[2]
         },
