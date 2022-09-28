@@ -7,8 +7,19 @@ import { NotificationsProvider } from '@mantine/notifications'
 
 import { IconContext } from 'phosphor-react'
 
+import { trpc } from './utils'
+import { httpBatchLink } from '@trpc/client'
+
 const queryClient = new QueryClient({
     defaultOptions: { queries: { refetchOnWindowFocus: false } }
+})
+
+const trpcClient = trpc.createClient({
+    links: [
+        httpBatchLink({
+            url: 'http://localhost:8080/trpc'
+        })
+    ]
 })
 
 interface Props {
@@ -26,23 +37,25 @@ const Providers: React.FC<Props> = ({ children }) => {
     }
 
     return (
-        <QueryClientProvider client={queryClient}>
-            <ColorSchemeProvider colorScheme={colorScheme} toggleColorScheme={toggleTheme}>
-                <MantineProvider
-                    withNormalizeCSS
-                    withGlobalStyles
-                    theme={{ colorScheme: colorScheme }}
-                >
-                    <ModalsProvider>
-                        <NotificationsProvider>
-                            <IconContext.Provider value={{ weight: 'fill' }}>
-                                {children}
-                            </IconContext.Provider>
-                        </NotificationsProvider>
-                    </ModalsProvider>
-                </MantineProvider>
-            </ColorSchemeProvider>
-        </QueryClientProvider>
+        <trpc.Provider client={trpcClient} queryClient={queryClient}>
+            <QueryClientProvider client={queryClient}>
+                <ColorSchemeProvider colorScheme={colorScheme} toggleColorScheme={toggleTheme}>
+                    <MantineProvider
+                        withNormalizeCSS
+                        withGlobalStyles
+                        theme={{ colorScheme: colorScheme }}
+                    >
+                        <ModalsProvider>
+                            <NotificationsProvider>
+                                <IconContext.Provider value={{ weight: 'fill' }}>
+                                    {children}
+                                </IconContext.Provider>
+                            </NotificationsProvider>
+                        </ModalsProvider>
+                    </MantineProvider>
+                </ColorSchemeProvider>
+            </QueryClientProvider>
+        </trpc.Provider>
     )
 }
 

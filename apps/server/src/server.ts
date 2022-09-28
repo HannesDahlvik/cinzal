@@ -1,6 +1,9 @@
 import express from 'express'
 import 'dotenv/config'
 
+import appRouter from './router'
+import * as trpcExpress from '@trpc/server/adapters/express'
+
 import { PrismaClient } from '@prisma/client'
 
 import cors from 'cors'
@@ -29,9 +32,12 @@ app.use(morgan('tiny'))
 /**
  * ROUTES
  */
-app.get('/', (req, res) => {
-    res.send({ msg: 'Hello world' })
-})
+app.use(
+    '/trpc',
+    trpcExpress.createExpressMiddleware({
+        router: appRouter
+    })
+)
 
 /**
  * START SERVER
