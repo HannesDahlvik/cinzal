@@ -8,7 +8,9 @@
     ],
     "scripts": {
         "dev": "turbo run dev --parallel",
-        "build": "turbo run build"
+        "build": "turbo run build",
+        "docker:up": "docker-compose up -d",
+        "docker:stop": "docker-compose stop"
     },
     "devDependencies": {
         "prettier": "2.7.1",

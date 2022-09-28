@@ -1,0 +1,39 @@
+import express from 'express'
+import 'dotenv/config'
+
+import { PrismaClient } from '@prisma/client'
+
+import cors from 'cors'
+import helmet from 'helmet'
+import compression from 'compression'
+import morgan from 'morgan'
+
+export const prisma = new PrismaClient()
+const app = express()
+const PORT = 8080 || process.env.SERVER_PORT
+
+/**
+ * SERVER MIDDLEWARE
+ */
+app.use(express.json())
+app.use(express.urlencoded({ extended: false }))
+
+app.use(cors())
+
+app.use(helmet())
+
+app.use(compression())
+
+app.use(morgan('tiny'))
+
+/**
+ * ROUTES
+ */
+app.get('/', (req, res) => {
+    res.send({ msg: 'Hello world' })
+})
+
+/**
+ * START SERVER
+ */
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`))
