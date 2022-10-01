@@ -20,13 +20,16 @@ const tasksRouter = t.router({
                 uuid: z.string(),
                 title: z.string(),
                 description: z.string(),
-                deadline: z.date()
+                deadline: z.string()
             })
         )
         .mutation(async ({ input }) => {
+            const deadline = new Date(input.deadline)
+
             const newTask = await prisma.task.create({
                 data: {
-                    ...input
+                    ...input,
+                    deadline
                 }
             })
 

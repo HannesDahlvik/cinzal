@@ -8,6 +8,7 @@ import { DatePicker, TimeInput } from '@mantine/dates'
 import { useForm } from '@mantine/form'
 import { closeAllModals } from '@mantine/modals'
 
+import { useQueryClient } from '@tanstack/react-query'
 import { errorHandler, trpc } from '../../utils'
 
 interface FormVals {
@@ -18,6 +19,7 @@ interface FormVals {
 }
 
 const DashboardCreateTaskModal: React.FC = () => {
+    const qc = useQueryClient()
     const { mutate: createTaskMutation } = trpc.tasks.create.useMutation()
 
     const { value: user } = useHookstate(state.auth.user)
@@ -40,23 +42,30 @@ const DashboardCreateTaskModal: React.FC = () => {
     const handleCreateTask = (vals: FormVals) => {
         setLoading(true)
 
+        const deadlineDate = vals.deadlineDate
+        const deadlineTime = vals.deadlineTime
+        const deadline = deadlineDate
+        deadline.setHours(deadlineTime.getHours())
+        deadline.setMinutes(deadlineTime.getMinutes())
+        deadline.setSeconds(0)
+
         createTaskMutation(
             {
+                uuid: user?.uuid as string,
                 title: vals.title,
                 description: vals.description,
-                deadline: new Date(),
-                uuid: user?.uuid as string
+                deadline: deadline.toString()
             },
             {
                 onError: (err) => {
                     const error = JSON.parse(err.message)
                     errorHandler(error[1].message)
                     setLoading(false)
-                    closeAllModals()
+                    handleClose()
                 },
                 onSuccess: (data) => {
-                    console.log(data)
-                    closeAllModals()
+                    handleClose()
+                    qc.invalidateQueries(['tasks.get'])
                 }
             }
         )

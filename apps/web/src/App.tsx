@@ -15,11 +15,16 @@ import AuthSignupPage from './pages/auth/Signup'
 import NotFoundPage from './pages/NotFound'
 
 import { errorHandler, setAuth, trpc } from './utils'
+import RequireAuth from './components/RequireAuth'
 
 const router = createBrowserRouter([
     {
         path: 'dashboard',
-        element: <DashboardLayout />,
+        element: (
+            <RequireAuth>
+                <DashboardLayout />
+            </RequireAuth>
+        ),
         errorElement: <NotFoundPage />,
         children: [
             {
