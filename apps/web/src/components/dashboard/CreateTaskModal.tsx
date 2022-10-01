@@ -1,14 +1,30 @@
 import { useState } from 'react'
 
+import state from '../../state'
+import { useHookstate } from '@hookstate/core'
+
 import { Group, TextInput, Textarea, Stack, Button } from '@mantine/core'
 import { DatePicker, TimeInput } from '@mantine/dates'
 import { useForm } from '@mantine/form'
 import { closeAllModals } from '@mantine/modals'
 
+import { errorHandler, trpc } from '../../utils'
+
+interface FormVals {
+    title: string
+    description: string
+    deadlineDate: Date
+    deadlineTime: Date
+}
+
 const DashboardCreateTaskModal: React.FC = () => {
+    const { mutate: createTaskMutation } = trpc.tasks.create.useMutation()
+
+    const { value: user } = useHookstate(state.auth.user)
+
     const [loading, setLoading] = useState(false)
 
-    const form = useForm({
+    const form = useForm<FormVals>({
         initialValues: {
             title: '',
             description: '',
@@ -21,9 +37,29 @@ const DashboardCreateTaskModal: React.FC = () => {
         closeAllModals()
     }
 
-    const handleCreateTask = (vals: any) => {
+    const handleCreateTask = (vals: FormVals) => {
         setLoading(true)
-        console.log(vals)
+
+        createTaskMutation(
+            {
+                title: vals.title,
+                description: vals.description,
+                deadline: new Date(),
+                uuid: user?.uuid as string
+            },
+            {
+                onError: (err) => {
+                    const error = JSON.parse(err.message)
+                    errorHandler(error[1].message)
+                    setLoading(false)
+                    closeAllModals()
+                },
+                onSuccess: (data) => {
+                    console.log(data)
+                    closeAllModals()
+                }
+            }
+        )
     }
 
     return (

@@ -46,7 +46,7 @@ const Providers: React.FC<Props> = ({ children }) => {
                         theme={{ colorScheme: colorScheme }}
                     >
                         <ModalsProvider>
-                            <NotificationsProvider>
+                            <NotificationsProvider position="top-center">
                                 <IconContext.Provider value={{ weight: 'fill' }}>
                                     {children}
                                 </IconContext.Provider>
