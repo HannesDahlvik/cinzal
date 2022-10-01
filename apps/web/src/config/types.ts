@@ -1,4 +1,5 @@
 export interface UserData {
+    id: number
     uuid: string
     username: string
     email: string

@@ -1,5 +1,7 @@
 import type { DashboardSidebarLinks } from '../../config/types'
 
+import { useNavigate } from 'react-router-dom'
+
 import { createStyles } from '@mantine/core'
 import {
     Alarm,
@@ -13,6 +15,7 @@ import {
 } from 'phosphor-react'
 
 import DashboardSidebarLink from './SidebarLink'
+import { setAuth } from '../../utils'
 
 const links: DashboardSidebarLinks[] = [
     {
@@ -62,6 +65,13 @@ const links: DashboardSidebarLinks[] = [
 const DashboardSidebar: React.FC = () => {
     const { classes } = useStyles()
 
+    const navigate = useNavigate()
+
+    const handleSignOut = () => {
+        navigate('/')
+        setAuth(null, null)
+    }
+
     return (
         <div className={classes.sidebar}>
             <div className={classes.sidebarMiddle}>
@@ -82,6 +92,7 @@ const DashboardSidebar: React.FC = () => {
                     title="Sign out"
                     icon={<SignOut weight="regular" />}
                     iconActive={<SignOut weight="fill" />}
+                    onClick={handleSignOut}
                 />
             </div>
         </div>
