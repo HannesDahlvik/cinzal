@@ -34,6 +34,30 @@ const tasksRouter = t.router({
             })
 
             return newTask
+        }),
+    edit: t.procedure
+        .input(
+            z.object({
+                id: z.number(),
+                uuid: z.string(),
+                title: z.string(),
+                description: z.string(),
+                deadline: z.string()
+            })
+        )
+        .mutation(async ({ input }) => {
+            const deadline = new Date(input.deadline)
+
+            const editTask = await prisma.task.update({
+                where: { id: input.id },
+                data: {
+                    title: input.title,
+                    description: input.description,
+                    deadline: deadline
+                }
+            })
+
+            return editTask
         })
 })
 
