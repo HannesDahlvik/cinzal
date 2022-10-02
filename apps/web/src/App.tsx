@@ -71,7 +71,11 @@ const App: React.FC = () => {
             authVerifyMutation(
                 { token },
                 {
-                    onError: (err) => errorHandler(err.message),
+                    onError: (err) => {
+                        errorHandler(err.message)
+                        setAuth(null, null)
+                        setRender(true)
+                    },
                     onSuccess: (data) => {
                         const currentTime = Date.now() / 1000
                         if (data.exp < currentTime) {

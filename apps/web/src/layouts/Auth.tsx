@@ -41,7 +41,7 @@ const useStyles = createStyles((theme) => {
             display: 'flex',
             justifyContent: 'center',
             alignItems: 'center',
-            backgroundColor: isDark ? colors.dark[8] : colors.gray[5]
+            backgroundColor: isDark ? colors.dark[8] : colors.gray[3]
         },
         blob: {
             width: '200px',

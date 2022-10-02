@@ -105,7 +105,7 @@ const DashboardCreateTaskModal: React.FC = () => {
             </Stack>
 
             <Group position="right" mt="md">
-                <Button color="red" onClick={handleClose}>
+                <Button variant="outline" color="red" onClick={handleClose}>
                     Cancel
                 </Button>
                 <Button type="submit" loading={loading}>
