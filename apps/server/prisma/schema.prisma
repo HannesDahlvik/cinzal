@@ -24,6 +24,7 @@ model Task {
   description       String
   deadline          DateTime
   completed         Boolean           @default(false)
+  color             String            @default("blue")
   uuid              String
   user              User              @relation(fields: [uuid], references: [uuid])
   createdAt         DateTime          @default(now())

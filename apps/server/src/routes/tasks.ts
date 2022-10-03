@@ -29,7 +29,8 @@ const tasksRouter = t.router({
                 uuid: z.string(),
                 title: z.string(),
                 description: z.string(),
-                deadline: z.string()
+                deadline: z.string(),
+                color: z.string()
             })
         )
         .mutation(async ({ input }) => {
@@ -59,7 +60,8 @@ const tasksRouter = t.router({
                 uuid: z.string(),
                 title: z.string(),
                 description: z.string(),
-                deadline: z.string()
+                deadline: z.string(),
+                color: z.string()
             })
         )
         .mutation(async ({ input }) => {
@@ -71,7 +73,8 @@ const tasksRouter = t.router({
                     data: {
                         title: input.title,
                         description: input.description,
-                        deadline: deadline
+                        deadline: deadline,
+                        color: input.color
                     }
                 })
                 .catch((err) => {

@@ -4,7 +4,7 @@ import { Task } from '../../config/types'
 import state from '../../state'
 import { useHookstate } from '@hookstate/core'
 
-import { Box, createStyles, Text } from '@mantine/core'
+import { Box, createStyles, Text, useMantineTheme } from '@mantine/core'
 import { openModal } from '@mantine/modals'
 
 import dayjs from 'dayjs'
@@ -12,6 +12,7 @@ import DashboardEditTaskModal from './EditTaskModal'
 
 const DashboardHomeTimeline: React.FC = () => {
     const { classes } = useStyles()
+    const theme = useMantineTheme()
 
     const { value: tasks } = useHookstate(state.data.tasks)
 
@@ -86,12 +87,13 @@ const DashboardHomeTimeline: React.FC = () => {
                                     sx={{ top: finalPos }}
                                     key={task.id}
                                 >
-                                    <div
+                                    <Box
                                         className={classes.innerTaskBox}
+                                        sx={{ backgroundColor: theme.colors[task.color][7] }}
                                         onClick={() => handleEditTask(task)}
                                     >
                                         <Text>{task.title}</Text>
-                                    </div>
+                                    </Box>
                                 </Box>
                             )
                         } else return null
@@ -135,7 +137,7 @@ const useStyles = createStyles((theme) => {
             gridTemplateRows: 'repeat(24, 100px)'
         },
         tasksWrapper: {
-            position: 'absolute',
+            position: 'relative',
             display: 'flex',
             width: '100%',
             height: '100%'
@@ -144,12 +146,10 @@ const useStyles = createStyles((theme) => {
             position: 'relative',
             width: '100%',
             height: '30px',
-            padding: '0 12px',
-            flex: '1'
+            padding: '0 3px'
         },
         innerTaskBox: {
             height: '100%',
-            backgroundColor: colors.blue[7],
             borderRadius: theme.radius.sm,
             padding: '2px',
             cursor: 'pointer'

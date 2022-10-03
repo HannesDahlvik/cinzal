@@ -13,6 +13,7 @@ export interface Task {
     description: string
     deadline: Date
     completed: boolean
+    color: string
     uuid: String
     user: UserData
     createdAt: Date

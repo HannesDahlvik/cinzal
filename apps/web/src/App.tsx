@@ -13,6 +13,7 @@ import AuthLoginPage from './pages/auth/Login'
 import AuthSignupPage from './pages/auth/Signup'
 
 import NotFoundPage from './pages/NotFound'
+import ErrorPage from './pages/Error'
 
 import { errorHandler, setAuth, trpc } from './utils'
 import RequireAuth from './components/RequireAuth'
@@ -25,8 +26,12 @@ const router = createBrowserRouter([
                 <DashboardLayout />
             </RequireAuth>
         ),
-        errorElement: <NotFoundPage />,
+        errorElement: <ErrorPage />,
         children: [
+            {
+                path: '*',
+                element: <NotFoundPage />
+            },
             {
                 path: '',
                 element: <Navigate to="home" />
@@ -40,12 +45,12 @@ const router = createBrowserRouter([
     {
         path: '/',
         element: <Home />,
-        errorElement: <NotFoundPage />
+        errorElement: <ErrorPage />
     },
     {
         path: '/',
         element: <AuthLayout />,
-        errorElement: <NotFoundPage />,
+        errorElement: <ErrorPage />,
         children: [
             {
                 path: 'login',
@@ -56,6 +61,10 @@ const router = createBrowserRouter([
                 element: <AuthSignupPage />
             }
         ]
+    },
+    {
+        path: '*',
+        element: <NotFoundPage />
     }
 ])
 

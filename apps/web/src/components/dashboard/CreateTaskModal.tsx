@@ -3,10 +3,20 @@ import { useState } from 'react'
 import state from '../../state'
 import { useHookstate } from '@hookstate/core'
 
-import { Group, TextInput, Textarea, Stack, Button } from '@mantine/core'
+import {
+    Group,
+    TextInput,
+    Textarea,
+    Stack,
+    Button,
+    useMantineTheme,
+    ColorSwatch,
+    Text
+} from '@mantine/core'
 import { DatePicker, TimeInput } from '@mantine/dates'
 import { useForm } from '@mantine/form'
 import { closeAllModals } from '@mantine/modals'
+import { Check } from 'phosphor-react'
 
 import { useQueryClient } from '@tanstack/react-query'
 import { errorHandler, trpc } from '../../utils'
@@ -16,22 +26,27 @@ interface FormVals {
     description: string
     deadlineDate: Date
     deadlineTime: Date
+    color: string
 }
 
 const DashboardCreateTaskModal: React.FC = () => {
+    const theme = useMantineTheme()
+
     const qc = useQueryClient()
     const { mutate: createTaskMutation } = trpc.tasks.create.useMutation()
 
     const { value: user } = useHookstate(state.auth.user)
 
     const [loading, setLoading] = useState(false)
+    const [selectedColor, setSelectedColor] = useState<string>('blue')
 
     const form = useForm<FormVals>({
         initialValues: {
             title: '',
             description: '',
             deadlineDate: new Date(),
-            deadlineTime: new Date()
+            deadlineTime: new Date(),
+            color: 'blue'
         }
     })
 
@@ -54,7 +69,8 @@ const DashboardCreateTaskModal: React.FC = () => {
                 uuid: user?.uuid as string,
                 title: vals.title,
                 description: vals.description,
-                deadline: deadline.toString()
+                deadline: deadline.toString(),
+                color: selectedColor
             },
             {
                 onError: (err) => {
@@ -102,6 +118,24 @@ const DashboardCreateTaskModal: React.FC = () => {
                         {...form.getInputProps('deadlineTime')}
                     />
                 </Group>
+
+                <Stack>
+                    <Text>Color</Text>
+                    <Group position="left">
+                        {['red', 'pink', 'violet', 'blue', 'teal', 'green', 'yellow', 'orange'].map(
+                            (color) => (
+                                <ColorSwatch
+                                    key={color}
+                                    sx={{ cursor: 'pointer' }}
+                                    color={theme.colors[color][7]}
+                                    onClick={() => setSelectedColor(color)}
+                                >
+                                    {selectedColor === color && <Check />}
+                                </ColorSwatch>
+                            )
+                        )}
+                    </Group>
+                </Stack>
             </Stack>
 
             <Group position="right" mt="md">
