@@ -11,17 +11,16 @@ const tasksRouter = t.router({
             })
         )
         .query(async ({ input }) => {
-            const tasks = await prisma.task
-                .findMany({ where: { uuid: input.uuid } })
-                .catch((err) => {
-                    throw new TRPCError({
-                        code: 'INTERNAL_SERVER_ERROR',
-                        message: 'Database error',
-                        cause: err
-                    })
-                })
+            try {
+                const tasks = await prisma.task.findMany({ where: { uuid: input.uuid } })
 
-            return tasks
+                return tasks
+            } catch (err) {
+                throw new TRPCError({
+                    code: 'INTERNAL_SERVER_ERROR',
+                    message: 'Database error'
+                })
+            }
         }),
     create: t.procedure
         .input(
@@ -34,24 +33,23 @@ const tasksRouter = t.router({
             })
         )
         .mutation(async ({ input }) => {
-            const deadline = new Date(input.deadline)
+            try {
+                const deadline = new Date(input.deadline)
 
-            const newTask = await prisma.task
-                .create({
+                const newTask = await prisma.task.create({
                     data: {
                         ...input,
                         deadline
                     }
                 })
-                .catch((err) => {
-                    throw new TRPCError({
-                        code: 'INTERNAL_SERVER_ERROR',
-                        message: 'Database error',
-                        cause: err
-                    })
-                })
 
-            return newTask
+                return newTask
+            } catch (err) {
+                throw new TRPCError({
+                    code: 'INTERNAL_SERVER_ERROR',
+                    message: 'Database error'
+                })
+            }
         }),
     edit: t.procedure
         .input(
@@ -65,10 +63,10 @@ const tasksRouter = t.router({
             })
         )
         .mutation(async ({ input }) => {
-            const deadline = new Date(input.deadline)
+            try {
+                const deadline = new Date(input.deadline)
 
-            const editTask = await prisma.task
-                .update({
+                const editTask = await prisma.task.update({
                     where: { id: input.id },
                     data: {
                         title: input.title,
@@ -77,15 +75,14 @@ const tasksRouter = t.router({
                         color: input.color
                     }
                 })
-                .catch((err) => {
-                    throw new TRPCError({
-                        code: 'INTERNAL_SERVER_ERROR',
-                        message: 'Database error',
-                        cause: err
-                    })
-                })
 
-            return editTask
+                return editTask
+            } catch (err) {
+                throw new TRPCError({
+                    code: 'INTERNAL_SERVER_ERROR',
+                    message: 'Database error'
+                })
+            }
         }),
     delete: t.procedure
         .input(
@@ -94,17 +91,24 @@ const tasksRouter = t.router({
             })
         )
         .mutation(async ({ input }) => {
-            const deleteTask = await prisma.task
-                .delete({ where: { id: input.task_id } })
-                .catch((err) => {
-                    throw new TRPCError({
-                        code: 'INTERNAL_SERVER_ERROR',
-                        message: 'Database error',
-                        cause: err
+            try {
+                const deleteTask = await prisma.task
+                    .delete({ where: { id: input.task_id } })
+                    .catch((err) => {
+                        throw new TRPCError({
+                            code: 'INTERNAL_SERVER_ERROR',
+                            message: 'Database error',
+                            cause: err
+                        })
                     })
-                })
 
-            return deleteTask
+                return deleteTask
+            } catch (err) {
+                throw new TRPCError({
+                    code: 'INTERNAL_SERVER_ERROR',
+                    message: 'Database error'
+                })
+            }
         })
 })
 

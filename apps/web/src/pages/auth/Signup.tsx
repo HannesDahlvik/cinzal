@@ -1,3 +1,5 @@
+import { useState } from 'react'
+
 import { useNavigate } from 'react-router-dom'
 
 import {
@@ -26,11 +28,17 @@ type SignupValues = typeof formValidation._type
 const AuthSignupPage: React.FC = () => {
     const { classes } = useStyles()
 
+    const [loading, setLoading] = useState(false)
+
     const navigate = useNavigate()
 
     const { mutate: signupMutation } = trpc.auth.signup.useMutation({
-        onError: (err) => errorHandler(err.message),
+        onError: (err) => {
+            setLoading(false)
+            errorHandler(err.message)
+        },
         onSuccess: (data) => {
+            setLoading(false)
             setAuth(data.token, data.user)
             navigate('/dashboard')
         }
@@ -45,11 +53,16 @@ const AuthSignupPage: React.FC = () => {
         }
     })
 
+    const handleSignup = (vals: SignupValues) => {
+        setLoading(true)
+        signupMutation(vals)
+    }
+
     return (
         <>
             <Title mb="xl">Signup</Title>
 
-            <form className={classes.form} onSubmit={form.onSubmit((vals) => signupMutation(vals))}>
+            <form className={classes.form} onSubmit={form.onSubmit((vals) => handleSignup(vals))}>
                 <Stack>
                     <TextInput
                         label="Username"
@@ -73,7 +86,9 @@ const AuthSignupPage: React.FC = () => {
                         {...form.getInputProps('password')}
                     />
 
-                    <Button type="submit">Signup</Button>
+                    <Button type="submit" loading={loading}>
+                        Signup
+                    </Button>
                 </Stack>
             </form>
 

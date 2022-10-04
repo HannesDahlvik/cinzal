@@ -41,15 +41,23 @@ const authRouter = t.router({
             })
         )
         .mutation(async ({ input }) => {
-            const user = await prisma.user.findFirst({ where: { email: input.email } })
-            if (!user) throw new TRPCError({ code: 'UNAUTHORIZED', message: 'User does not exist' })
+            try {
+                const user = await prisma.user.findFirst({ where: { email: input.email } })
+                if (!user)
+                    throw new TRPCError({ code: 'UNAUTHORIZED', message: 'User does not exist' })
 
-            const isMatch = await bcrypt.compare(input.password, user.password)
-            if (!isMatch)
-                throw new TRPCError({ code: 'UNAUTHORIZED', message: 'Incorrect password' })
+                const isMatch = await bcrypt.compare(input.password, user.password)
+                if (!isMatch)
+                    throw new TRPCError({ code: 'UNAUTHORIZED', message: 'Incorrect password' })
 
-            const token = genJwtToken(user)
-            return token
+                const token = genJwtToken(user)
+                return token
+            } catch (err) {
+                throw new TRPCError({
+                    code: 'INTERNAL_SERVER_ERROR',
+                    message: 'Database error'
+                })
+            }
         }),
     signup: t.procedure
         .input(
@@ -60,30 +68,38 @@ const authRouter = t.router({
             })
         )
         .mutation(async ({ input }) => {
-            const user = await prisma.user.findFirst({ where: { email: input.email } })
-            if (user) throw new TRPCError({ code: 'UNAUTHORIZED', message: 'User already exists' })
+            try {
+                const user = await prisma.user.findFirst({ where: { email: input.email } })
+                if (user)
+                    throw new TRPCError({ code: 'UNAUTHORIZED', message: 'User already exists' })
 
-            const salt = await bcrypt.genSalt(10)
-            const hashedPassword = await bcrypt.hash(input.password, salt)
-            const userID = uuid()
+                const salt = await bcrypt.genSalt(10)
+                const hashedPassword = await bcrypt.hash(input.password, salt)
+                const userID = uuid()
 
-            const newUser = await prisma.user.create({
-                data: {
-                    uuid: userID,
-                    username: input.username,
-                    email: input.email,
-                    password: hashedPassword
-                }
-            })
-
-            if (!newUser)
-                throw new TRPCError({
-                    code: 'UNAUTHORIZED',
-                    message: 'There was an error with creating new user'
+                const newUser = await prisma.user.create({
+                    data: {
+                        uuid: userID,
+                        username: input.username,
+                        email: input.email,
+                        password: hashedPassword
+                    }
                 })
 
-            const token = genJwtToken(newUser)
-            return token
+                if (!newUser)
+                    throw new TRPCError({
+                        code: 'UNAUTHORIZED',
+                        message: 'There was an error with creating new user'
+                    })
+
+                const token = genJwtToken(newUser)
+                return token
+            } catch (err) {
+                throw new TRPCError({
+                    code: 'INTERNAL_SERVER_ERROR',
+                    message: 'Database error'
+                })
+            }
         })
 })
 
