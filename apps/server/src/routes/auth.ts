@@ -10,16 +10,14 @@ import bcrypt from 'bcryptjs'
 import { v4 as uuid } from 'uuid'
 import jwt from 'jsonwebtoken'
 import genJwtToken from '../utils/genJwtToken'
+import isAuthed from '../middleware/isAuthed'
 
 const authRouter = t.router({
     verify: t.procedure
-        .input(
-            z.object({
-                token: z.string().nullable()
-            })
-        )
-        .mutation(async ({ input }) => {
-            const token = input.token
+        .use(isAuthed)
+        .input(z.null())
+        .mutation(async ({ ctx }) => {
+            const token = ctx.token
 
             if (!token)
                 throw new TRPCError({ code: 'UNAUTHORIZED', message: 'You are not logged in' })
@@ -52,10 +50,10 @@ const authRouter = t.router({
 
                 const token = genJwtToken(user)
                 return token
-            } catch (err) {
+            } catch (err: any) {
                 throw new TRPCError({
                     code: 'INTERNAL_SERVER_ERROR',
-                    message: 'Database error'
+                    message: err.message
                 })
             }
         }),
@@ -94,10 +92,10 @@ const authRouter = t.router({
 
                 const token = genJwtToken(newUser)
                 return token
-            } catch (err) {
+            } catch (err: any) {
                 throw new TRPCError({
                     code: 'INTERNAL_SERVER_ERROR',
-                    message: 'Database error'
+                    message: err.message
                 })
             }
         })

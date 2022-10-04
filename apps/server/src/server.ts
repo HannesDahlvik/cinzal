@@ -2,6 +2,7 @@ import express from 'express'
 import 'dotenv/config'
 
 import appRouter from './router'
+import { createContext } from './context'
 import * as trpcExpress from '@trpc/server/adapters/express'
 
 import { PrismaClient } from '@prisma/client'
@@ -35,7 +36,8 @@ app.use(morgan('tiny'))
 app.use(
     '/trpc',
     trpcExpress.createExpressMiddleware({
-        router: appRouter
+        router: appRouter,
+        createContext
     })
 )
 

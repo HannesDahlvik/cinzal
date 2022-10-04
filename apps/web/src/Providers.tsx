@@ -7,17 +7,40 @@ import { NotificationsProvider } from '@mantine/notifications'
 
 import { IconContext } from 'phosphor-react'
 
-import { trpc } from './utils'
+import { errorHandler, setAuth, trpc } from './utils'
 import { httpBatchLink } from '@trpc/client'
 
 const queryClient = new QueryClient({
-    defaultOptions: { queries: { refetchOnWindowFocus: false } }
+    defaultOptions: {
+        queries: {
+            refetchOnWindowFocus: false,
+            onError(err: any) {
+                if (err.message.includes('jwt malformed')) {
+                    setAuth(null, null)
+                    errorHandler('Invalid token')
+                }
+            }
+        },
+        mutations: {
+            onError(err: any) {
+                if (err.message.includes('jwt malformed')) {
+                    setAuth(null, null)
+                    errorHandler('Invalid token')
+                }
+            }
+        }
+    }
 })
 
 const trpcClient = trpc.createClient({
     links: [
         httpBatchLink({
-            url: 'http://localhost:8080/trpc'
+            url: 'http://localhost:8080/trpc',
+            headers() {
+                return {
+                    Authorization: localStorage.token
+                }
+            }
         })
     ]
 })

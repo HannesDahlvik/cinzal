@@ -13,10 +13,10 @@ import AuthLoginPage from './pages/auth/Login'
 import AuthSignupPage from './pages/auth/Signup'
 
 import NotFoundPage from './pages/NotFound'
+import RequireAuth from './components/RequireAuth'
 import ErrorPage from './pages/Error'
 
 import { errorHandler, setAuth, trpc } from './utils'
-import RequireAuth from './components/RequireAuth'
 
 const router = createBrowserRouter([
     {
@@ -74,29 +74,26 @@ const App: React.FC = () => {
     const [render, setRender] = useState(false)
 
     useEffect(() => {
-        const token = localStorage.token
+        const token: string | undefined = localStorage.token
 
         if (token) {
-            authVerifyMutation(
-                { token },
-                {
-                    onError: (err) => {
-                        errorHandler(err.message)
+            authVerifyMutation(null, {
+                onError: (err) => {
+                    errorHandler(err.message)
+                    setAuth(null, null)
+                    setRender(true)
+                },
+                onSuccess: (data) => {
+                    const currentTime = Date.now() / 1000
+                    if (data.exp < currentTime) {
                         setAuth(null, null)
                         setRender(true)
-                    },
-                    onSuccess: (data) => {
-                        const currentTime = Date.now() / 1000
-                        if (data.exp < currentTime) {
-                            setAuth(null, null)
-                            setRender(true)
-                            return
-                        }
-                        setAuth(token, data.user)
-                        setRender(true)
+                        return
                     }
+                    setAuth(token, data.user)
+                    setRender(true)
                 }
-            )
+            })
         } else setRender(true)
     }, [])
 
