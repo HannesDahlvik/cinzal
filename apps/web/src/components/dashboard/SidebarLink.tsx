@@ -5,7 +5,7 @@ import { createStyles, Text } from '@mantine/core'
 interface Props {
     title: string
     icon: React.ReactNode
-    iconActive: React.ReactNode
+    iconActive?: React.ReactNode
     to?: string
     active?: boolean
     onClick?: () => void
@@ -56,14 +56,14 @@ const useStyles = createStyles((theme) => {
             paddingRight: theme.spacing.lg,
             cursor: 'pointer',
             transition: '.25s',
-            color: colors.gray[5],
+            color: isDark ? colors.gray[5] : colors.dark[3],
 
             '&:hover': {
-                color: 'white'
+                color: isDark ? 'white' : 'black'
             }
         },
         sidebarLinkActive: {
-            color: 'white !important',
+            color: isDark ? 'white' : 'black !important',
             transition: '.25s',
 
             '&:after': {
@@ -73,7 +73,7 @@ const useStyles = createStyles((theme) => {
                 height: '75%',
                 width: '8px',
                 transition: '.25s',
-                backgroundColor: isDark ? theme.white : '',
+                backgroundColor: isDark ? theme.white : theme.black,
                 borderTopLeftRadius: theme.radius.sm,
                 borderBottomLeftRadius: theme.radius.sm
             }

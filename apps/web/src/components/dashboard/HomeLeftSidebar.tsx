@@ -3,7 +3,7 @@ import { useState } from 'react'
 import state from '../../state'
 import { useHookstate } from '@hookstate/core'
 
-import { Button, createStyles, useMantineTheme } from '@mantine/core'
+import { Button, Center, createStyles, useMantineTheme } from '@mantine/core'
 import { Calendar } from '@mantine/dates'
 import { openModal } from '@mantine/modals'
 
@@ -36,25 +36,27 @@ const DashboardHomeLeftSidebar: React.FC = () => {
                         date.getDate() === new Date().getDate()
                     )
                         return {
-                            backgroundColor: theme.colors.blue[6]
+                            backgroundColor: theme.colors.blue[6],
+                            color: '#fff'
                         }
                     else if (
                         date.getMonth() === selectedDate.getMonth() &&
                         date.getDate() === selectedDate.getDate()
                     )
                         return {
-                            backgroundColor: theme.colors.indigo[6]
+                            backgroundColor: theme.colors.indigo[6],
+                            color: '#fff'
                         }
                     else return {}
                 }}
                 onChange={(value) => setSelectedDate(value as Date)}
             />
 
-            <div className={classes.create}>
+            <Center className={classes.create}>
                 <Button fullWidth onClick={handleCreateTask}>
                     Create task
                 </Button>
-            </div>
+            </Center>
         </div>
     )
 }
@@ -72,10 +74,6 @@ const useStyles = createStyles((theme) => {
             flexDirection: 'column'
         },
         create: {
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'center',
-            gap: theme.spacing.sm,
             width: '100%',
             padding: theme.spacing.xl,
             borderTop: '1px solid',

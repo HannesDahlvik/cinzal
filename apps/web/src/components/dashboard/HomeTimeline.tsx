@@ -121,7 +121,7 @@ const useStyles = createStyles((theme) => {
             display: 'grid',
             gridTemplateColumns: '100px 1fr',
             height: '100%',
-            backgroundColor: isDark ? colors.dark[7] : theme.white,
+            backgroundColor: !isDark ? colors.gray[2] : '',
             overflowY: 'auto',
             scrollbarWidth: 'thin',
             position: 'relative'
@@ -159,7 +159,7 @@ const useStyles = createStyles((theme) => {
             height: '100%',
             borderTop: '1px solid',
             borderLeft: '1px solid',
-            borderColor: isDark ? colors.dark[5] : colors.gray[2]
+            borderColor: isDark ? colors.dark[5] : colors.gray[4]
         },
         needle: {
             position: 'absolute',

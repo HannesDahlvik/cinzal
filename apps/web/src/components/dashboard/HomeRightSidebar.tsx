@@ -1,26 +1,11 @@
-import { useHookstate } from '@hookstate/core'
-import state from '../../state'
-
-import { createStyles, Title } from '@mantine/core'
+import { createStyles } from '@mantine/core'
 
 const DashboardHomeRightSidebar: React.FC = () => {
     const { classes } = useStyles()
 
-    const { value: selectedTask } = useHookstate(state.selectedTask)
-
     return (
         <div className={classes.sidebar}>
-            {!selectedTask && (
-                <Title align="center" mt="md">
-                    Select a task
-                </Title>
-            )}
-
-            {selectedTask && (
-                <>
-                    <Title>{selectedTask.title}</Title>
-                </>
-            )}
+            <p>Weather coming soon</p>
         </div>
     )
 }

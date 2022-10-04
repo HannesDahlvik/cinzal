@@ -2,16 +2,18 @@ import type { DashboardSidebarLinks } from '../../config/types'
 
 import { useNavigate } from 'react-router-dom'
 
-import { createStyles } from '@mantine/core'
+import { createStyles, useMantineColorScheme } from '@mantine/core'
 import {
     Alarm,
     CalendarBlank,
     CirclesFour,
     Cloud,
     ListChecks,
+    Moon,
     Newspaper,
     Notebook,
-    SignOut
+    SignOut,
+    Sun
 } from 'phosphor-react'
 
 import DashboardSidebarLink from './SidebarLink'
@@ -64,6 +66,7 @@ const links: DashboardSidebarLinks[] = [
 
 const DashboardSidebar: React.FC = () => {
     const { classes } = useStyles()
+    const { colorScheme, toggleColorScheme } = useMantineColorScheme()
 
     const navigate = useNavigate()
 
@@ -88,6 +91,12 @@ const DashboardSidebar: React.FC = () => {
             </div>
 
             <div className={classes.sidebarBottom}>
+                <DashboardSidebarLink
+                    title="Theme"
+                    icon={colorScheme === 'dark' ? <Sun /> : <Moon />}
+                    onClick={toggleColorScheme}
+                />
+
                 <DashboardSidebarLink
                     title="Sign out"
                     icon={<SignOut weight="regular" />}

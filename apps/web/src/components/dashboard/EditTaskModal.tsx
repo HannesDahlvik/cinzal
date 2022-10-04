@@ -44,7 +44,7 @@ const DashboardEditTaskModal: React.FC<Props> = ({ task }) => {
     const { value: user } = useHookstate(state.auth.user)
 
     const [loading, setLoading] = useState(false)
-    const [selectedColor, setSelectedColor] = useState<string>('blue')
+    const [selectedColor, setSelectedColor] = useState<string>(task.color)
 
     const form = useForm<FormVals>({
         initialValues: {

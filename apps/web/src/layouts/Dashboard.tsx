@@ -51,7 +51,7 @@ const useStyles = createStyles((theme) => {
             display: 'grid',
             gridTemplateColumns: '150px 1fr',
             minHeight: '100vh',
-            backgroundColor: isDark ? colors.dark[7] : colors.gray[2]
+            backgroundColor: isDark ? colors.dark[7] : colors.gray[1]
         },
         innerWrapper: {
             height: '100%'
