@@ -1,4 +1,5 @@
 import authRouter from './auth'
+import calendarRouter from './calendar'
 import tasksRouter from './tasks'
 
-export { authRouter, tasksRouter }
+export { authRouter, calendarRouter, tasksRouter }
