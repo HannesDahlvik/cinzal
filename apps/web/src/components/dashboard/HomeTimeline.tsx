@@ -15,6 +15,7 @@ const DashboardHomeTimeline: React.FC = () => {
     const theme = useMantineTheme()
 
     const { value: tasks } = useHookstate(state.data.tasks)
+    const { value: events } = useHookstate(state.data.events)
 
     const wrapperEl = useRef<HTMLDivElement>(null)
 
@@ -50,6 +51,20 @@ const DashboardHomeTimeline: React.FC = () => {
         setNeedlePos(finalPos)
     }
 
+    const calcBoxFinalPos = (boxDate: dayjs.Dayjs) => {
+        const date = dayjs()
+        if (
+            boxDate.date() === date.date() &&
+            boxDate.month() === date.month() &&
+            boxDate.year() === date.year()
+        ) {
+            const hourPos = boxDate.hour() * 100
+            const minutePos = 100 / (60 / boxDate.minute())
+            const finalPos = hourPos + minutePos
+            return finalPos
+        } else return null
+    }
+
     const handleEditTask = (task: Task) => {
         openModal({
             title: `Edit ${task.title}`,
@@ -69,18 +84,24 @@ const DashboardHomeTimeline: React.FC = () => {
 
             <div className={classes.innerWrapper}>
                 <div className={classes.tasksWrapper}>
-                    {tasks.map((task) => {
-                        const date = dayjs()
-                        const taskDate = dayjs(task.deadline)
+                    {events.map((event, i) => {
+                        const finalPos = calcBoxFinalPos(dayjs(event.start))
 
-                        if (
-                            taskDate.date() === date.date() &&
-                            taskDate.month() === date.month() &&
-                            taskDate.year() === date.year()
-                        ) {
-                            const hourPos = taskDate.hour() * 100
-                            const minutePos = 100 / (60 / taskDate.minute())
-                            const finalPos = hourPos + minutePos
+                        if (finalPos) {
+                            return (
+                                <Box className={classes.taskBox} sx={{ top: finalPos }} key={i}>
+                                    <Box className={classes.innerTaskBox}>
+                                        <Text lineClamp={1}>{event.summary}</Text>
+                                        <Text lineClamp={1}>{event.location}</Text>
+                                    </Box>
+                                </Box>
+                            )
+                        } else return null
+                    })}
+
+                    {tasks.map((task) => {
+                        const finalPos = calcBoxFinalPos(dayjs(task.deadline))
+                        if (finalPos)
                             return (
                                 <Box
                                     className={classes.taskBox}
@@ -96,7 +117,7 @@ const DashboardHomeTimeline: React.FC = () => {
                                     </Box>
                                 </Box>
                             )
-                        } else return null
+                        else return null
                     })}
                 </div>
 
@@ -145,12 +166,13 @@ const useStyles = createStyles((theme) => {
         taskBox: {
             position: 'relative',
             width: '100%',
-            height: '30px',
+            height: '60px',
             padding: '0 3px'
         },
         innerTaskBox: {
             height: '100%',
             borderRadius: theme.radius.sm,
+            backgroundColor: colors.blue[7],
             padding: '2px',
             cursor: 'pointer'
         },

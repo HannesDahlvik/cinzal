@@ -50,7 +50,8 @@ const calendarRouter = t.router({
                 const data: CalendarResponse[] = []
                 arr.map((obj) => {
                     Object.entries(obj).map((row) => {
-                        data.push(row[1] as CalendarResponse)
+                        if (row[1].type === 'VEVENT')
+                            data.push(row[1] as unknown as CalendarResponse)
                     })
                 })
 
