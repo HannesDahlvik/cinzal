@@ -6,20 +6,55 @@ import ical from 'node-ical'
 
 import isAuthed from '../middleware/isAuthed'
 import { CalendarResponse } from '../config/types'
+import { prisma } from '../server'
 
 const cp = t.procedure.use(isAuthed)
 
 const calendarRouter = t.router({
-    getEvents: cp
+    getICalLinks: cp.query(async ({ ctx }) => {
+        try {
+            const links = await prisma.calendar
+                .findMany({ where: { uuid: ctx.user?.uuid } })
+                .catch(() => {
+                    throw new TRPCError({
+                        code: 'INTERNAL_SERVER_ERROR',
+                        message: 'Database error'
+                    })
+                })
+            const arr: string[] = []
+            links.map((val) => arr.push(val.link))
+
+            return arr
+        } catch (err: any) {
+            throw new TRPCError({
+                code: 'INTERNAL_SERVER_ERROR',
+                message: err.message
+            })
+        }
+    }),
+    getICalEventsFromUrls: cp
         .input(
             z.object({
-                ical: z.string()
+                links: z.string().array()
             })
         )
         .query(async ({ input }) => {
             try {
-                const data = await ical.async.fromURL(input.ical)
-                return data as unknown as CalendarResponse[]
+                const arr = await Promise.all(
+                    input.links.map(async (row) => {
+                        const data = await ical.async.fromURL(row)
+                        return data
+                    })
+                )
+
+                const data: CalendarResponse[] = []
+                arr.map((obj) => {
+                    Object.entries(obj).map((row) => {
+                        data.push(row[1] as CalendarResponse)
+                    })
+                })
+
+                return data
             } catch (err) {
                 throw new TRPCError({
                     code: 'INTERNAL_SERVER_ERROR',

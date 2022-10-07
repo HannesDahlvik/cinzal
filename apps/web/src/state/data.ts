@@ -3,7 +3,8 @@ import { hookstate } from '@hookstate/core'
 import { Task } from '../config/types'
 
 const data = {
-    tasks: hookstate<Task[]>([])
+    tasks: hookstate<Task[]>([]),
+    events: hookstate<any[]>([])
 }
 
 export default data

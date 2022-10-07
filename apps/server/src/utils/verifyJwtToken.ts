@@ -1,10 +1,12 @@
 import config from '../config'
+import { VerifyDecoded } from '../config/types'
 
 import jwt from 'jsonwebtoken'
 
-const verifyJwtToken = (token: string | undefined) => {
+const verifyJwtToken = (token: string | undefined): null | VerifyDecoded => {
     if (token) {
-        return jwt.verify(token, config.jwtSecret)
+        const data = jwt.verify(token, config.jwtSecret)
+        return data as VerifyDecoded
     } else {
         return null
     }

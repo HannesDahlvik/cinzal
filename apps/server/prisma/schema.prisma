@@ -16,6 +16,7 @@ model User {
   createdAt         DateTime          @default(now())
   updatedAt         DateTime          @updatedAt
   tasks             Task[]
+  calendars         Calendar[]
 }
 
 model Task {
@@ -29,4 +30,11 @@ model Task {
   user              User              @relation(fields: [uuid], references: [uuid])
   createdAt         DateTime          @default(now())
   updatedAt         DateTime          @updatedAt
+}
+
+model Calendar {
+  id                Int               @id @default(autoincrement())
+  link              String
+  uuid              String
+  user              User              @relation(fields: [uuid], references: [uuid])
 }

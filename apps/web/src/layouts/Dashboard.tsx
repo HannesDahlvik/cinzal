@@ -18,9 +18,28 @@ const DashboardLayout: React.FC = () => {
 
     const { value: user } = useHookstate(state.auth.user)
 
-    const { isLoading, error } = trpc.tasks.get.useQuery(
+    const iCalLinksQuery = trpc.calendar.getICalLinks.useQuery(undefined, {
+        enabled: !!user
+    })
+    const calendarsQuery = trpc.calendar.getICalEventsFromUrls.useQuery(
+        {
+            links: iCalLinksQuery.data ? iCalLinksQuery.data : []
+        },
+        {
+            enabled: !!iCalLinksQuery.data,
+            onError: (err) => {
+                errorHandler(err.message)
+            },
+            onSuccess: (data) => {
+                state.data.events.merge(data)
+            }
+        }
+    )
+
+    const tasksQuery = trpc.tasks.get.useQuery(
         { uuid: user?.uuid as string },
         {
+            enabled: !!user,
             onError: (err) => {
                 errorHandler(err.message)
             },
@@ -30,9 +49,19 @@ const DashboardLayout: React.FC = () => {
         }
     )
 
-    if (error) return <ErrorPage error={error.message} />
+    if (tasksQuery.error || iCalLinksQuery.error || calendarsQuery.error)
+        return (
+            <ErrorPage
+                error={
+                    tasksQuery.error?.message ||
+                    iCalLinksQuery.error?.message ||
+                    calendarsQuery.error?.message
+                }
+            />
+        )
 
-    if (isLoading) return <LoadingPage />
+    if (tasksQuery.isLoading || calendarsQuery.isLoading || iCalLinksQuery.isLoading)
+        return <LoadingPage />
 
     return (
         <div className={classes.wrapper}>

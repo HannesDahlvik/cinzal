@@ -1,12 +1,7 @@
+import { User } from '@prisma/client'
+
 export interface VerifyDecoded {
-    user: {
-        id: number
-        uuid: string
-        username: string
-        email: string
-        createdAt: Date
-        updatedAt: Date
-    }
+    user: User
     iat: number
     exp: number
 }
