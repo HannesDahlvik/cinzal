@@ -173,6 +173,7 @@ const useStyles = createStyles((theme) => {
             height: '100%',
             borderRadius: theme.radius.sm,
             backgroundColor: colors.blue[7],
+            color: '#fff',
             padding: '2px',
             cursor: 'pointer'
         },

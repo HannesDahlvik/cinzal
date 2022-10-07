@@ -9,11 +9,10 @@ import {
     CirclesFour,
     Cloud,
     ListChecks,
-    Moon,
     Newspaper,
     Notebook,
     SignOut,
-    Sun
+    User
 } from 'phosphor-react'
 
 import DashboardSidebarLink from './SidebarLink'
@@ -33,16 +32,16 @@ const links: DashboardSidebarLinks[] = [
         iconActive: <CalendarBlank weight="fill" />
     },
     {
-        title: 'Notes',
-        path: 'notes',
-        icon: <Notebook weight="regular" />,
-        iconActive: <Notebook weight="fill" />
-    },
-    {
         title: 'Tasks',
         path: 'tasks',
         icon: <ListChecks weight="regular" />,
         iconActive: <ListChecks weight="fill" />
+    },
+    {
+        title: 'Notes',
+        path: 'notes',
+        icon: <Notebook weight="regular" />,
+        iconActive: <Notebook weight="fill" />
     },
     {
         title: 'Alarms',
@@ -92,16 +91,17 @@ const DashboardSidebar: React.FC = () => {
 
             <div className={classes.sidebarBottom}>
                 <DashboardSidebarLink
-                    title="Theme"
-                    icon={colorScheme === 'dark' ? <Sun /> : <Moon />}
-                    onClick={toggleColorScheme}
+                    title="Sign out"
+                    icon={<SignOut weight="regular" />}
+                    onClick={handleSignOut}
                 />
 
                 <DashboardSidebarLink
-                    title="Sign out"
-                    icon={<SignOut weight="regular" />}
-                    iconActive={<SignOut weight="fill" />}
-                    onClick={handleSignOut}
+                    title="Profile"
+                    icon={<User weight="regular" />}
+                    iconActive={<User weight="fill" />}
+                    active={location.pathname.includes('/profile')}
+                    onClick={() => navigate('/dashboard/profile')}
                 />
             </div>
         </div>

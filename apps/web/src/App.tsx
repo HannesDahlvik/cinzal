@@ -7,6 +7,7 @@ import Home from './pages/Home'
 
 import DashboardLayout from './layouts/Dashboard'
 import DashboardHomePage from './pages/dashboard/Home'
+import DashboardProfilePage from './pages/dashboard/Profile'
 
 import AuthLayout from './layouts/Auth'
 import AuthLoginPage from './pages/auth/Login'
@@ -39,6 +40,10 @@ const router = createBrowserRouter([
             {
                 path: 'home',
                 element: <DashboardHomePage />
+            },
+            {
+                path: 'profile',
+                element: <DashboardProfilePage />
             }
         ]
     },
