@@ -11,21 +11,26 @@ import LoadingPage from '../pages/Loading'
 import DashboardSidebar from '../components/dashboard/Sidebar'
 
 import { errorHandler, trpc } from '../utils'
+import ErrorPage from '../pages/Error'
 
 const DashboardLayout: React.FC = () => {
     const { classes } = useStyles()
 
     const { value: user } = useHookstate(state.auth.user)
 
-    const { isLoading } = trpc.tasks.get.useQuery(
+    const { isLoading, error } = trpc.tasks.get.useQuery(
         { uuid: user?.uuid as string },
         {
-            onError: (err) => errorHandler(err.message),
+            onError: (err) => {
+                errorHandler(err.message)
+            },
             onSuccess: (data) => {
                 state.data.tasks.set(data as unknown as Task[])
             }
         }
     )
+
+    if (error) return <ErrorPage error={error.message} />
 
     if (isLoading) return <LoadingPage />
 

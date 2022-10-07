@@ -2,18 +2,23 @@ import { useRouteError } from 'react-router-dom'
 
 import { Button, Center, Code, createStyles, Group, Title } from '@mantine/core'
 
-const ErrorPage: React.FC = () => {
+interface Props {
+    error?: string
+}
+
+const ErrorPage: React.FC<Props> = ({ error }) => {
+    console.log(error)
+
     const { classes } = useStyles()
 
-    const error: any = useRouteError()
-    console.error(error)
+    const routerError: any = useRouteError()
 
     return (
         <Center className={classes.center}>
             <Title>APP CRASHED</Title>
 
             <Code mt="sm" className={classes.code}>
-                Error: {error.statusText || error.message}
+                Error: {error || routerError.statusText || routerError.message}
             </Code>
 
             <Group mt="md">

@@ -40,7 +40,14 @@ const authRouter = t.router({
         )
         .mutation(async ({ input }) => {
             try {
-                const user = await prisma.user.findFirst({ where: { email: input.email } })
+                const user = await prisma.user
+                    .findFirst({ where: { email: input.email } })
+                    .catch(() => {
+                        throw new TRPCError({
+                            code: 'INTERNAL_SERVER_ERROR',
+                            message: 'Database error'
+                        })
+                    })
                 if (!user)
                     throw new TRPCError({ code: 'UNAUTHORIZED', message: 'User does not exist' })
 
@@ -67,7 +74,14 @@ const authRouter = t.router({
         )
         .mutation(async ({ input }) => {
             try {
-                const user = await prisma.user.findFirst({ where: { email: input.email } })
+                const user = await prisma.user
+                    .findFirst({ where: { email: input.email } })
+                    .catch(() => {
+                        throw new TRPCError({
+                            code: 'INTERNAL_SERVER_ERROR',
+                            message: 'Database error'
+                        })
+                    })
                 if (user)
                     throw new TRPCError({ code: 'UNAUTHORIZED', message: 'User already exists' })
 
@@ -75,14 +89,21 @@ const authRouter = t.router({
                 const hashedPassword = await bcrypt.hash(input.password, salt)
                 const userID = uuid()
 
-                const newUser = await prisma.user.create({
-                    data: {
-                        uuid: userID,
-                        username: input.username,
-                        email: input.email,
-                        password: hashedPassword
-                    }
-                })
+                const newUser = await prisma.user
+                    .create({
+                        data: {
+                            uuid: userID,
+                            username: input.username,
+                            email: input.email,
+                            password: hashedPassword
+                        }
+                    })
+                    .catch(() => {
+                        throw new TRPCError({
+                            code: 'INTERNAL_SERVER_ERROR',
+                            message: 'Database error'
+                        })
+                    })
 
                 if (!newUser)
                     throw new TRPCError({
