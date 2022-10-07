@@ -1,16 +1,24 @@
+import { VerifyDecoded } from './config/types'
+import { User } from '@prisma/client'
 import * as trpc from '@trpc/server'
 import * as trpcExpress from '@trpc/server/adapters/express'
 
-import verifyJwtToken from './utils/verifyJwtToken'
+import jwt from 'jsonwebtoken'
 
 export const createContext = async ({ req }: trpcExpress.CreateExpressContextOptions) => {
     const token = req.headers.authorization
 
-    const user = verifyJwtToken(token)
+    const getUser = (): null | User => {
+        if (token) {
+            const { user } = jwt.decode(token) as VerifyDecoded
+            return user
+        }
+        return null
+    }
 
     return {
         token,
-        user: user?.user
+        user: getUser()
     }
 }
 
