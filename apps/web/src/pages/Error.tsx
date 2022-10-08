@@ -37,7 +37,8 @@ const useStyles = createStyles((theme) => {
             height: '100vh'
         },
         code: {
-            fontSize: theme.fontSizes.md
+            fontSize: theme.fontSizes.md,
+            maxWidth: '600px'
         }
     }
 })

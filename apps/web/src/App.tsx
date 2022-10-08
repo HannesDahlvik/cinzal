@@ -1,21 +1,21 @@
-import { useEffect, useState } from 'react'
+import { lazy, Suspense, useEffect, useState } from 'react'
 import { createBrowserRouter, Navigate, RouterProvider } from 'react-router-dom'
 
 import LoadingPage from './pages/Loading'
 
 import Home from './pages/Home'
 
-import DashboardLayout from './layouts/Dashboard'
-import DashboardHomePage from './pages/dashboard/Home'
-import DashboardProfilePage from './pages/dashboard/Profile'
+const DashboardLayout = lazy(() => import('./layouts/Dashboard'))
+const DashboardHomePage = lazy(() => import('./pages/dashboard/Home'))
+const DashboardProfilePage = lazy(() => import('./pages/dashboard/Profile'))
 
-import AuthLayout from './layouts/Auth'
-import AuthLoginPage from './pages/auth/Login'
-import AuthSignupPage from './pages/auth/Signup'
+const AuthLayout = lazy(() => import('./layouts/Auth'))
+const AuthLoginPage = lazy(() => import('./pages/auth/Login'))
+const AuthSignupPage = lazy(() => import('./pages/auth/Signup'))
 
-import NotFoundPage from './pages/NotFound'
-import RequireAuth from './components/RequireAuth'
-import ErrorPage from './pages/Error'
+const NotFoundPage = lazy(() => import('./pages/NotFound'))
+const RequireAuth = lazy(() => import('./components/RequireAuth'))
+const ErrorPage = lazy(() => import('./pages/Error'))
 
 import { errorHandler, setAuth, trpc } from './utils'
 
@@ -102,7 +102,12 @@ const App: React.FC = () => {
         } else setRender(true)
     }, [])
 
-    if (render) return <RouterProvider router={router} />
+    if (render)
+        return (
+            <Suspense fallback={<LoadingPage />}>
+                <RouterProvider router={router} />
+            </Suspense>
+        )
     else return <LoadingPage />
 }
 

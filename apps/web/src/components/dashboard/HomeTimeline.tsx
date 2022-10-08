@@ -89,8 +89,8 @@ const DashboardHomeTimeline: React.FC = () => {
 
                         if (finalPos) {
                             return (
-                                <Box className={classes.taskBox} sx={{ top: finalPos }} key={i}>
-                                    <Box className={classes.innerTaskBox}>
+                                <Box className={classes.eventBox} sx={{ top: finalPos }} key={i}>
+                                    <Box className={classes.innerBox}>
                                         <Text lineClamp={1}>{event.summary}</Text>
                                         <Text lineClamp={1}>{event.location}</Text>
                                     </Box>
@@ -109,10 +109,13 @@ const DashboardHomeTimeline: React.FC = () => {
                                     key={task.id}
                                 >
                                     <Box
-                                        className={classes.innerTaskBox}
+                                        className={classes.innerBox}
                                         sx={{ backgroundColor: theme.colors[task.color][7] }}
                                         onClick={() => handleEditTask(task)}
                                     >
+                                        <Text mr="sm">
+                                            {dayjs(new Date(task.deadline)).format('HH:mm')}
+                                        </Text>
                                         <Text>{task.title}</Text>
                                     </Box>
                                 </Box>
@@ -166,16 +169,23 @@ const useStyles = createStyles((theme) => {
         taskBox: {
             position: 'relative',
             width: '100%',
-            height: '60px',
+            height: '30px',
             padding: '0 3px'
         },
-        innerTaskBox: {
+        innerBox: {
+            display: 'flex',
             height: '100%',
             borderRadius: theme.radius.sm,
             backgroundColor: colors.blue[7],
             color: '#fff',
             padding: '2px',
             cursor: 'pointer'
+        },
+        eventBox: {
+            position: 'relative',
+            width: '100%',
+            height: '60px',
+            padding: '0 3px'
         },
         timeBox: {
             width: '100%',
