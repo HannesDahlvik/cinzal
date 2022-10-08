@@ -1,21 +1,20 @@
-import { useState } from 'react'
-
 import state from '../../state'
 import { useHookstate } from '@hookstate/core'
 
-import { Button, Center, createStyles, useMantineTheme } from '@mantine/core'
-import { Calendar } from '@mantine/dates'
+import { Box, Button, Center, createStyles, Divider, useMantineTheme } from '@mantine/core'
+import { Month } from '@mantine/dates'
 import { openModal } from '@mantine/modals'
 
 import DashboardCreateTaskModal from './CreateTaskModal'
+import DashboardDateChanger from './DateChanger'
+
+import dayjs from 'dayjs'
 
 const DashboardHomeLeftSidebar: React.FC = () => {
     const { classes } = useStyles()
     const theme = useMantineTheme()
 
-    const { value: globalDate } = useHookstate(state.date)
-
-    const [selectedDate, setSelectedDate] = useState(new Date())
+    const { value: globalDate, set: setGlobalDate } = useHookstate(state.date)
 
     const handleCreateTask = () => {
         openModal({
@@ -26,33 +25,40 @@ const DashboardHomeLeftSidebar: React.FC = () => {
 
     return (
         <div className={classes.sidebar}>
-            <Calendar
-                initialMonth={globalDate.toDate()}
-                fullWidth
-                p="xl"
-                dayStyle={(date) => {
-                    if (
-                        date.getMonth() === selectedDate.getMonth() &&
-                        date.getDate() === new Date().getDate()
-                    )
-                        return {
-                            backgroundColor: theme.colors.blue[6],
-                            color: '#fff'
-                        }
-                    else if (
-                        date.getMonth() === selectedDate.getMonth() &&
-                        date.getDate() === selectedDate.getDate()
-                    )
-                        return {
-                            backgroundColor: theme.colors.indigo[6],
-                            color: '#fff'
-                        }
-                    else return {}
-                }}
-                onChange={(value) => setSelectedDate(value as Date)}
-            />
+            <Box sx={{ padding: '24px' }}>
+                <DashboardDateChanger />
 
-            <Center className={classes.create}>
+                <Month
+                    month={globalDate.toDate()}
+                    value={globalDate.toDate()}
+                    fullWidth
+                    my="xl"
+                    dayStyle={(date) => {
+                        if (
+                            date.getMonth() === globalDate.month() &&
+                            date.getDate() === new Date().getDate()
+                        )
+                            return {
+                                backgroundColor: theme.colors.blue[6],
+                                color: '#fff'
+                            }
+                        else if (
+                            date.getMonth() === globalDate.month() &&
+                            date.getDate() === globalDate.date()
+                        )
+                            return {
+                                backgroundColor: theme.colors.indigo[6],
+                                color: '#fff'
+                            }
+                        else return {}
+                    }}
+                    onChange={(value) => setGlobalDate(dayjs(value))}
+                />
+            </Box>
+
+            <Divider sx={{ width: '100%' }} />
+
+            <Center className={classes.create} p="xl">
                 <Button fullWidth onClick={handleCreateTask}>
                     Create task
                 </Button>
@@ -63,10 +69,7 @@ const DashboardHomeLeftSidebar: React.FC = () => {
 
 export default DashboardHomeLeftSidebar
 
-const useStyles = createStyles((theme) => {
-    const isDark = theme.colorScheme === 'dark'
-    const colors = theme.colors
-
+const useStyles = createStyles(() => {
     return {
         sidebar: {
             display: 'flex',
@@ -74,10 +77,7 @@ const useStyles = createStyles((theme) => {
             flexDirection: 'column'
         },
         create: {
-            width: '100%',
-            padding: theme.spacing.xl,
-            borderTop: '1px solid',
-            borderTopColor: isDark ? colors.dark[6] : colors.gray[4]
+            width: '100%'
         }
     }
 })

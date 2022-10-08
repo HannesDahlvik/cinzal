@@ -4,7 +4,7 @@ import { Task } from '../../config/types'
 import state from '../../state'
 import { useHookstate } from '@hookstate/core'
 
-import { Box, createStyles, Text, useMantineTheme } from '@mantine/core'
+import { Box, createStyles, Stack, Text, useMantineTheme } from '@mantine/core'
 import { openModal } from '@mantine/modals'
 
 import dayjs from 'dayjs'
@@ -14,6 +14,7 @@ const DashboardHomeTimeline: React.FC = () => {
     const { classes } = useStyles()
     const theme = useMantineTheme()
 
+    const { value: globalDate } = useHookstate(state.date)
     const { value: tasks } = useHookstate(state.data.tasks)
     const { value: events } = useHookstate(state.data.events)
 
@@ -21,7 +22,7 @@ const DashboardHomeTimeline: React.FC = () => {
 
     const [needlePos, setNeedlePos] = useState(0)
 
-    const times = Array.from<number>({ length: 24 }).fill(0)
+    const hours = Array.from<number>({ length: 24 }).fill(0)
 
     useEffect(() => {
         const el = document.querySelector<HTMLDivElement>(`#time-${dayjs().hour()}`)
@@ -52,11 +53,10 @@ const DashboardHomeTimeline: React.FC = () => {
     }
 
     const calcBoxFinalPos = (boxDate: dayjs.Dayjs) => {
-        const date = dayjs()
         if (
-            boxDate.date() === date.date() &&
-            boxDate.month() === date.month() &&
-            boxDate.year() === date.year()
+            boxDate.date() === globalDate.date() &&
+            boxDate.month() === globalDate.month() &&
+            boxDate.year() === globalDate.year()
         ) {
             const hourPos = boxDate.hour() * 100
             const minutePos = 100 / (60 / boxDate.minute())
@@ -75,7 +75,7 @@ const DashboardHomeTimeline: React.FC = () => {
     return (
         <div className={classes.wrapper} ref={wrapperEl}>
             <div className={classes.timeWrapper}>
-                {times.map((row, hour) => (
+                {hours.map((row, hour) => (
                     <Text className={classes.timeBox} id={`time-${hour}`} key={hour}>
                         {hour}:00
                     </Text>
@@ -91,8 +91,10 @@ const DashboardHomeTimeline: React.FC = () => {
                             return (
                                 <Box className={classes.eventBox} sx={{ top: finalPos }} key={i}>
                                     <Box className={classes.innerBox}>
-                                        <Text lineClamp={1}>{event.summary}</Text>
-                                        <Text lineClamp={1}>{event.location}</Text>
+                                        <Stack spacing={2}>
+                                            <Text lineClamp={1}>{event.summary}</Text>
+                                            <Text lineClamp={1}>{event.location}</Text>
+                                        </Stack>
                                     </Box>
                                 </Box>
                             )
@@ -124,7 +126,7 @@ const DashboardHomeTimeline: React.FC = () => {
                     })}
                 </div>
 
-                {times.map((row, hour) => (
+                {hours.map((row, hour) => (
                     <div className={classes.timeBox} key={hour}></div>
                 ))}
 
