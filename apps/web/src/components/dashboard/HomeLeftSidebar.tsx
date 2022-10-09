@@ -7,6 +7,7 @@ import { openModal } from '@mantine/modals'
 
 import DashboardCreateTaskModal from './CreateTaskModal'
 import DashboardDateChanger from './DateChanger'
+import HomeLeftSidebarCalendars from './HomeLeftSidebarCalendars'
 
 import dayjs from 'dayjs'
 
@@ -63,6 +64,10 @@ const DashboardHomeLeftSidebar: React.FC = () => {
                     Create task
                 </Button>
             </Center>
+
+            <Divider sx={{ width: '100%' }} />
+
+            <HomeLeftSidebarCalendars />
         </div>
     )
 }

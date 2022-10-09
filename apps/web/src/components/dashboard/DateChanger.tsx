@@ -69,7 +69,12 @@ const useStyles = createStyles((theme) => ({
         width: '100%'
     },
     icons: {
-        height: '24px'
+        height: '24px',
+
+        svg: {
+            width: '24px',
+            height: '24px'
+        }
     },
     icon: {
         cursor: 'pointer',

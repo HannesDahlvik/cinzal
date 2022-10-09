@@ -5,7 +5,7 @@ const DashboardHomeRightSidebar: React.FC = () => {
 
     return (
         <div className={classes.sidebar}>
-            <p>Weather coming soon</p>
+            <></>
         </div>
     )
 }

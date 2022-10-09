@@ -72,7 +72,7 @@ const Providers: React.FC<Props> = ({ children }) => {
                     >
                         <ModalsProvider>
                             <NotificationsProvider position="top-center">
-                                <IconContext.Provider value={{ weight: 'fill', size: 24 }}>
+                                <IconContext.Provider value={{ weight: 'fill', size: 16 }}>
                                     {children}
                                 </IconContext.Provider>
                             </NotificationsProvider>

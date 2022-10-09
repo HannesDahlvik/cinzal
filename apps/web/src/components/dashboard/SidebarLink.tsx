@@ -80,7 +80,12 @@ const useStyles = createStyles((theme) => {
         },
         sidebarLinkIcon: {
             width: '24px',
-            height: '24px'
+            height: '24px',
+
+            svg: {
+                width: '24px',
+                height: '24px'
+            }
         },
         sidebarLinkText: {
             fontWeight: 'bold'

@@ -2,7 +2,7 @@ import type { DashboardSidebarLinks } from '../../config/types'
 
 import { useNavigate } from 'react-router-dom'
 
-import { createStyles, useMantineColorScheme } from '@mantine/core'
+import { createStyles } from '@mantine/core'
 import {
     Alarm,
     CalendarBlank,
@@ -65,7 +65,6 @@ const links: DashboardSidebarLinks[] = [
 
 const DashboardSidebar: React.FC = () => {
     const { classes } = useStyles()
-    const { colorScheme, toggleColorScheme } = useMantineColorScheme()
 
     const navigate = useNavigate()
 

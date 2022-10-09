@@ -19,7 +19,10 @@ const DashboardLayout: React.FC = () => {
     const { value: user } = useHookstate(state.auth.user)
 
     const iCalLinksQuery = trpc.calendar.getICalLinks.useQuery(undefined, {
-        enabled: !!user
+        enabled: !!user,
+        onSuccess: (data) => {
+            state.data.calendars.set(data)
+        }
     })
     const calendarsQuery = trpc.calendar.getICalEventsFromUrls.useQuery(
         {
@@ -31,7 +34,7 @@ const DashboardLayout: React.FC = () => {
                 errorHandler(err.message)
             },
             onSuccess: (data) => {
-                state.data.events.merge(data)
+                state.data.events.set(data)
             }
         }
     )

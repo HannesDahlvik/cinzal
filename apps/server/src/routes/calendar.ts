@@ -13,7 +13,7 @@ const cp = t.procedure.use(isAuthed)
 const calendarRouter = t.router({
     getICalLinks: cp.query(async ({ ctx }) => {
         try {
-            const links = await prisma.calendar
+            const calendars = await prisma.calendar
                 .findMany({ where: { uuid: ctx.user?.uuid } })
                 .catch(() => {
                     throw new TRPCError({
@@ -21,10 +21,8 @@ const calendarRouter = t.router({
                         message: 'Database error'
                     })
                 })
-            const arr: string[] = []
-            links.map((val) => arr.push(val.link))
 
-            return arr
+            return calendars
         } catch (err: any) {
             throw new TRPCError({
                 code: 'INTERNAL_SERVER_ERROR',
@@ -35,14 +33,20 @@ const calendarRouter = t.router({
     getICalEventsFromUrls: cp
         .input(
             z.object({
-                links: z.string().array()
+                links: z
+                    .object({
+                        id: z.number(),
+                        url: z.string(),
+                        uuid: z.string()
+                    })
+                    .array()
             })
         )
         .query(async ({ input }) => {
             try {
                 const arr = await Promise.all(
                     input.links.map(async (row) => {
-                        const data = await ical.async.fromURL(row)
+                        const data = await ical.async.fromURL(row.url)
                         return data
                     })
                 )
@@ -62,6 +66,78 @@ const calendarRouter = t.router({
                     message: 'iCal error'
                 })
             }
+        }),
+    addCalendar: cp
+        .input(
+            z.object({
+                name: z.string(),
+                url: z.string().url()
+            })
+        )
+        .mutation(async ({ ctx, input }) => {
+            const newCalendar = await prisma.calendar
+                .create({
+                    data: {
+                        url: input.url,
+                        name: input.name,
+                        uuid: ctx.user.uuid
+                    }
+                })
+                .catch(() => {
+                    throw new TRPCError({
+                        code: 'INTERNAL_SERVER_ERROR',
+                        message: 'Database error'
+                    })
+                })
+
+            return newCalendar
+        }),
+    editCalendar: cp
+        .input(
+            z.object({
+                id: z.number(),
+                name: z.string(),
+                url: z.string()
+            })
+        )
+        .mutation(async ({ ctx, input }) => {
+            const editedCalendar = await prisma.calendar
+                .update({
+                    data: {
+                        url: input.url,
+                        name: input.name,
+                        uuid: ctx.user.uuid
+                    },
+                    where: { id: input.id }
+                })
+                .catch(() => {
+                    throw new TRPCError({
+                        code: 'INTERNAL_SERVER_ERROR',
+                        message: 'Database error'
+                    })
+                })
+
+            return editedCalendar
+        }),
+    deleteCalendar: cp
+        .input(
+            z.object({
+                id: z.number()
+            })
+        )
+        .mutation(async ({ input }) => {
+            await prisma.calendar
+                .delete({
+                    where: { id: input.id }
+                })
+                .catch(() => {
+                    throw new TRPCError({
+                        code: 'INTERNAL_SERVER_ERROR',
+                        message: 'Database error'
+                    })
+                })
+
+            return
         })
 })
 
