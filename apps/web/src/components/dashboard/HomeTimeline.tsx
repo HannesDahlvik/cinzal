@@ -77,6 +77,13 @@ const DashboardHomeTimeline: React.FC = () => {
     const handleOpenEventInfo = (event: VEvent) => {
         openModal({
             title: event.summary,
+            size: 'lg',
+            styles: {
+                title: {
+                    fontSize: '1.5em',
+                    fontWeight: 'bold'
+                }
+            },
             children: <DashboardEventInfoModal event={event} />
         })
     }

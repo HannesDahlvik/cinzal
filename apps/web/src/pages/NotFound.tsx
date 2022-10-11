@@ -33,24 +33,30 @@ const NotFoundPage: React.FC = () => {
 
 export default NotFoundPage
 
-const useStyles = createStyles(() => ({
-    wrapper: {
-        height: '100vh'
-    },
-    container: {
-        textAlign: 'center'
-    },
-    title: {
-        fontSize: '5rem'
-    },
-    text: {
-        marginBottom: '8px',
-        fontSize: '2rem'
-    },
-    code: {
-        fontSize: '2rem'
-    },
-    button: {
-        marginTop: '12px'
+const useStyles = createStyles((theme) => {
+    const isDark = theme.colorScheme === 'dark'
+    const colors = theme.colors
+
+    return {
+        wrapper: {
+            height: '100vh'
+        },
+        container: {
+            textAlign: 'center'
+        },
+        title: {
+            fontSize: '5rem'
+        },
+        text: {
+            marginBottom: '8px',
+            fontSize: '2rem'
+        },
+        code: {
+            fontSize: '2rem',
+            backgroundColor: isDark ? colors.dark[5] : colors.gray[4]
+        },
+        button: {
+            marginTop: '12px'
+        }
     }
-}))
+})
