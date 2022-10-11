@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { Task } from '../../config/types'
+import { VEvent } from 'node-ical'
 
 import state from '../../state'
 import { useHookstate } from '@hookstate/core'
@@ -9,6 +10,7 @@ import { openModal } from '@mantine/modals'
 
 import dayjs from 'dayjs'
 import DashboardEditTaskModal from './EditTaskModal'
+import DashboardEventInfoModal from './EventInfoModal'
 
 const DashboardHomeTimeline: React.FC = () => {
     const { classes } = useStyles()
@@ -65,6 +67,20 @@ const DashboardHomeTimeline: React.FC = () => {
         } else return null
     }
 
+    const calcEventBoxHeight = (event: VEvent) => {
+        const startMillis = dayjs(new Date(event.start))
+        const endMillis = dayjs(new Date(event.end))
+        const millis = endMillis.diff(startMillis, 'milliseconds')
+        return millis / 100000 + 100
+    }
+
+    const handleOpenEventInfo = (event: VEvent) => {
+        openModal({
+            title: event.summary,
+            children: <DashboardEventInfoModal event={event} />
+        })
+    }
+
     const handleEditTask = (task: Task) => {
         openModal({
             title: `Edit ${task.title}`,
@@ -75,7 +91,7 @@ const DashboardHomeTimeline: React.FC = () => {
     return (
         <div className={classes.wrapper} ref={wrapperEl}>
             <div className={classes.timeWrapper}>
-                {hours.map((row, hour) => (
+                {hours.map((_, hour) => (
                     <Text className={classes.timeBox} id={`time-${hour}`} key={hour}>
                         {hour}:00
                     </Text>
@@ -88,9 +104,18 @@ const DashboardHomeTimeline: React.FC = () => {
                         const finalPos = calcBoxFinalPos(dayjs(event.start))
 
                         if (finalPos) {
+                            const height = calcEventBoxHeight(event)
+
                             return (
-                                <Box className={classes.eventBox} sx={{ top: finalPos }} key={i}>
-                                    <Box className={classes.innerBox}>
+                                <Box
+                                    className={classes.eventBox}
+                                    sx={{ top: finalPos, height: `${height}px` }}
+                                    key={i}
+                                >
+                                    <Box
+                                        className={classes.innerBox}
+                                        onClick={() => handleOpenEventInfo(event)}
+                                    >
                                         <Stack spacing={2}>
                                             <Text lineClamp={1}>{event.summary}</Text>
                                             <Text lineClamp={1}>{event.location}</Text>

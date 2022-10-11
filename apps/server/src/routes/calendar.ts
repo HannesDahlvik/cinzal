@@ -5,7 +5,6 @@ import { TRPCError } from '@trpc/server'
 import ical from 'node-ical'
 
 import isAuthed from '../middleware/isAuthed'
-import { CalendarResponse } from '../config/types'
 import { prisma } from '../server'
 
 const cp = t.procedure.use(isAuthed)
@@ -51,11 +50,10 @@ const calendarRouter = t.router({
                     })
                 )
 
-                const data: CalendarResponse[] = []
+                const data: ical.VEvent[] = []
                 arr.map((obj) => {
                     Object.entries(obj).map((row) => {
-                        if (row[1].type === 'VEVENT')
-                            data.push(row[1] as unknown as CalendarResponse)
+                        if (row[1].type === 'VEVENT') data.push(row[1])
                     })
                 })
 

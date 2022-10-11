@@ -23,6 +23,7 @@
         "@trpc/react": "^10.0.0-proxy-beta.8",
         "@trpc/server": "^10.0.0-proxy-beta.8",
         "dayjs": "^1.11.5",
+        "node-ical": "^0.15.2",
         "phosphor-react": "^1.4.1",
         "react": "^18.2.0",
         "react-dom": "^18.2.0",
