@@ -1,4 +1,7 @@
 import { lazy, Suspense, useEffect, useState } from 'react'
+
+import Providers from './Providers'
+
 import { createBrowserRouter, Navigate, RouterProvider } from 'react-router-dom'
 
 import LoadingPage from './pages/Loading'
@@ -18,6 +21,15 @@ const RequireAuth = lazy(() => import('./components/RequireAuth'))
 const ErrorPage = lazy(() => import('./pages/Error'))
 
 import { errorHandler, setAuth, trpc } from './utils'
+
+import dayjs from 'dayjs'
+import localeData from 'dayjs/plugin/localeData'
+import en from 'dayjs/locale/en'
+
+dayjs.locale({
+    ...en
+})
+dayjs.extend(localeData)
 
 const router = createBrowserRouter([
     {
@@ -111,4 +123,12 @@ const App: React.FC = () => {
     else return <LoadingPage />
 }
 
-export default App
+const Interface: React.FC = () => {
+    return (
+        <Providers>
+            <App />
+        </Providers>
+    )
+}
+
+export default Interface
