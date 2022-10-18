@@ -17,6 +17,7 @@ model User {
   updatedAt         DateTime          @updatedAt
   tasks             Task[]
   calendars         Calendar[]
+  note              Note[]
 }
 
 model Task {
@@ -38,4 +39,14 @@ model Calendar {
   url               String
   uuid              String
   user              User              @relation(fields: [uuid], references: [uuid])
+}
+
+model Note {
+  id                Int               @id @default(autoincrement())
+  title             String
+  data              String
+  uuid              String
+  user              User              @relation(fields: [uuid], references: [uuid])
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
 }

@@ -15,4 +15,6 @@ const isAuthed = t.middleware(async ({ ctx, next }) => {
     })
 })
 
+export const ap = t.procedure.use(isAuthed)
+
 export default isAuthed

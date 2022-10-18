@@ -7,6 +7,8 @@ import Home from './pages/Home'
 
 const DashboardLayout = lazy(() => import('./layouts/Dashboard'))
 const DashboardHomePage = lazy(() => import('./pages/dashboard/Home'))
+const DashboardNotesPage = lazy(() => import('./pages/dashboard/Notes'))
+const DashboardNotesEditPage = lazy(() => import('./pages/dashboard/NotesEdit'))
 const DashboardProfilePage = lazy(() => import('./pages/dashboard/Profile'))
 
 const AuthLayout = lazy(() => import('./layouts/Auth'))
@@ -40,6 +42,16 @@ const router = createBrowserRouter([
             {
                 path: 'home',
                 element: <DashboardHomePage />
+            },
+            {
+                path: 'notes',
+                element: <DashboardNotesPage />,
+                children: [
+                    {
+                        path: ':note_id',
+                        element: <DashboardNotesEditPage />
+                    }
+                ]
             },
             {
                 path: 'profile',

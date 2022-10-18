@@ -4,13 +4,11 @@ import { TRPCError } from '@trpc/server'
 
 import ical from 'node-ical'
 
-import isAuthed from '../middleware/isAuthed'
+import { ap } from '../middleware/isAuthed'
 import { prisma } from '../server'
 
-const cp = t.procedure.use(isAuthed)
-
 const calendarRouter = t.router({
-    getICalLinks: cp.query(async ({ ctx }) => {
+    getICalLinks: ap.query(async ({ ctx }) => {
         try {
             const calendars = await prisma.calendar
                 .findMany({ where: { uuid: ctx.user?.uuid } })
@@ -29,7 +27,7 @@ const calendarRouter = t.router({
             })
         }
     }),
-    getICalEventsFromUrls: cp
+    getICalEventsFromUrls: ap
         .input(
             z.object({
                 links: z
@@ -65,7 +63,7 @@ const calendarRouter = t.router({
                 })
             }
         }),
-    addCalendar: cp
+    addCalendar: ap
         .input(
             z.object({
                 name: z.string(),
@@ -90,7 +88,7 @@ const calendarRouter = t.router({
 
             return newCalendar
         }),
-    editCalendar: cp
+    editCalendar: ap
         .input(
             z.object({
                 id: z.number(),
@@ -117,7 +115,7 @@ const calendarRouter = t.router({
 
             return editedCalendar
         }),
-    deleteCalendar: cp
+    deleteCalendar: ap
         .input(
             z.object({
                 id: z.number()

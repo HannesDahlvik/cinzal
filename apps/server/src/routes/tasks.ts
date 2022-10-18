@@ -3,12 +3,10 @@ import { z } from 'zod'
 import { prisma } from '../server'
 import { TRPCError } from '@trpc/server'
 
-import isAuthed from '../middleware/isAuthed'
-
-const tp = t.procedure.use(isAuthed)
+import { ap } from '../middleware/isAuthed'
 
 const tasksRouter = t.router({
-    get: tp
+    get: ap
         .input(
             z.object({
                 uuid: z.string()
@@ -26,7 +24,7 @@ const tasksRouter = t.router({
                 })
             }
         }),
-    create: tp
+    create: ap
         .input(
             z.object({
                 uuid: z.string(),
@@ -55,7 +53,7 @@ const tasksRouter = t.router({
                 })
             }
         }),
-    edit: tp
+    edit: ap
         .input(
             z.object({
                 id: z.number(),
@@ -88,7 +86,7 @@ const tasksRouter = t.router({
                 })
             }
         }),
-    delete: tp
+    delete: ap
         .input(
             z.object({
                 task_id: z.number()

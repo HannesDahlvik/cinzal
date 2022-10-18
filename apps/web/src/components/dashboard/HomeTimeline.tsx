@@ -232,7 +232,7 @@ const useStyles = createStyles((theme) => {
             position: 'absolute',
             width: '100%',
             height: '2px',
-            backgroundColor: colors.blue[5]
+            backgroundColor: colors.red[6]
         }
     }
 })
