@@ -4,7 +4,7 @@ import { Button, Group, Stack, TextInput } from '@mantine/core'
 import { useForm } from '@mantine/form'
 import { closeAllModals } from '@mantine/modals'
 
-import { errorHandler, trpc } from '../../utils'
+import { errorHandler, trpc } from '../../../utils'
 
 interface FormVals {
     title: string

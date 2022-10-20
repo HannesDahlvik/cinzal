@@ -1,13 +1,13 @@
-import state from '../../state'
+import state from '../../../state'
 import { useHookstate } from '@hookstate/core'
 
 import { Box, Button, Center, createStyles, Divider, useMantineTheme } from '@mantine/core'
 import { Month } from '@mantine/dates'
 import { openModal } from '@mantine/modals'
 
-import DashboardCreateTaskModal from './CreateTaskModal'
-import DashboardDateChanger from './DateChanger'
-import HomeLeftSidebarCalendars from './HomeLeftSidebarCalendars'
+import DashboardCreateTaskModal from '../modals/CreateTask'
+import DashboardDateChanger from '../DateChanger'
+import HomeLeftSidebarCalendars from './LeftSidebarCalendars'
 
 import dayjs from 'dayjs'
 

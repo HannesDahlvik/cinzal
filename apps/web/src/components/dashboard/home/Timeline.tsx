@@ -1,16 +1,16 @@
 import { useEffect, useRef, useState } from 'react'
-import { Task } from '../../config/types'
+import { Task } from '../../../config/types'
 import { VEvent } from 'node-ical'
 
-import state from '../../state'
+import state from '../../../state'
 import { useHookstate } from '@hookstate/core'
 
 import { Box, createStyles, Stack, Text, useMantineTheme } from '@mantine/core'
 import { openModal } from '@mantine/modals'
 
 import dayjs from 'dayjs'
-import DashboardEditTaskModal from './EditTaskModal'
-import DashboardEventInfoModal from './EventInfoModal'
+import DashboardEditTaskModal from '../modals/EditTask'
+import DashboardEventInfoModal from '../modals/EventInfo'
 
 const DashboardHomeTimeline: React.FC = () => {
     const { classes } = useStyles()

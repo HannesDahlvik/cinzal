@@ -5,7 +5,7 @@ import { useForm, zodResolver } from '@mantine/form'
 import { closeAllModals } from '@mantine/modals'
 
 import { z } from 'zod'
-import { errorHandler, trpc } from '../../utils'
+import { errorHandler, trpc } from '../../../utils'
 
 const schema = z.object({
     name: z.string(),

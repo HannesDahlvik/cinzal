@@ -5,7 +5,7 @@ import { openModal } from '@mantine/modals'
 import { Plus } from 'phosphor-react'
 
 import LoadingPage from '../Loading'
-import DashboardCreateNoteModal from '../../components/dashboard/CreateNoteModal'
+import DashboardCreateNoteModal from '../../components/dashboard/modals/CreateNote'
 
 import { trpc } from '../../utils'
 import dayjs from 'dayjs'

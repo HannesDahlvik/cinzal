@@ -1,14 +1,14 @@
 import { useHookstate } from '@hookstate/core'
-import state from '../../state'
+import state from '../../../state'
 
 import { Box, Menu, Stack, Text } from '@mantine/core'
 import { closeAllModals, openConfirmModal, openModal } from '@mantine/modals'
 import { DotsThreeOutlineVertical, PencilSimple, Plus, TrashSimple } from 'phosphor-react'
 
-import DashboardAddCalendarModal from './AddCalendarModal'
+import DashboardAddCalendarModal from '../modals/AddCalendar'
 
-import { errorHandler, trpc } from '../../utils'
-import DashboaredEditCalendarModal from './EditCalendarModal'
+import { errorHandler, trpc } from '../../../utils'
+import DashboaredEditCalendarModal from '../modals/EditCalendar'
 
 const HomeLeftSidebarCalendars: React.FC = () => {
     const trpcUtils = trpc.useContext()

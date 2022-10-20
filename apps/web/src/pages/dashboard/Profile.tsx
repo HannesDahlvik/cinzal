@@ -3,8 +3,8 @@ import state from '../../state'
 
 import { Avatar, Tabs, Title, createStyles } from '@mantine/core'
 
-import DashboardProfileSettings from '../../components/dashboard/ProfileSettings'
-import DashboardProfileUserInfo from '../../components/dashboard/ProfileUserInfo'
+import DashboardProfileSettings from '../../components/dashboard/profile/Settings'
+import DashboardProfileUserInfo from '../../components/dashboard/profile/UserInfo'
 
 const DashboardProfilePage: React.FC = () => {
     const { classes } = useStyles()

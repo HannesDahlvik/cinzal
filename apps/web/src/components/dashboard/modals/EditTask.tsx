@@ -1,6 +1,7 @@
 import { useState } from 'react'
+import { Task } from '../../../config/types'
 
-import state from '../../state'
+import state from '../../../state'
 import { useHookstate } from '@hookstate/core'
 
 import {
@@ -9,17 +10,21 @@ import {
     Textarea,
     Stack,
     Button,
-    useMantineTheme,
+    Text,
     ColorSwatch,
-    Text
+    useMantineTheme
 } from '@mantine/core'
 import { DatePicker, TimeInput } from '@mantine/dates'
 import { useForm } from '@mantine/form'
-import { closeAllModals } from '@mantine/modals'
+import { closeAllModals, openConfirmModal } from '@mantine/modals'
 import { Check } from 'phosphor-react'
 
 import { useQueryClient } from '@tanstack/react-query'
-import { errorHandler, trpc } from '../../utils'
+import { errorHandler, parseTrpcError, trpc } from '../../../utils'
+
+interface Props {
+    task: Task
+}
 
 interface FormVals {
     title: string
@@ -29,24 +34,25 @@ interface FormVals {
     color: string
 }
 
-const DashboardCreateTaskModal: React.FC = () => {
+const DashboardEditTaskModal: React.FC<Props> = ({ task }) => {
     const theme = useMantineTheme()
 
     const qc = useQueryClient()
-    const { mutate: createTaskMutation } = trpc.tasks.create.useMutation()
+    const { mutate: editTaskMutation } = trpc.tasks.edit.useMutation()
+    const { mutate: deleteTaskMutation } = trpc.tasks.delete.useMutation()
 
     const { value: user } = useHookstate(state.auth.user)
 
     const [loading, setLoading] = useState(false)
-    const [selectedColor, setSelectedColor] = useState<string>('blue')
+    const [selectedColor, setSelectedColor] = useState<string>(task.color)
 
     const form = useForm<FormVals>({
         initialValues: {
-            title: '',
-            description: '',
-            deadlineDate: new Date(),
-            deadlineTime: new Date(),
-            color: 'blue'
+            title: task.title,
+            description: task.description,
+            deadlineDate: new Date(task.deadline),
+            deadlineTime: new Date(task.deadline),
+            color: task.color
         }
     })
 
@@ -54,7 +60,7 @@ const DashboardCreateTaskModal: React.FC = () => {
         closeAllModals()
     }
 
-    const handleCreateTask = (vals: FormVals) => {
+    const handleEditTask = (vals: FormVals) => {
         setLoading(true)
 
         const deadlineDate = vals.deadlineDate
@@ -63,32 +69,60 @@ const DashboardCreateTaskModal: React.FC = () => {
         deadline.setHours(deadlineTime.getHours())
         deadline.setMinutes(deadlineTime.getMinutes())
         deadline.setSeconds(0)
-
-        createTaskMutation(
-            {
-                uuid: user?.uuid as string,
-                title: vals.title,
-                description: vals.description,
-                deadline: deadline.toString(),
-                color: selectedColor
-            },
-            {
-                onError: (err) => {
-                    const error = JSON.parse(err.message)
-                    errorHandler(error[1].message)
-                    setLoading(false)
-                    handleClose()
+        if (user)
+            editTaskMutation(
+                {
+                    id: task.id,
+                    uuid: user.uuid,
+                    title: vals.title,
+                    description: vals.description,
+                    deadline: deadline.toString(),
+                    color: selectedColor
                 },
-                onSuccess: (data) => {
-                    handleClose()
-                    qc.invalidateQueries(['tasks.get'])
+                {
+                    onError: (err) => {
+                        const error = parseTrpcError(err)
+                        errorHandler(error)
+                        setLoading(false)
+                        handleClose()
+                    },
+                    onSuccess: (data) => {
+                        handleClose()
+                        qc.invalidateQueries(['tasks.get'])
+                    }
                 }
+            )
+    }
+
+    const handleDeleteTask = () => {
+        openConfirmModal({
+            title: `Are you sure you want to delete "${task.title}"`,
+            labels: { cancel: 'No', confirm: 'Yes' },
+            cancelProps: { variant: 'outline' },
+            onCancel: () => handleClose(),
+            onConfirm: () => {
+                deleteTaskMutation(
+                    {
+                        task_id: task.id
+                    },
+                    {
+                        onError: (err) => {
+                            const error = parseTrpcError(err)
+                            errorHandler(error)
+                            handleClose()
+                        },
+                        onSuccess: (data) => {
+                            handleClose()
+                            qc.invalidateQueries(['tasks.get'])
+                        }
+                    }
+                )
             }
-        )
+        })
     }
 
     return (
-        <form onSubmit={form.onSubmit((values) => handleCreateTask(values))}>
+        <form onSubmit={form.onSubmit((values) => handleEditTask(values))}>
             <Stack>
                 <TextInput
                     label="Title"
@@ -138,16 +172,22 @@ const DashboardCreateTaskModal: React.FC = () => {
                 </Stack>
             </Stack>
 
-            <Group position="right" mt="md">
-                <Button variant="outline" color="red" onClick={handleClose}>
-                    Cancel
+            <Group position="apart" mt="md">
+                <Button color="red" onClick={handleDeleteTask}>
+                    Delete
                 </Button>
-                <Button type="submit" loading={loading}>
-                    Save
-                </Button>
+
+                <Group position="right">
+                    <Button variant="outline" onClick={handleClose}>
+                        Cancel
+                    </Button>
+                    <Button type="submit" loading={loading}>
+                        Save
+                    </Button>
+                </Group>
             </Group>
         </form>
     )
 }
 
-export default DashboardCreateTaskModal
+export default DashboardEditTaskModal

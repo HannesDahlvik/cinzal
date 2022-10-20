@@ -1,8 +1,8 @@
 import { createStyles } from '@mantine/core'
 
-import DashboardHomeLeftSidebar from '../../components/dashboard/HomeLeftSidebar'
-import DashboardHomeTimeline from '../../components/dashboard/HomeTimeline'
-import DashboardHomeRightSidebar from '../../components/dashboard/HomeRightSidebar'
+import DashboardHomeLeftSidebar from '../../components/dashboard/home/LeftSidebar'
+import DashboardHomeTimeline from '../../components/dashboard/home/Timeline'
+import DashboardHomeRightSidebar from '../../components/dashboard/home/RightSidebar'
 
 const DashboardHomePage: React.FC = () => {
     const { classes } = useStyles()
