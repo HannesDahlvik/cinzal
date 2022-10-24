@@ -11,4 +11,6 @@ const state = {
     date: hookstate(dayjs())
 }
 
+export * from './data'
+
 export default state

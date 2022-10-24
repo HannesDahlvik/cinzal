@@ -3,7 +3,7 @@ import { Context } from './context'
 
 export const t = initTRPC.context<Context>().create()
 
-import { authRouter, calendarRouter, notesRouter, tasksRouter } from './routes'
+import { authRouter, calendarRouter, eventsRouter, notesRouter, tasksRouter } from './routes'
 
 /**
  * TRPC ROUTER
@@ -11,6 +11,7 @@ import { authRouter, calendarRouter, notesRouter, tasksRouter } from './routes'
 const appRouter = t.router({
     auth: authRouter,
     calendar: calendarRouter,
+    events: eventsRouter,
     notes: notesRouter,
     tasks: tasksRouter
 })

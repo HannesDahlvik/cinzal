@@ -68,10 +68,10 @@ const DashboardHomeTimeline: React.FC = () => {
     }
 
     const calcEventBoxHeight = (event: VEvent) => {
-        const startMillis = dayjs(new Date(event.start))
-        const endMillis = dayjs(new Date(event.end))
-        const millis = endMillis.diff(startMillis, 'milliseconds')
-        return millis / 100000 + 100
+        const start = dayjs(new Date(event.start))
+        const end = dayjs(new Date(event.end))
+        const minute = end.diff(start, 'minute')
+        return (minute / 60) * 100
     }
 
     const handleOpenEventInfo = (event: VEvent) => {

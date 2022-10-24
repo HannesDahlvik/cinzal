@@ -2,12 +2,14 @@ import { hookstate } from '@hookstate/core'
 
 import ical from 'node-ical'
 
-import { Task } from '../config/types'
+import { Calendar, Event, Task } from '../config/types'
+
+export type IEvents = ical.VEvent & Event
 
 const data = {
     tasks: hookstate<Task[]>([]),
-    events: hookstate<ical.VEvent[]>([]),
-    calendars: hookstate<any[]>([])
+    events: hookstate<IEvents[]>([]),
+    calendars: hookstate<Calendar[]>([])
 }
 
 export default data

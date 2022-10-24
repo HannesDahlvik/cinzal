@@ -20,6 +20,25 @@ export interface Task {
     updatedAt: Date
 }
 
+export interface Event {
+    id: number
+    title: string
+    start: Date
+    end: Date
+    location: string | null
+    description: string | null
+    createdAt: Date
+    updatedAt: Date
+    uuid: string
+}
+
+export interface Calendar {
+    id: number
+    name: string
+    url: string
+    uuid: string
+}
+
 export interface DashboardSidebarLinks {
     title: string
     path: string

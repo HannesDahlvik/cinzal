@@ -2,68 +2,23 @@ import { t } from '../router'
 import { z } from 'zod'
 import { TRPCError } from '@trpc/server'
 
-import ical from 'node-ical'
-
 import { ap } from '../middleware/isAuthed'
 import { prisma } from '../server'
 
 const calendarRouter = t.router({
-    getICalLinks: ap.query(async ({ ctx }) => {
-        try {
-            const calendars = await prisma.calendar
-                .findMany({ where: { uuid: ctx.user?.uuid } })
-                .catch(() => {
-                    throw new TRPCError({
-                        code: 'INTERNAL_SERVER_ERROR',
-                        message: 'Database error'
-                    })
-                })
-
-            return calendars
-        } catch (err: any) {
-            throw new TRPCError({
-                code: 'INTERNAL_SERVER_ERROR',
-                message: err.message
-            })
-        }
-    }),
-    getICalEventsFromUrls: ap
-        .input(
-            z.object({
-                links: z
-                    .object({
-                        id: z.number(),
-                        url: z.string(),
-                        uuid: z.string()
-                    })
-                    .array()
-            })
-        )
-        .query(async ({ input }) => {
-            try {
-                const arr = await Promise.all(
-                    input.links.map(async (row) => {
-                        const data = await ical.async.fromURL(row.url)
-                        return data
-                    })
-                )
-
-                const data: ical.VEvent[] = []
-                arr.map((obj) => {
-                    Object.entries(obj).map((row) => {
-                        if (row[1].type === 'VEVENT') data.push(row[1])
-                    })
-                })
-
-                return data
-            } catch (err) {
+    links: ap.query(async ({ ctx }) => {
+        const calendars = await prisma.calendar
+            .findMany({ where: { uuid: ctx.user?.uuid } })
+            .catch(() => {
                 throw new TRPCError({
                     code: 'INTERNAL_SERVER_ERROR',
-                    message: 'iCal error'
+                    message: 'Database error'
                 })
-            }
-        }),
-    addCalendar: ap
+            })
+
+        return calendars
+    }),
+    add: ap
         .input(
             z.object({
                 name: z.string(),
@@ -88,7 +43,7 @@ const calendarRouter = t.router({
 
             return newCalendar
         }),
-    editCalendar: ap
+    edit: ap
         .input(
             z.object({
                 id: z.number(),
@@ -115,7 +70,7 @@ const calendarRouter = t.router({
 
             return editedCalendar
         }),
-    deleteCalendar: ap
+    delete: ap
         .input(
             z.object({
                 id: z.number()

@@ -12,7 +12,7 @@ import DashboaredEditCalendarModal from '../modals/EditCalendar'
 
 const HomeLeftSidebarCalendars: React.FC = () => {
     const trpcUtils = trpc.useContext()
-    const deleteCalendarMutation = trpc.calendar.deleteCalendar.useMutation()
+    const deleteCalendarMutation = trpc.calendar.delete.useMutation()
 
     const { value: calendars } = useHookstate(state.data.calendars)
 
@@ -45,7 +45,7 @@ const HomeLeftSidebarCalendars: React.FC = () => {
                         },
                         onSuccess: () => {
                             closeAllModals()
-                            trpcUtils.calendar.getICalLinks.invalidate()
+                            trpcUtils.calendar.links.invalidate()
                         }
                     }
                 )
