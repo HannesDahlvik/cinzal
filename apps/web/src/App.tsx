@@ -12,13 +12,13 @@ const DashboardNotesPage = lazy(() => import('./pages/dashboard/Notes'))
 const DashboardNotesEditPage = lazy(() => import('./pages/dashboard/NotesEdit'))
 const DashboardProfilePage = lazy(() => import('./pages/dashboard/Profile'))
 
-const AuthLayout = lazy(() => import('./layouts/Auth'))
-const AuthLoginPage = lazy(() => import('./pages/auth/Login'))
-const AuthSignupPage = lazy(() => import('./pages/auth/Signup'))
+import AuthLayout from './layouts/Auth'
+import AuthLoginPage from './pages/auth/Login'
+import AuthSignupPage from './pages/auth/Signup'
 
-const NotFoundPage = lazy(() => import('./pages/NotFound'))
-const RequireAuth = lazy(() => import('./components/RequireAuth'))
-const ErrorPage = lazy(() => import('./pages/Error'))
+import NotFoundPage from './pages/NotFound'
+import RequireAuth from './components/RequireAuth'
+import ErrorPage from './pages/Error'
 
 import { errorHandler, setAuth, trpc } from './utils'
 

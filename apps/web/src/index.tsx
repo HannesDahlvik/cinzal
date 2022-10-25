@@ -12,8 +12,7 @@ import isTodayPlugin from 'dayjs/plugin/isToday'
 
 dayjs.locale({
     ...en,
-    weekStart: 1,
-    weekdays: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+    weekStart: 0
 })
 dayjs.extend(localeData)
 dayjs.extend(weekdayPlugin)

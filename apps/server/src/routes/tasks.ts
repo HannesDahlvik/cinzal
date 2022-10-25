@@ -15,6 +15,7 @@ const tasksRouter = t.router({
                     message: err.message
                 })
             })
+        tasks.sort((a, b) => new Date(a.deadline).getTime() - new Date(b.deadline).getTime())
 
         return tasks
     }),

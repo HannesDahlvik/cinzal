@@ -41,10 +41,10 @@ const authRouter = t.router({
         .mutation(async ({ input }) => {
             const user = await prisma.user
                 .findFirst({ where: { email: input.email } })
-                .catch(() => {
+                .catch((err) => {
                     throw new TRPCError({
                         code: 'INTERNAL_SERVER_ERROR',
-                        message: 'Database error'
+                        message: err.message
                     })
                 })
             if (!user) throw new TRPCError({ code: 'UNAUTHORIZED', message: 'User does not exist' })
@@ -67,10 +67,10 @@ const authRouter = t.router({
         .mutation(async ({ input }) => {
             const user = await prisma.user
                 .findFirst({ where: { email: input.email } })
-                .catch(() => {
+                .catch((err) => {
                     throw new TRPCError({
                         code: 'INTERNAL_SERVER_ERROR',
-                        message: 'Database error'
+                        message: err.message
                     })
                 })
             if (user) throw new TRPCError({ code: 'UNAUTHORIZED', message: 'User already exists' })
@@ -88,10 +88,10 @@ const authRouter = t.router({
                         password: hashedPassword
                     }
                 })
-                .catch(() => {
+                .catch((err) => {
                     throw new TRPCError({
                         code: 'INTERNAL_SERVER_ERROR',
-                        message: 'Database error'
+                        message: err.message
                     })
                 })
 
