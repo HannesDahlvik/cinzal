@@ -6,7 +6,7 @@ import { TRPCError } from '@trpc/server'
 import { ap } from '../middleware/isAuthed'
 
 const tasksRouter = t.router({
-    get: ap.input(z.null()).query(async ({ ctx }) => {
+    get: ap.query(async ({ ctx }) => {
         const tasks = await prisma.task
             .findMany({ where: { uuid: ctx.user.uuid } })
             .catch((err) => {

@@ -32,7 +32,7 @@ const DashboardLayout: React.FC = () => {
             }
         }
     )
-    const tasksQuery = trpc.tasks.get.useQuery(null, {
+    const tasksQuery = trpc.tasks.get.useQuery(undefined, {
         enabled: !!user,
         onSuccess: (data) => {
             state.data.tasks.set(data as unknown as Task[])

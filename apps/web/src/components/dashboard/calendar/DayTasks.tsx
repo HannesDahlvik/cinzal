@@ -29,6 +29,7 @@ const DashboardCalendarDayTasks: React.FC<Props> = (props) => {
                     }}
                     className={classes.dayTask}
                     onClick={() => handleEditTask(task)}
+                    key={task.id}
                 >
                     <Text size="sm">{task.title}</Text>
                 </Box>
