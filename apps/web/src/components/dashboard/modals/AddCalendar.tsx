@@ -14,8 +14,8 @@ const schema = z.object({
 type FormValues = z.infer<typeof schema>
 
 const DashboardAddCalendarModal: React.FC = () => {
-    const trpcUtils = trpc.useContext()
-    const addCalendarMutation = trpc.calendar.addCalendar.useMutation()
+    const tu = trpc.useContext()
+    const addCalendarMutation = trpc.calendar.add.useMutation()
 
     const [loading, setLoading] = useState(false)
 
@@ -47,7 +47,7 @@ const DashboardAddCalendarModal: React.FC = () => {
                 },
                 onSuccess: () => {
                     handleClose()
-                    trpcUtils.calendar.getICalLinks.invalidate()
+                    tu.calendar.links.invalidate()
                 }
             }
         )

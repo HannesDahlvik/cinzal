@@ -11,7 +11,7 @@ interface FormVals {
 }
 
 const DashboardCreateNoteModal: React.FC = () => {
-    const trpcUtils = trpc.useContext()
+    const tu = trpc.useContext()
     const createNoteMutation = trpc.notes.create.useMutation()
 
     const [loading, setLoading] = useState(false)
@@ -41,7 +41,7 @@ const DashboardCreateNoteModal: React.FC = () => {
                 onSuccess: (data) => {
                     setLoading(false)
                     closeAllModals()
-                    trpcUtils.notes.all.invalidate()
+                    tu.notes.all.invalidate()
                 }
             }
         )

@@ -1,9 +1,6 @@
 import { useState } from 'react'
 import { Task } from '../../../config/types'
 
-import state from '../../../state'
-import { useHookstate } from '@hookstate/core'
-
 import {
     Group,
     TextInput,
@@ -19,7 +16,6 @@ import { useForm } from '@mantine/form'
 import { closeAllModals, openConfirmModal } from '@mantine/modals'
 import { Check } from 'phosphor-react'
 
-import { useQueryClient } from '@tanstack/react-query'
 import { errorHandler, parseTrpcError, trpc } from '../../../utils'
 
 interface Props {
@@ -37,11 +33,9 @@ interface FormVals {
 const DashboardEditTaskModal: React.FC<Props> = ({ task }) => {
     const theme = useMantineTheme()
 
-    const qc = useQueryClient()
+    const tu = trpc.useContext()
     const { mutate: editTaskMutation } = trpc.tasks.edit.useMutation()
     const { mutate: deleteTaskMutation } = trpc.tasks.delete.useMutation()
-
-    const { value: user } = useHookstate(state.auth.user)
 
     const [loading, setLoading] = useState(false)
     const [selectedColor, setSelectedColor] = useState<string>(task.color)
@@ -69,29 +63,28 @@ const DashboardEditTaskModal: React.FC<Props> = ({ task }) => {
         deadline.setHours(deadlineTime.getHours())
         deadline.setMinutes(deadlineTime.getMinutes())
         deadline.setSeconds(0)
-        if (user)
-            editTaskMutation(
-                {
-                    id: task.id,
-                    uuid: user.uuid,
-                    title: vals.title,
-                    description: vals.description,
-                    deadline: deadline.toString(),
-                    color: selectedColor
+
+        editTaskMutation(
+            {
+                id: task.id,
+                title: vals.title,
+                description: vals.description,
+                deadline: deadline.toString(),
+                color: selectedColor
+            },
+            {
+                onError: (err) => {
+                    const error = parseTrpcError(err)
+                    errorHandler(error)
+                    setLoading(false)
+                    handleClose()
                 },
-                {
-                    onError: (err) => {
-                        const error = parseTrpcError(err)
-                        errorHandler(error)
-                        setLoading(false)
-                        handleClose()
-                    },
-                    onSuccess: (data) => {
-                        handleClose()
-                        qc.invalidateQueries(['tasks.get'])
-                    }
+                onSuccess: () => {
+                    handleClose()
+                    tu.tasks.get.invalidate()
                 }
-            )
+            }
+        )
     }
 
     const handleDeleteTask = () => {
@@ -103,7 +96,7 @@ const DashboardEditTaskModal: React.FC<Props> = ({ task }) => {
             onConfirm: () => {
                 deleteTaskMutation(
                     {
-                        task_id: task.id
+                        taskId: task.id
                     },
                     {
                         onError: (err) => {
@@ -113,7 +106,7 @@ const DashboardEditTaskModal: React.FC<Props> = ({ task }) => {
                         },
                         onSuccess: (data) => {
                             handleClose()
-                            qc.invalidateQueries(['tasks.get'])
+                            tu.tasks.get.invalidate()
                         }
                     }
                 )

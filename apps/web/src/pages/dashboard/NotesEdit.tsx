@@ -10,7 +10,7 @@ import LoadingPage from '../Loading'
 import { openConfirmModal } from '@mantine/modals'
 
 const DashboardNotesEditPage: React.FC = () => {
-    const trpcUtils = trpc.useContext()
+    const tu = trpc.useContext()
     const notesSaveMutation = trpc.notes.save.useMutation()
     const notesDeleteMutation = trpc.notes.delete.useMutation()
 
@@ -76,7 +76,7 @@ const DashboardNotesEditPage: React.FC = () => {
                             errorHandler(err.message)
                         },
                         onSuccess: (data) => {
-                            trpcUtils.notes.all.invalidate()
+                            tu.notes.all.invalidate()
                             navigate('/dashboard/notes')
                         }
                     }

@@ -6,58 +6,51 @@ import { TRPCError } from '@trpc/server'
 import { ap } from '../middleware/isAuthed'
 
 const tasksRouter = t.router({
-    get: ap
-        .input(
-            z.object({
-                uuid: z.string()
-            })
-        )
-        .query(async ({ input }) => {
-            try {
-                const tasks = await prisma.task.findMany({ where: { uuid: input.uuid } })
-
-                return tasks
-            } catch (err) {
+    get: ap.input(z.null()).query(async ({ ctx }) => {
+        const tasks = await prisma.task
+            .findMany({ where: { uuid: ctx.user.uuid } })
+            .catch((err) => {
                 throw new TRPCError({
                     code: 'INTERNAL_SERVER_ERROR',
-                    message: 'Database error'
+                    message: err.message
                 })
-            }
-        }),
+            })
+
+        return tasks
+    }),
     create: ap
         .input(
             z.object({
-                uuid: z.string(),
                 title: z.string(),
                 description: z.string(),
                 deadline: z.string(),
                 color: z.string()
             })
         )
-        .mutation(async ({ input }) => {
-            try {
-                const deadline = new Date(input.deadline)
+        .mutation(async ({ ctx, input }) => {
+            const deadline = new Date(input.deadline)
 
-                const newTask = await prisma.task.create({
+            const newTask = await prisma.task
+                .create({
                     data: {
                         ...input,
+                        uuid: ctx.user.uuid,
                         deadline
                     }
                 })
-
-                return newTask
-            } catch (err) {
-                throw new TRPCError({
-                    code: 'INTERNAL_SERVER_ERROR',
-                    message: 'Database error'
+                .catch((err) => {
+                    throw new TRPCError({
+                        code: 'INTERNAL_SERVER_ERROR',
+                        message: err.message
+                    })
                 })
-            }
+
+            return newTask
         }),
     edit: ap
         .input(
             z.object({
                 id: z.number(),
-                uuid: z.string(),
                 title: z.string(),
                 description: z.string(),
                 deadline: z.string(),
@@ -65,10 +58,10 @@ const tasksRouter = t.router({
             })
         )
         .mutation(async ({ input }) => {
-            try {
-                const deadline = new Date(input.deadline)
+            const deadline = new Date(input.deadline)
 
-                const editTask = await prisma.task.update({
+            const editTask = await prisma.task
+                .update({
                     where: { id: input.id },
                     data: {
                         title: input.title,
@@ -77,40 +70,32 @@ const tasksRouter = t.router({
                         color: input.color
                     }
                 })
-
-                return editTask
-            } catch (err) {
-                throw new TRPCError({
-                    code: 'INTERNAL_SERVER_ERROR',
-                    message: 'Database error'
+                .catch((err) => {
+                    throw new TRPCError({
+                        code: 'INTERNAL_SERVER_ERROR',
+                        message: err.message
+                    })
                 })
-            }
+
+            return editTask
         }),
     delete: ap
         .input(
             z.object({
-                task_id: z.number()
+                taskId: z.number()
             })
         )
         .mutation(async ({ input }) => {
-            try {
-                const deleteTask = await prisma.task
-                    .delete({ where: { id: input.task_id } })
-                    .catch((err) => {
-                        throw new TRPCError({
-                            code: 'INTERNAL_SERVER_ERROR',
-                            message: 'Database error',
-                            cause: err
-                        })
+            const deleteTask = await prisma.task
+                .delete({ where: { id: input.taskId } })
+                .catch((err) => {
+                    throw new TRPCError({
+                        code: 'INTERNAL_SERVER_ERROR',
+                        message: err.message
                     })
-
-                return deleteTask
-            } catch (err) {
-                throw new TRPCError({
-                    code: 'INTERNAL_SERVER_ERROR',
-                    message: 'Database error'
                 })
-            }
+
+            return deleteTask
         })
 })
 

@@ -1,8 +1,5 @@
 import { useState } from 'react'
 
-import state from '../../../state'
-import { useHookstate } from '@hookstate/core'
-
 import {
     Group,
     TextInput,
@@ -18,7 +15,6 @@ import { useForm } from '@mantine/form'
 import { closeAllModals } from '@mantine/modals'
 import { Check } from 'phosphor-react'
 
-import { useQueryClient } from '@tanstack/react-query'
 import { errorHandler, trpc } from '../../../utils'
 
 interface FormVals {
@@ -32,10 +28,8 @@ interface FormVals {
 const DashboardCreateTaskModal: React.FC = () => {
     const theme = useMantineTheme()
 
-    const qc = useQueryClient()
+    const tu = trpc.useContext()
     const { mutate: createTaskMutation } = trpc.tasks.create.useMutation()
-
-    const { value: user } = useHookstate(state.auth.user)
 
     const [loading, setLoading] = useState(false)
     const [selectedColor, setSelectedColor] = useState<string>('blue')
@@ -66,7 +60,6 @@ const DashboardCreateTaskModal: React.FC = () => {
 
         createTaskMutation(
             {
-                uuid: user?.uuid as string,
                 title: vals.title,
                 description: vals.description,
                 deadline: deadline.toString(),
@@ -81,7 +74,7 @@ const DashboardCreateTaskModal: React.FC = () => {
                 },
                 onSuccess: (data) => {
                     handleClose()
-                    qc.invalidateQueries(['tasks.get'])
+                    tu.tasks.get.invalidate()
                 }
             }
         )

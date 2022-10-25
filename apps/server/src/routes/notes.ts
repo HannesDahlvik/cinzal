@@ -10,10 +10,7 @@ const notesRouter = t.router({
         const notes = await prisma.note
             .findMany({
                 where: {
-                    uuid: ctx.user.uuid,
-                    AND: {
-                        uuid: ctx.user.uuid
-                    }
+                    uuid: ctx.user.uuid
                 }
             })
             .catch((err) => {
@@ -85,6 +82,7 @@ const notesRouter = t.router({
                 .catch((err) => {
                     throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: err.message })
                 })
+
             return note
         }),
     delete: ap
@@ -99,6 +97,7 @@ const notesRouter = t.router({
                 .catch((err) => {
                     throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: err.message })
                 })
+
             return deletedNote
         })
 })

@@ -18,7 +18,7 @@ interface Props {
 }
 
 const DashboaredEditCalendarModal: React.FC<Props> = ({ calendar }) => {
-    const trpcUtils = trpc.useContext()
+    const tu = trpc.useContext()
     const editCalendarMutation = trpc.calendar.edit.useMutation()
 
     const [loading, setLoading] = useState(false)
@@ -51,7 +51,7 @@ const DashboaredEditCalendarModal: React.FC<Props> = ({ calendar }) => {
                 },
                 onSuccess: () => {
                     handleClose()
-                    trpcUtils.calendar.links.invalidate()
+                    tu.calendar.links.invalidate()
                 }
             }
         )

@@ -32,15 +32,12 @@ const DashboardLayout: React.FC = () => {
             }
         }
     )
-    const tasksQuery = trpc.tasks.get.useQuery(
-        { uuid: user?.uuid as string },
-        {
-            enabled: !!user,
-            onSuccess: (data) => {
-                state.data.tasks.set(data as unknown as Task[])
-            }
+    const tasksQuery = trpc.tasks.get.useQuery(null, {
+        enabled: !!user,
+        onSuccess: (data) => {
+            state.data.tasks.set(data as unknown as Task[])
         }
-    )
+    })
 
     if (tasksQuery.error || calendarLinks.error || eventsQuery.error)
         return (
