@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { Task } from '../../config/types'
 
 import { useHookstate } from '@hookstate/core'
 import state from '../../state'
@@ -8,17 +9,24 @@ import { createStyles, Text } from '@mantine/core'
 import DashboardDateChanger from '../../components/dashboard/DateChanger'
 
 import dayjs, { Dayjs } from 'dayjs'
+import DashboardCalendarDayTasks from '../../components/dashboard/calendar/DayTasks'
 
 interface IFormatedDate {
     date: Dayjs
     isThisMonth: boolean
     isToday: boolean
+    tasks: Task[]
+}
+
+interface IMonthData {
+    tasks: Task[]
 }
 
 const DashboardCalendarPage: React.FC = () => {
     const { classes } = useStyles()
 
     const { value: globalDate } = useHookstate(state.date)
+    const { value: tasks } = useHookstate(state.data.tasks)
 
     const [month, setMonth] = useState<IFormatedDate[][]>([])
 
@@ -26,11 +34,12 @@ const DashboardCalendarPage: React.FC = () => {
         createMonth()
     }, [globalDate])
 
-    const formatDateObject = (date: Dayjs): IFormatedDate => {
+    const formatDateObject = (date: Dayjs, data: IMonthData): IFormatedDate => {
         const formatedObj: IFormatedDate = {
             date: date,
             isThisMonth: globalDate.month() === date.month(),
-            isToday: date.isToday()
+            isToday: date.isToday(),
+            tasks: data.tasks.filter((task) => dayjs(task.deadline).date() === date.date())
         }
         return formatedObj
     }
@@ -38,11 +47,12 @@ const DashboardCalendarPage: React.FC = () => {
     const createMonth = () => {
         let currentDate = globalDate.startOf('month').weekday(0)
         const nextMonth = globalDate.add(1, 'month').month()
+        const monthData = createMonthData(globalDate.month())
         let allDates = []
         let weekDates = []
         let weekCounter = 1
         while (currentDate.weekday(0).month() !== nextMonth) {
-            const formated = formatDateObject(currentDate)
+            const formated = formatDateObject(currentDate, monthData)
             weekDates.push(formated)
             if (weekCounter === 7) {
                 allDates.push(weekDates)
@@ -53,6 +63,20 @@ const DashboardCalendarPage: React.FC = () => {
             currentDate = currentDate.add(1, 'day')
         }
         setMonth(allDates)
+    }
+
+    const createMonthData = (month: number) => {
+        const obj: IMonthData = {
+            tasks: []
+        }
+
+        tasks.map((task) => {
+            const taskDeadline = dayjs(task.deadline)
+            if (taskDeadline.year() === globalDate.year() && taskDeadline.month() === month)
+                obj.tasks.push(task)
+        })
+
+        return obj
     }
 
     return (
@@ -80,6 +104,8 @@ const DashboardCalendarPage: React.FC = () => {
                                 key={j}
                             >
                                 <Text className={`${classes.dayText} `}>{day.date.date()}</Text>
+
+                                {day.tasks && <DashboardCalendarDayTasks tasks={day.tasks} />}
                             </div>
                         ))}
                     </div>
@@ -132,10 +158,11 @@ const useStyles = createStyles((theme) => {
         },
         day: {
             position: 'relative',
-            display: 'flex',
-            justifyContent: 'center',
+            display: 'grid',
+            gridTemplateRows: '32px 1fr',
+            gap: '8px',
             width: '100%',
-            padding: theme.spacing.md,
+            padding: theme.spacing.xs,
             border: '1px solid',
             borderColor: isDark ? colors.dark[5] : colors.gray[4]
         },
@@ -143,7 +170,7 @@ const useStyles = createStyles((theme) => {
             display: 'flex',
             justifyContent: 'center',
             alignItems: 'center',
-            width: '32px',
+            width: '100%',
             height: '32px',
             zIndex: 99
         },
@@ -151,6 +178,11 @@ const useStyles = createStyles((theme) => {
             '&:after': {
                 content: `""`,
                 position: 'absolute',
+                top: 12,
+                left: 0,
+                right: 0,
+                marginLeft: 'auto',
+                marginRight: 'auto',
                 width: '32px',
                 height: '32px',
                 backgroundColor: colors.blue[5],
