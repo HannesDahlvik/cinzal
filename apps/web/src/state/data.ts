@@ -4,11 +4,11 @@ import ical from 'node-ical'
 
 import { Calendar, Event, Task } from '../config/types'
 
-export type IEvents = ical.VEvent & Event
+export type IEvent = ical.VEvent & Event
 
 const data = {
     tasks: hookstate<Task[]>([]),
-    events: hookstate<IEvents[]>([]),
+    events: hookstate<IEvent[]>([]),
     calendars: hookstate<Calendar[]>([])
 }
 

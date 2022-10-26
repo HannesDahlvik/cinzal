@@ -2,7 +2,7 @@ import { Task } from '../config/types'
 
 import { Outlet } from 'react-router-dom'
 
-import state, { IEvents } from '../state'
+import state, { IEvent } from '../state'
 import { useHookstate } from '@hookstate/core'
 
 import { createStyles } from '@mantine/core'
@@ -28,7 +28,7 @@ const DashboardLayout: React.FC = () => {
         {
             enabled: !!calendarLinks.isSuccess,
             onSuccess: (data) => {
-                state.data.events.set(data as unknown as IEvents[])
+                state.data.events.set(data as unknown as IEvent[])
             }
         }
     )

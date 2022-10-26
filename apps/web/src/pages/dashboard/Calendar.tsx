@@ -2,24 +2,26 @@ import { useEffect, useState } from 'react'
 import { Task } from '../../config/types'
 
 import { useHookstate } from '@hookstate/core'
-import state from '../../state'
+import state, { IEvent } from '../../state'
 
 import { createStyles, Text } from '@mantine/core'
 
 import DashboardDateChanger from '../../components/dashboard/DateChanger'
+import DashboardCalendarDayRenderer from '../../components/dashboard/calendar/DayRenderer'
 
 import dayjs, { Dayjs } from 'dayjs'
-import DashboardCalendarDayTasks from '../../components/dashboard/calendar/DayTasks'
 
 interface IFormatedDate {
     date: Dayjs
     isThisMonth: boolean
     isToday: boolean
     tasks: Task[]
+    events: IEvent[]
 }
 
 interface IMonthData {
     tasks: Task[]
+    events: IEvent[]
 }
 
 const DashboardCalendarPage: React.FC = () => {
@@ -27,6 +29,7 @@ const DashboardCalendarPage: React.FC = () => {
 
     const { value: globalDate } = useHookstate(state.date)
     const { value: tasks } = useHookstate(state.data.tasks)
+    const { value: events } = useHookstate(state.data.events)
 
     const [month, setMonth] = useState<IFormatedDate[][]>([])
 
@@ -39,7 +42,8 @@ const DashboardCalendarPage: React.FC = () => {
             date: date,
             isThisMonth: globalDate.month() === date.month(),
             isToday: date.isToday(),
-            tasks: data.tasks.filter((task) => dayjs(task.deadline).date() === date.date())
+            tasks: data.tasks.filter((task) => dayjs(task.deadline).date() === date.date()),
+            events: data.events.filter((event) => dayjs(event.start).date() === date.date())
         }
         return formatedObj
     }
@@ -67,13 +71,20 @@ const DashboardCalendarPage: React.FC = () => {
 
     const createMonthData = (month: number) => {
         const obj: IMonthData = {
-            tasks: []
+            tasks: [],
+            events: []
         }
 
         tasks.map((task) => {
             const taskDeadline = dayjs(task.deadline)
             if (taskDeadline.year() === globalDate.year() && taskDeadline.month() === month)
                 obj.tasks.push(task)
+        })
+
+        events.map((event) => {
+            const eventStart = dayjs(event.start)
+            if (eventStart.year() === globalDate.year() && eventStart.month() === month)
+                obj.events.push(event)
         })
 
         return obj
@@ -105,7 +116,12 @@ const DashboardCalendarPage: React.FC = () => {
                             >
                                 <Text className={`${classes.dayText} `}>{day.date.date()}</Text>
 
-                                {day.tasks && <DashboardCalendarDayTasks tasks={day.tasks} />}
+                                <div>
+                                    <DashboardCalendarDayRenderer
+                                        tasks={day.tasks}
+                                        events={day.events}
+                                    />
+                                </div>
                             </div>
                         ))}
                     </div>
@@ -120,6 +136,7 @@ export default DashboardCalendarPage
 const useStyles = createStyles((theme) => {
     const isDark = theme.colorScheme === 'dark'
     const colors = theme.colors
+    const spacing = theme.spacing
 
     return {
         calendar: {
@@ -129,7 +146,7 @@ const useStyles = createStyles((theme) => {
             height: '100%'
         },
         dateChanger: {
-            padding: theme.spacing.md,
+            padding: spacing.md,
             width: '100%'
         },
         weekNames: {
@@ -158,11 +175,13 @@ const useStyles = createStyles((theme) => {
         },
         day: {
             position: 'relative',
-            display: 'grid',
-            gridTemplateRows: '32px 1fr',
+            display: 'flex',
+            flexDirection: 'column',
             gap: '8px',
             width: '100%',
-            padding: theme.spacing.xs,
+            padding: '2px',
+            paddingLeft: spacing.xs,
+            paddingRight: spacing.xs,
             border: '1px solid',
             borderColor: isDark ? colors.dark[5] : colors.gray[4]
         },
@@ -171,20 +190,21 @@ const useStyles = createStyles((theme) => {
             justifyContent: 'center',
             alignItems: 'center',
             width: '100%',
-            height: '32px',
-            zIndex: 99
+            height: '26px',
+            zIndex: 20,
+            color: isDark ? '#fff' : '#000'
         },
         isToday: {
             '&:after': {
                 content: `""`,
                 position: 'absolute',
-                top: 12,
+                top: 3,
                 left: 0,
                 right: 0,
                 marginLeft: 'auto',
                 marginRight: 'auto',
-                width: '32px',
-                height: '32px',
+                width: '26px',
+                height: '26px',
                 backgroundColor: colors.blue[5],
                 borderRadius: theme.radius.xl
             }
