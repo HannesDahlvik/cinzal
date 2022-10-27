@@ -9,6 +9,8 @@
     "scripts": {
         "dev": "turbo run dev --parallel",
         "build": "turbo run build",
+        "build-web": "yarn workspace @cz/web build",
+        "build-server": "yarn workspace @cz/server build",
         "docker:up": "docker-compose up -d",
         "docker:stop": "docker-compose stop"
     },
