@@ -16,6 +16,7 @@ const tasksRouter = t.router({
                 })
             })
         tasks.sort((a, b) => new Date(a.deadline).getTime() - new Date(b.deadline).getTime())
+        tasks.sort((a, b) => Number(a.completed) - Number(b.completed))
 
         return tasks
     }),
@@ -97,6 +98,30 @@ const tasksRouter = t.router({
                 })
 
             return deleteTask
+        }),
+    toggle: ap
+        .input(
+            z.object({
+                id: z.number(),
+                completed: z.boolean()
+            })
+        )
+        .mutation(async ({ input }) => {
+            const toggledTask = await prisma.task
+                .update({
+                    where: { id: input.id },
+                    data: {
+                        completed: !input.completed
+                    }
+                })
+                .catch((err) => {
+                    throw new TRPCError({
+                        code: 'INTERNAL_SERVER_ERROR',
+                        message: err.message
+                    })
+                })
+
+            return toggledTask
         })
 })
 

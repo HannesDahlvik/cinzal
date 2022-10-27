@@ -120,7 +120,7 @@ const DashboardCreateTaskModal: React.FC = () => {
                                 <ColorSwatch
                                     key={color}
                                     sx={{ cursor: 'pointer' }}
-                                    color={theme.colors[color][7]}
+                                    color={theme.colors[color][5]}
                                     onClick={() => setSelectedColor(color)}
                                 >
                                     {selectedColor === color && <Check />}

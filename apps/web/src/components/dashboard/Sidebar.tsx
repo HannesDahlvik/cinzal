@@ -3,7 +3,7 @@ import type { DashboardSidebarLinks } from '../../config/types'
 import { useNavigate } from 'react-router-dom'
 
 import { createStyles } from '@mantine/core'
-import { CalendarBlank, CirclesFour, Notebook, SignOut, User } from 'phosphor-react'
+import { CalendarBlank, CirclesFour, ListChecks, Notebook, SignOut, User } from 'phosphor-react'
 
 import DashboardSidebarLink from './SidebarLink'
 import { setAuth } from '../../utils'
@@ -20,6 +20,12 @@ const links: DashboardSidebarLinks[] = [
         path: 'calendar',
         icon: <CalendarBlank weight="regular" />,
         iconActive: <CalendarBlank weight="fill" />
+    },
+    {
+        title: 'Tasks',
+        path: 'tasks',
+        icon: <ListChecks weight="regular" />,
+        iconActive: <ListChecks weight="fill" />
     },
     {
         title: 'Notes',

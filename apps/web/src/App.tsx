@@ -8,6 +8,7 @@ import Home from './pages/Home'
 const DashboardLayout = lazy(() => import('./layouts/Dashboard'))
 const DashboardHomePage = lazy(() => import('./pages/dashboard/Home'))
 const DashboardCalendarPage = lazy(() => import('./pages/dashboard/Calendar'))
+const DashboardTasksPage = lazy(() => import('./pages/dashboard/Tasks'))
 const DashboardNotesPage = lazy(() => import('./pages/dashboard/Notes'))
 const DashboardNotesEditPage = lazy(() => import('./pages/dashboard/NotesEdit'))
 const DashboardProfilePage = lazy(() => import('./pages/dashboard/Profile'))
@@ -47,6 +48,10 @@ const router = createBrowserRouter([
             {
                 path: 'calendar',
                 element: <DashboardCalendarPage />
+            },
+            {
+                path: 'tasks',
+                element: <DashboardTasksPage />
             },
             {
                 path: 'notes',
