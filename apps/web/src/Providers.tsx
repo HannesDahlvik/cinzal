@@ -1,3 +1,5 @@
+import config from './config'
+
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 
 import { useColorScheme, useLocalStorage } from '@mantine/hooks'
@@ -35,7 +37,7 @@ const queryClient = new QueryClient({
 const trpcClient = trpc.createClient({
     links: [
         httpBatchLink({
-            url: 'http://localhost:8080/trpc',
+            url: config.serverURL,
             headers() {
                 if (localStorage.token)
                     return {
