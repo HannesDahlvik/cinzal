@@ -1,6 +1,6 @@
 <p align="center">
     <img src="apps\web\src\assets\imgs\logo.png" style="width: 200px;">
-    <h1 align="center"><a href="http://cinzal.tk" target="_blank">Cinzal</a></h1>
+    <h1 align="center"><a href="http://cinzal.com" target="_blank">Cinzal</a></h1>
 </p>
 
 <h3 align="center">A time-management and scheduling service.</h3>

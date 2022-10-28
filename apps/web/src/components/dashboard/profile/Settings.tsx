@@ -1,20 +1,10 @@
-import { ColorScheme, Group, Select, Stack, Text, useMantineColorScheme } from '@mantine/core'
+import { Group, Stack, Text } from '@mantine/core'
 
 const DashboardProfileSettings = () => {
-    const { colorScheme, toggleColorScheme } = useMantineColorScheme()
-
     return (
         <Stack>
             <Group grow>
-                <Text>Theme</Text>
-                <Select
-                    value={colorScheme}
-                    onChange={(value) => toggleColorScheme(value as ColorScheme)}
-                    data={[
-                        { value: 'light', label: 'Light' },
-                        { value: 'dark', label: 'Dark' }
-                    ]}
-                />
+                <Text>None</Text>
             </Group>
         </Stack>
     )

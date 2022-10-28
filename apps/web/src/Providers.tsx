@@ -2,8 +2,7 @@ import config from './config'
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 
-import { useColorScheme, useLocalStorage } from '@mantine/hooks'
-import { ColorScheme, ColorSchemeProvider, MantineProvider } from '@mantine/core'
+import { MantineProvider } from '@mantine/core'
 import { ModalsProvider } from '@mantine/modals'
 import { NotificationsProvider } from '@mantine/notifications'
 
@@ -54,33 +53,18 @@ interface Props {
 }
 
 const Providers: React.FC<Props> = ({ children }) => {
-    const preferredTheme = useColorScheme()
-    const [colorScheme, setColorScheme] = useLocalStorage<ColorScheme>({
-        key: 'color-scheme',
-        defaultValue: preferredTheme
-    })
-    const toggleTheme = (value?: ColorScheme) => {
-        setColorScheme(value ? value : colorScheme === 'dark' ? 'light' : 'dark')
-    }
-
     return (
         <trpc.Provider client={trpcClient} queryClient={queryClient}>
             <QueryClientProvider client={queryClient}>
-                <ColorSchemeProvider colorScheme={colorScheme} toggleColorScheme={toggleTheme}>
-                    <MantineProvider
-                        withNormalizeCSS
-                        withGlobalStyles
-                        theme={{ colorScheme: colorScheme }}
-                    >
-                        <ModalsProvider>
-                            <NotificationsProvider position="top-center">
-                                <IconContext.Provider value={{ weight: 'fill', size: 16 }}>
-                                    {children}
-                                </IconContext.Provider>
-                            </NotificationsProvider>
-                        </ModalsProvider>
-                    </MantineProvider>
-                </ColorSchemeProvider>
+                <MantineProvider withNormalizeCSS withGlobalStyles theme={{ colorScheme: 'dark' }}>
+                    <ModalsProvider>
+                        <NotificationsProvider position="top-center">
+                            <IconContext.Provider value={{ weight: 'fill', size: 16 }}>
+                                {children}
+                            </IconContext.Provider>
+                        </NotificationsProvider>
+                    </ModalsProvider>
+                </MantineProvider>
             </QueryClientProvider>
         </trpc.Provider>
     )
