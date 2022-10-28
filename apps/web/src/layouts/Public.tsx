@@ -42,20 +42,20 @@ const useStyles = createStyles((theme) => {
             width: '100%',
             height: '400px',
             background:
-                'radial-gradient(ellipse 50% 100% at 50% -20%, rgba(77, 171, 247, 0.3), transparent)',
+                'radial-gradient(ellipse 50% 100% at 50% -20%, rgba(77, 171, 247, 0.15), transparent)',
 
             [`@media (max-width: ${breakpoints.md}px)`]: {
                 background:
-                    'radial-gradient(ellipse 70% 100% at 50% -20%, rgba(77, 171, 247, 0.3), transparent)'
+                    'radial-gradient(ellipse 70% 100% at 50% -20%, rgba(77, 171, 247, 0.15), transparent)'
             },
 
             [`@media (max-width: ${breakpoints.sm}px)`]: {
                 background:
-                    'radial-gradient(ellipse 100% 80% at 50% -20%, rgba(77, 171, 247, 0.3), transparent)'
+                    'radial-gradient(ellipse 100% 80% at 50% -20%, rgba(77, 171, 247, 0.15), transparent)'
             }
         },
         innerMain: {
-            paddingTop: '100px'
+            paddingTop: '80px'
         }
     }
 })

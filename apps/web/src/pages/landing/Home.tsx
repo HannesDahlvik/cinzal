@@ -3,10 +3,13 @@ import { useHookstate } from '@hookstate/core'
 
 import { useNavigate } from 'react-router-dom'
 
-import { Button, Center, createStyles, Group, Text, Title } from '@mantine/core'
+import { Button, Center, createStyles, Group, Image, Title, useMantineTheme } from '@mantine/core'
 import { ArrowRight } from 'phosphor-react'
 
+import dashboardHome from '../../assets/imgs/dashboard-home.jpg'
+
 const HomePage: React.FC = () => {
+    const theme = useMantineTheme()
     const { classes } = useStyles()
 
     const navigate = useNavigate()
@@ -15,7 +18,7 @@ const HomePage: React.FC = () => {
 
     return (
         <>
-            <Center sx={{ flexDirection: 'column', height: '350px' }}>
+            <Center sx={{ flexDirection: 'column', height: '400px' }}>
                 <Title align="center" className={classes.title}>
                     A time-management and scheduling service
                 </Title>
@@ -38,6 +41,27 @@ const HomePage: React.FC = () => {
                     )}
                 </Group>
             </Center>
+
+            <Center sx={{ flexDirection: 'column', position: 'relative' }} py="200px">
+                <div className={classes.dashboardHome}>
+                    <div className={classes.bloomWrapper} />
+
+                    <Image
+                        styles={{
+                            image: {
+                                border: `1px solid ${theme.colors.dark[5]}`
+                            }
+                        }}
+                        src={dashboardHome}
+                        radius="lg"
+                        withPlaceholder
+                    />
+                </div>
+
+                <Button size="md" mt="xl" onClick={() => navigate('/signup')}>
+                    Get started
+                </Button>
+            </Center>
         </>
     )
 }
@@ -49,11 +73,29 @@ const useStyles = createStyles((theme) => {
 
     return {
         title: {
-            fontSize: '3rem',
+            fontSize: '3.5rem',
 
             [`@media (max-width: ${breakpoints.xs}px)`]: {
                 fontSize: '1.75rem'
             }
+        },
+        dashboardHome: {
+            position: 'relative',
+            width: '1200px',
+
+            [`@media (max-width: ${breakpoints.xl}px)`]: {
+                width: '90%'
+            }
+        },
+        bloomWrapper: {
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            background:
+                'conic-gradient(from 90deg at 50% 50%, rgba(77, 171, 247, 0.3) 0%, rgba(255, 255, 255, 0.15) 26%, rgba(132, 94, 247, 0.3) 49%, rgba(255, 107, 107, 0.2) 75%, rgba(77, 171, 247, 0.3) 100%)',
+            filter: 'blur(100px)'
         }
     }
 })
