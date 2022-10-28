@@ -3,7 +3,8 @@ import { createBrowserRouter, Navigate, RouterProvider } from 'react-router-dom'
 
 import LoadingPage from './pages/Loading'
 
-import Home from './pages/Home'
+import PublicLayout from './layouts/Public'
+import HomePage from './pages/landing/Home'
 
 const DashboardLayout = lazy(() => import('./layouts/Dashboard'))
 const DashboardHomePage = lazy(() => import('./pages/dashboard/Home'))
@@ -71,8 +72,14 @@ const router = createBrowserRouter([
     },
     {
         path: '/',
-        element: <Home />,
-        errorElement: <ErrorPage />
+        element: <PublicLayout />,
+        errorElement: <ErrorPage />,
+        children: [
+            {
+                path: '',
+                element: <HomePage />
+            }
+        ]
     },
     {
         path: '/',
