@@ -62,14 +62,43 @@ const eventsRouter = t.router({
             })
         )
         .mutation(async ({ ctx, input }) => {
-            const newEvent = prisma.event.create({
-                data: {
-                    ...input,
-                    uuid: ctx.user.uuid
-                }
-            })
+            const newEvent = await prisma.event
+                .create({
+                    data: {
+                        ...input,
+                        uuid: ctx.user.uuid
+                    }
+                })
+                .catch((err) => {
+                    throw new TRPCError({
+                        code: 'INTERNAL_SERVER_ERROR',
+                        message: err.message
+                    })
+                })
 
             return newEvent
+        }),
+    delete: ap
+        .input(
+            z.object({
+                id: z.number()
+            })
+        )
+        .mutation(async ({ input }) => {
+            const deletedEvent = await prisma.event
+                .delete({
+                    where: {
+                        id: input.id
+                    }
+                })
+                .catch((err) => {
+                    throw new TRPCError({
+                        code: 'INTERNAL_SERVER_ERROR',
+                        message: err.message
+                    })
+                })
+
+            return deletedEvent
         })
 })
 

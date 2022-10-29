@@ -1,16 +1,51 @@
-import { VEvent } from 'node-ical'
+import { IEvent } from '../../../state'
 
-import { createStyles, Text } from '@mantine/core'
+import { Button, createStyles, Group, Text } from '@mantine/core'
+import { closeAllModals, openConfirmModal } from '@mantine/modals'
 import { MapPin, TextAlignLeft } from 'phosphor-react'
 
 import dayjs from 'dayjs'
+import { errorHandler, trpc } from '../../../utils'
 
 interface Props {
-    event: VEvent
+    event: IEvent
 }
 
 const DashboardEventInfoModal: React.FC<Props> = ({ event }) => {
     const { classes } = useStyles()
+
+    const tu = trpc.useContext()
+    const deleteEventMutation = trpc.events.delete.useMutation()
+
+    const handleClose = () => {
+        closeAllModals()
+    }
+
+    const handleDeleteEvent = () => {
+        openConfirmModal({
+            title: `Are you sure you want to delete "${event.summary || event.title}"`,
+            labels: { cancel: 'No', confirm: 'Yes' },
+            cancelProps: { variant: 'outline' },
+            onCancel: () => handleClose(),
+            onConfirm: () => {
+                deleteEventMutation.mutate(
+                    {
+                        id: event.id
+                    },
+                    {
+                        onError: (err) => {
+                            errorHandler(err.message)
+                            handleClose()
+                        },
+                        onSuccess: () => {
+                            handleClose()
+                            tu.events.all.invalidate()
+                        }
+                    }
+                )
+            }
+        })
+    }
 
     return (
         <>
@@ -42,6 +77,14 @@ const DashboardEventInfoModal: React.FC<Props> = ({ event }) => {
                     {!event.description && 'No description'}
                 </Text>
             </div>
+
+            {event.type !== 'VEVENT' && (
+                <Group position="right" mt="md">
+                    <Button color="red" variant="outline" onClick={handleDeleteEvent}>
+                        Delete
+                    </Button>
+                </Group>
+            )}
         </>
     )
 }
