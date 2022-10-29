@@ -26,13 +26,21 @@ const DashboardEventInfoModal: React.FC<Props> = ({ event }) => {
                     <MapPin weight="fill" />
                 </div>
 
-                <Text>{event.location}</Text>
+                <Text>
+                    {event.location}
+
+                    {!event.location && 'No location'}
+                </Text>
 
                 <div className={classes.icon}>
                     <TextAlignLeft weight="fill" />
                 </div>
 
-                <Text>{event.description}</Text>
+                <Text>
+                    {event.description}
+
+                    {!event.description && 'No description'}
+                </Text>
             </div>
         </>
     )

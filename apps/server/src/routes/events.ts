@@ -50,6 +50,26 @@ const eventsRouter = t.router({
                     throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: err.message })
                 })
             return events
+        }),
+    create: ap
+        .input(
+            z.object({
+                title: z.string(),
+                description: z.string(),
+                location: z.string(),
+                start: z.date(),
+                end: z.date()
+            })
+        )
+        .mutation(async ({ ctx, input }) => {
+            const newEvent = prisma.event.create({
+                data: {
+                    ...input,
+                    uuid: ctx.user.uuid
+                }
+            })
+
+            return newEvent
         })
 })
 

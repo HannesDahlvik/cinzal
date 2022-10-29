@@ -1,11 +1,12 @@
 import state from '../../../state'
 import { useHookstate } from '@hookstate/core'
 
-import { Box, Button, Center, createStyles, Divider, useMantineTheme } from '@mantine/core'
+import { Box, Button, createStyles, Divider, Stack, useMantineTheme } from '@mantine/core'
 import { Month } from '@mantine/dates'
 import { openModal } from '@mantine/modals'
 
 import DashboardCreateTaskModal from '../modals/CreateTask'
+import DashboardCreateEventModal from '../modals/CreateEvent'
 import DashboardDateChanger from '../DateChanger'
 import HomeLeftSidebarCalendars from './LeftSidebarCalendars'
 
@@ -24,6 +25,13 @@ const DashboardHomeLeftSidebar: React.FC = () => {
         })
     }
 
+    const handleCreateEvent = () => {
+        openModal({
+            title: 'Create event',
+            children: <DashboardCreateEventModal />
+        })
+    }
+
     return (
         <div className={classes.sidebar}>
             <Box sx={{ padding: '24px' }}>
@@ -36,7 +44,7 @@ const DashboardHomeLeftSidebar: React.FC = () => {
                     my="xl"
                     dayStyle={(date) => {
                         if (
-                            date.getMonth() === globalDate.month() &&
+                            date.getMonth() === dayjs().month() &&
                             date.getDate() === new Date().getDate()
                         )
                             return {
@@ -59,11 +67,15 @@ const DashboardHomeLeftSidebar: React.FC = () => {
 
             <Divider sx={{ width: '100%' }} />
 
-            <Center className={classes.create} p="xl">
+            <Stack className={classes.create} p="xl">
                 <Button fullWidth onClick={handleCreateTask}>
                     Create task
                 </Button>
-            </Center>
+
+                <Button fullWidth onClick={handleCreateEvent}>
+                    Create event
+                </Button>
+            </Stack>
 
             <Divider sx={{ width: '100%' }} />
 
