@@ -91,10 +91,14 @@ const AuthLoginPage: React.FC = () => {
 
 export default AuthLoginPage
 
-const useStyles = createStyles(() => {
+const useStyles = createStyles((theme) => {
     return {
         form: {
-            width: '350px'
+            width: '400px',
+
+            [`@media (max-width: ${theme.breakpoints.sm}px)`]: {
+                width: '100%'
+            }
         }
     }
 })

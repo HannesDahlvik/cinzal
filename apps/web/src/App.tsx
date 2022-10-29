@@ -1,9 +1,11 @@
 import { lazy, Suspense, useEffect, useState } from 'react'
 import { createBrowserRouter, Navigate, RouterProvider } from 'react-router-dom'
 
+import { useMantineTheme } from '@mantine/core'
+
 import LoadingPage from './pages/Loading'
 
-import PublicLayout from './layouts/Public'
+import LandingLayout from './layouts/Landing'
 import HomePage from './pages/landing/Home'
 
 const DashboardLayout = lazy(() => import('./layouts/Dashboard'))
@@ -72,7 +74,7 @@ const router = createBrowserRouter([
     },
     {
         path: '/',
-        element: <PublicLayout />,
+        element: <LandingLayout />,
         errorElement: <ErrorPage />,
         children: [
             {
@@ -103,6 +105,8 @@ const router = createBrowserRouter([
 ])
 
 const App: React.FC = () => {
+    const theme = useMantineTheme()
+
     const { mutate: authVerifyMutation } = trpc.auth.verify.useMutation()
 
     const [render, setRender] = useState(false)
@@ -129,6 +133,8 @@ const App: React.FC = () => {
                 }
             })
         } else setRender(true)
+
+        document.body.setAttribute('style', `background-color: ${theme.colors.dark[9]}`)
     }, [])
 
     if (render)
