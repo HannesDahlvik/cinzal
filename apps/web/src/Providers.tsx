@@ -10,6 +10,7 @@ import { IconContext } from 'phosphor-react'
 
 import { errorHandler, setAuth, trpc } from './utils'
 import { httpBatchLink } from '@trpc/client'
+import SuperJSON from 'superjson'
 
 const queryClient = new QueryClient({
     defaultOptions: {
@@ -34,6 +35,7 @@ const queryClient = new QueryClient({
 })
 
 const trpcClient = trpc.createClient({
+    transformer: SuperJSON,
     links: [
         httpBatchLink({
             url: config.serverURL,

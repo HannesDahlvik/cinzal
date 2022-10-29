@@ -1,7 +1,10 @@
 import { initTRPC } from '@trpc/server'
 import { Context } from './context'
+import SuperJSON from 'superjson'
 
-export const t = initTRPC.context<Context>().create()
+export const t = initTRPC.context<Context>().create({
+    transformer: SuperJSON
+})
 
 import { authRouter, calendarRouter, eventsRouter, notesRouter, tasksRouter } from './routes'
 
