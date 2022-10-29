@@ -1,8 +1,10 @@
 import { IEvent } from '../../../state'
 
 import { Button, createStyles, Group, Text } from '@mantine/core'
-import { closeAllModals, openConfirmModal } from '@mantine/modals'
+import { closeAllModals, openConfirmModal, openModal } from '@mantine/modals'
 import { MapPin, TextAlignLeft } from 'phosphor-react'
+
+import DashboardEditEventModal from './EditEvent'
 
 import dayjs from 'dayjs'
 import { errorHandler, trpc } from '../../../utils'
@@ -47,6 +49,14 @@ const DashboardEventInfoModal: React.FC<Props> = ({ event }) => {
         })
     }
 
+    const handleEditEvent = () => {
+        handleClose()
+        openModal({
+            title: `Edit "${event.title}"`,
+            children: <DashboardEditEventModal event={event} />
+        })
+    }
+
     return (
         <>
             <Text mb="md">
@@ -83,6 +93,8 @@ const DashboardEventInfoModal: React.FC<Props> = ({ event }) => {
                     <Button color="red" variant="outline" onClick={handleDeleteEvent}>
                         Delete
                     </Button>
+
+                    <Button onClick={handleEditEvent}>Edit</Button>
                 </Group>
             )}
         </>

@@ -78,6 +78,34 @@ const eventsRouter = t.router({
 
             return newEvent
         }),
+    edit: ap
+        .input(
+            z.object({
+                id: z.number(),
+                title: z.string(),
+                description: z.string(),
+                location: z.string(),
+                start: z.date(),
+                end: z.date()
+            })
+        )
+        .mutation(async ({ input }) => {
+            const editedEvent = await prisma.event
+                .update({
+                    where: { id: input.id },
+                    data: {
+                        ...input
+                    }
+                })
+                .catch((err) => {
+                    throw new TRPCError({
+                        code: 'INTERNAL_SERVER_ERROR',
+                        message: err.message
+                    })
+                })
+
+            return editedEvent
+        }),
     delete: ap
         .input(
             z.object({
