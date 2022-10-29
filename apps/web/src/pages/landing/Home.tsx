@@ -31,18 +31,15 @@ const HomePage: React.FC = () => {
                         </Button>
                     ) : (
                         <>
-                            <Button size="md" variant="outline" onClick={() => navigate('/login')}>
-                                Login
-                            </Button>
                             <Button size="md" onClick={() => navigate('/signup')}>
-                                Signup
+                                Get started
                             </Button>
                         </>
                     )}
                 </Group>
             </Center>
 
-            <Center sx={{ flexDirection: 'column', position: 'relative' }} py="200px">
+            <Center className={classes.dashboardHomeWrapper}>
                 <div className={classes.dashboardHome}>
                     <div className={classes.bloomWrapper} />
 
@@ -79,7 +76,19 @@ const useStyles = createStyles((theme) => {
                 fontSize: '1.75rem'
             }
         },
+        dashboardHomeWrapper: {
+            flexDirection: 'column',
+            position: 'relative',
+            paddingTop: '200px',
+            paddingBottom: '200px',
+
+            [`@media (max-width: ${breakpoints.sm}px)`]: {
+                paddingTop: '75px',
+                paddingBottom: '75px'
+            }
+        },
         dashboardHome: {
+            transform: '',
             position: 'relative',
             width: '1200px',
 

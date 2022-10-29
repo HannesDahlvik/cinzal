@@ -6,7 +6,7 @@ import { createStyles, useMantineTheme } from '@mantine/core'
 
 import LandingNavbar from '../components/landing/Navbar'
 
-const PublicLayout: React.FC = () => {
+const LandingLayout: React.FC = () => {
     const theme = useMantineTheme()
     const { classes } = useStyles()
 
@@ -29,7 +29,7 @@ const PublicLayout: React.FC = () => {
     )
 }
 
-export default PublicLayout
+export default LandingLayout
 
 const useStyles = createStyles((theme) => {
     const breakpoints = theme.breakpoints

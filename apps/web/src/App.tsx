@@ -3,7 +3,7 @@ import { createBrowserRouter, Navigate, RouterProvider } from 'react-router-dom'
 
 import LoadingPage from './pages/Loading'
 
-import PublicLayout from './layouts/Public'
+import LandingLayout from './layouts/Landing'
 import HomePage from './pages/landing/Home'
 
 const DashboardLayout = lazy(() => import('./layouts/Dashboard'))
@@ -72,7 +72,7 @@ const router = createBrowserRouter([
     },
     {
         path: '/',
-        element: <PublicLayout />,
+        element: <LandingLayout />,
         errorElement: <ErrorPage />,
         children: [
             {
