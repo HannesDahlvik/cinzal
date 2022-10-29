@@ -1,18 +1,11 @@
-import { useEffect } from 'react'
-
 import { Outlet } from 'react-router-dom'
 
-import { createStyles, useMantineTheme } from '@mantine/core'
+import { createStyles } from '@mantine/core'
 
 import LandingNavbar from '../components/landing/Navbar'
 
 const LandingLayout: React.FC = () => {
-    const theme = useMantineTheme()
     const { classes } = useStyles()
-
-    useEffect(() => {
-        document.body.setAttribute('style', `background-color: ${theme.colors.dark[9]}`)
-    }, [])
 
     return (
         <div>

@@ -1,6 +1,8 @@
 import { lazy, Suspense, useEffect, useState } from 'react'
 import { createBrowserRouter, Navigate, RouterProvider } from 'react-router-dom'
 
+import { useMantineTheme } from '@mantine/core'
+
 import LoadingPage from './pages/Loading'
 
 import LandingLayout from './layouts/Landing'
@@ -103,6 +105,8 @@ const router = createBrowserRouter([
 ])
 
 const App: React.FC = () => {
+    const theme = useMantineTheme()
+
     const { mutate: authVerifyMutation } = trpc.auth.verify.useMutation()
 
     const [render, setRender] = useState(false)
@@ -129,6 +133,8 @@ const App: React.FC = () => {
                 }
             })
         } else setRender(true)
+
+        document.body.setAttribute('style', `background-color: ${theme.colors.dark[9]}`)
     }, [])
 
     if (render)

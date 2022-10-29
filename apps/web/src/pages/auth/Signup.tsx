@@ -101,10 +101,14 @@ const AuthSignupPage: React.FC = () => {
 
 export default AuthSignupPage
 
-const useStyles = createStyles(() => {
+const useStyles = createStyles((theme) => {
     return {
         form: {
-            width: '350px'
+            width: '400px',
+
+            [`@media (max-width: ${theme.breakpoints.sm}px)`]: {
+                width: '100%'
+            }
         }
     }
 })
