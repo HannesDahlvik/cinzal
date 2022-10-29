@@ -17,6 +17,7 @@ import { closeAllModals, openConfirmModal } from '@mantine/modals'
 import { Check } from 'phosphor-react'
 
 import { errorHandler, parseTrpcError, trpc } from '../../../utils'
+import dayjs from 'dayjs'
 
 interface Props {
     task: Task
@@ -57,20 +58,21 @@ const DashboardEditTaskModal: React.FC<Props> = ({ task }) => {
     const handleEditTask = (vals: FormVals) => {
         setLoading(true)
 
-        const deadlineDate = vals.deadlineDate
-        const deadlineTime = vals.deadlineTime
+        const deadlineDate = dayjs(vals.deadlineDate)
+        const deadlineTime = dayjs(vals.deadlineTime)
         const deadline = deadlineDate
-        deadline.setHours(deadlineTime.getHours())
-        deadline.setMinutes(deadlineTime.getMinutes())
-        deadline.setSeconds(0)
+            .set('hour', deadlineTime.hour())
+            .set('minute', deadlineTime.minute())
+            .set('second', 0)
+            .toDate()
 
         editTaskMutation(
             {
                 id: task.id,
                 title: vals.title,
                 description: vals.description,
-                deadline: deadline.toString(),
-                color: selectedColor
+                color: selectedColor,
+                deadline
             },
             {
                 onError: (err) => {
