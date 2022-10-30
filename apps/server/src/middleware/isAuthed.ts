@@ -10,7 +10,7 @@ const isAuthed = t.middleware(async ({ ctx, next }) => {
     return next({
         ctx: {
             user: verifed.user,
-            token: ctx.token
+            token: ctx.token as string
         }
     })
 })
