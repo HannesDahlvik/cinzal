@@ -5,6 +5,7 @@ import state from '../../state'
 
 import { Box, Button, Checkbox, createStyles, Text, Title, useMantineTheme } from '@mantine/core'
 import { openModal } from '@mantine/modals'
+import { TrashSimple } from 'phosphor-react'
 
 import DashboardCreateTaskModal from '../../components/dashboard/modals/CreateTask'
 
@@ -17,6 +18,7 @@ const DashboardTasksPage: React.FC = () => {
 
     const tu = trpc.useContext()
     const taskToggleCompletedMutation = trpc.tasks.toggle.useMutation()
+    const taskDeleteMutation = trpc.tasks.delete.useMutation()
 
     const { value: tasks } = useHookstate(state.data.tasks)
 
@@ -44,12 +46,34 @@ const DashboardTasksPage: React.FC = () => {
         )
     }
 
+    const handleDeleteTask = (task: Task) => {
+        taskDeleteMutation.mutate(
+            {
+                taskId: task.id
+            },
+            {
+                onError: (err) => {
+                    errorHandler(err.message)
+                },
+                onSuccess: () => {
+                    tu.tasks.get.invalidate()
+                }
+            }
+        )
+    }
+
     return (
         <div className={classes.wrapper}>
             <Title mt="md">All tasks</Title>
 
             <div className={classes.tasksWrapper}>
                 <Button onClick={handleCreateTask}>Create task</Button>
+
+                {tasks.length === 0 && (
+                    <Text align="center" color="dimmed">
+                        You have no tasks
+                    </Text>
+                )}
 
                 {tasks.map((task) => (
                     <div className={classes.task} key={task.id}>
@@ -67,6 +91,13 @@ const DashboardTasksPage: React.FC = () => {
                         <div>
                             <Text lineClamp={1}>{task.title}</Text>
                             <Text>{dayjs(task.deadline).format('DD.MM.YYYY - HH:mm')}</Text>
+                        </div>
+
+                        <div
+                            className={classes.taskDeleteIcon}
+                            onClick={() => handleDeleteTask(task)}
+                        >
+                            <TrashSimple size={22} />
                         </div>
                     </div>
                 ))}
@@ -106,6 +137,10 @@ const useStyles = createStyles((theme) => {
             marginLeft: spacing.md,
             marginRight: spacing.md,
             borderRadius: radius.xl
+        },
+        taskDeleteIcon: {
+            marginLeft: 'auto',
+            cursor: 'pointer'
         }
     }
 })
