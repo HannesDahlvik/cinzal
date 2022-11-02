@@ -85,15 +85,18 @@ const DashboardCreateEventModal: React.FC = () => {
                         {...form.getInputProps('title')}
                     />
 
-                    <Stack spacing="xs">
+                    <div>
                         <Text component="label" size="sm">
-                            Date
+                            Date{' '}
+                            <Text span color="red">
+                                *
+                            </Text>
                         </Text>
                         <Group grow>
                             <DatePicker required {...form.getInputProps('date')} />
                             <TimeRangeInput required {...form.getInputProps('time')} />
                         </Group>
-                    </Stack>
+                    </div>
 
                     <TextInput
                         label="Location"
