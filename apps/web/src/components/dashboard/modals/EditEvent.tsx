@@ -33,8 +33,8 @@ const DashboardEditEventModal: React.FC<Props> = ({ event }) => {
             title: event.title,
             description: event.description,
             location: event.location,
-            date: new Date(),
-            time: [new Date(), dayjs(new Date()).add(1, 'hour').toDate()]
+            date: event.start,
+            time: [event.start, event.end]
         }
     })
 

@@ -219,7 +219,7 @@ const useStyles = createStyles((theme) => {
         eventBox: {
             position: 'relative',
             width: '100%',
-            height: '60px',
+            minHeight: '60px',
             padding: '0 3px'
         },
         timeBox: {
