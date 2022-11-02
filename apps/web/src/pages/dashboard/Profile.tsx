@@ -6,6 +6,8 @@ import { Avatar, Tabs, Title, createStyles } from '@mantine/core'
 import DashboardProfileSettings from '../../components/dashboard/profile/Settings'
 import DashboardProfileUserInfo from '../../components/dashboard/profile/UserInfo'
 
+import { parseUsername } from '../../utils'
+
 const DashboardProfilePage: React.FC = () => {
     const { classes } = useStyles()
 
@@ -26,8 +28,7 @@ const DashboardProfilePage: React.FC = () => {
                         }
                     }}
                 >
-                    {user?.username.charAt(0)}
-                    {user?.username.split(' ')[1].charAt(0)}
+                    {parseUsername(user?.username as string)}
                 </Avatar>
                 <Title mt="sm">{user?.username}</Title>
             </div>

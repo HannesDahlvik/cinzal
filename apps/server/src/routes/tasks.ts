@@ -25,19 +25,16 @@ const tasksRouter = t.router({
             z.object({
                 title: z.string(),
                 description: z.string(),
-                deadline: z.string(),
+                deadline: z.date(),
                 color: z.string()
             })
         )
         .mutation(async ({ ctx, input }) => {
-            const deadline = new Date(input.deadline)
-
             const newTask = await prisma.task
                 .create({
                     data: {
                         ...input,
-                        uuid: ctx.user.uuid,
-                        deadline
+                        uuid: ctx.user.uuid
                     }
                 })
                 .catch((err) => {
@@ -55,21 +52,16 @@ const tasksRouter = t.router({
                 id: z.number(),
                 title: z.string(),
                 description: z.string(),
-                deadline: z.string(),
+                deadline: z.date(),
                 color: z.string()
             })
         )
         .mutation(async ({ input }) => {
-            const deadline = new Date(input.deadline)
-
             const editTask = await prisma.task
                 .update({
                     where: { id: input.id },
                     data: {
-                        title: input.title,
-                        description: input.description,
-                        deadline: deadline,
-                        color: input.color
+                        ...input
                     }
                 })
                 .catch((err) => {

@@ -50,6 +50,83 @@ const eventsRouter = t.router({
                     throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: err.message })
                 })
             return events
+        }),
+    create: ap
+        .input(
+            z.object({
+                title: z.string(),
+                description: z.string(),
+                location: z.string(),
+                start: z.date(),
+                end: z.date()
+            })
+        )
+        .mutation(async ({ ctx, input }) => {
+            const newEvent = await prisma.event
+                .create({
+                    data: {
+                        ...input,
+                        uuid: ctx.user.uuid
+                    }
+                })
+                .catch((err) => {
+                    throw new TRPCError({
+                        code: 'INTERNAL_SERVER_ERROR',
+                        message: err.message
+                    })
+                })
+
+            return newEvent
+        }),
+    edit: ap
+        .input(
+            z.object({
+                id: z.number(),
+                title: z.string(),
+                description: z.string(),
+                location: z.string(),
+                start: z.date(),
+                end: z.date()
+            })
+        )
+        .mutation(async ({ input }) => {
+            const editedEvent = await prisma.event
+                .update({
+                    where: { id: input.id },
+                    data: {
+                        ...input
+                    }
+                })
+                .catch((err) => {
+                    throw new TRPCError({
+                        code: 'INTERNAL_SERVER_ERROR',
+                        message: err.message
+                    })
+                })
+
+            return editedEvent
+        }),
+    delete: ap
+        .input(
+            z.object({
+                id: z.number()
+            })
+        )
+        .mutation(async ({ input }) => {
+            const deletedEvent = await prisma.event
+                .delete({
+                    where: {
+                        id: input.id
+                    }
+                })
+                .catch((err) => {
+                    throw new TRPCError({
+                        code: 'INTERNAL_SERVER_ERROR',
+                        message: err.message
+                    })
+                })
+
+            return deletedEvent
         })
 })
 

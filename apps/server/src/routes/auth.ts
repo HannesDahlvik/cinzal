@@ -10,27 +10,23 @@ import bcrypt from 'bcryptjs'
 import { v4 as uuid } from 'uuid'
 import jwt from 'jsonwebtoken'
 import genJwtToken from '../utils/genJwtToken'
-import isAuthed from '../middleware/isAuthed'
+import { ap } from '../middleware/isAuthed'
 
 const authRouter = t.router({
-    verify: t.procedure
-        .use(isAuthed)
-        .input(z.null())
-        .mutation(async ({ ctx }) => {
-            const token = ctx.token
+    verify: ap.input(z.null()).mutation(async ({ ctx }) => {
+        const token = ctx.token
 
-            if (!token)
-                throw new TRPCError({ code: 'UNAUTHORIZED', message: 'You are not logged in' })
+        if (!token) throw new TRPCError({ code: 'UNAUTHORIZED', message: 'You are not logged in' })
 
-            const decoded = jwt.verify(token, config.jwtSecret)
-            if (!decoded)
-                throw new TRPCError({
-                    code: 'UNAUTHORIZED',
-                    message: 'Unauthorized invalid token'
-                })
+        const decoded = jwt.verify(token, config.jwtSecret)
+        if (!decoded)
+            throw new TRPCError({
+                code: 'UNAUTHORIZED',
+                message: 'Unauthorized invalid token'
+            })
 
-            return decoded as VerifyDecoded
-        }),
+        return decoded as VerifyDecoded
+    }),
     login: t.procedure
         .input(
             z.object({
@@ -103,6 +99,36 @@ const authRouter = t.router({
 
             const token = genJwtToken(newUser)
             return token
+        }),
+    update: ap
+        .input(
+            z.object({
+                username: z.string()
+            })
+        )
+        .mutation(async ({ ctx, input }) => {
+            const updatedUser = await prisma.user
+                .update({
+                    where: {
+                        uuid: ctx.user.uuid
+                    },
+                    data: {
+                        username: input.username
+                    }
+                })
+                .catch((err) => {
+                    throw new TRPCError({
+                        code: 'INTERNAL_SERVER_ERROR',
+                        message: err.message
+                    })
+                })
+
+            const newUser = genJwtToken(updatedUser)
+
+            return {
+                token: newUser.token,
+                user: newUser.user
+            }
         })
 })
 

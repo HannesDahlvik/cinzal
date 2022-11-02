@@ -1,8 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { Task } from '../../../config/types'
-import { VEvent } from 'node-ical'
 
-import state from '../../../state'
+import state, { IEvent } from '../../../state'
 import { useHookstate } from '@hookstate/core'
 
 import { Box, createStyles, Stack, Text, useMantineTheme } from '@mantine/core'
@@ -67,16 +66,16 @@ const DashboardHomeTimeline: React.FC = () => {
         } else return null
     }
 
-    const calcEventBoxHeight = (event: VEvent) => {
+    const calcEventBoxHeight = (event: IEvent) => {
         const start = dayjs(new Date(event.start))
         const end = dayjs(new Date(event.end))
         const minute = end.diff(start, 'minute')
         return (minute / 60) * 100
     }
 
-    const handleOpenEventInfo = (event: VEvent) => {
+    const handleOpenEventInfo = (event: IEvent) => {
         openModal({
-            title: event.summary,
+            title: event.summary || event.title,
             size: 'lg',
             styles: {
                 title: {
@@ -124,7 +123,9 @@ const DashboardHomeTimeline: React.FC = () => {
                                         onClick={() => handleOpenEventInfo(event)}
                                     >
                                         <Stack spacing={2}>
-                                            <Text lineClamp={1}>{event.summary}</Text>
+                                            <Text lineClamp={1}>
+                                                {event.summary || event.title}
+                                            </Text>
                                             <Text lineClamp={1}>{event.location}</Text>
                                         </Stack>
                                     </Box>
@@ -218,7 +219,7 @@ const useStyles = createStyles((theme) => {
         eventBox: {
             position: 'relative',
             width: '100%',
-            height: '60px',
+            minHeight: '60px',
             padding: '0 3px'
         },
         timeBox: {

@@ -46,7 +46,7 @@ const DashboardCalendarDayRenderer: React.FC<Props> = (props) => {
 
     const handleOpenEventInfo = (event: IEvent) => {
         openModal({
-            title: event.summary,
+            title: event.summary || event.title,
             size: 'lg',
             styles: {
                 title: {
