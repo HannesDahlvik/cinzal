@@ -19,29 +19,18 @@ const DashboardCalendarDayRenderer: React.FC<Props> = (props) => {
     const theme = useMantineTheme()
     const { classes } = useStyles()
 
-    const [obj, setObj] = useState<Props | null>(null)
+    const [arr, setArr] = useState<Props | null>(null)
 
     useEffect(() => {
-        const obj: Props = {
+        const preArr: Props = {
             events: [],
             tasks: []
         }
 
-        let eventsCounter = 0
-        props.events.map((event) => {
-            if (eventsCounter === 2) return
-            else obj.events.push(event)
-            eventsCounter++
-        })
+        props.events.map((event) => preArr.events.push(event))
+        props.tasks.map((task) => preArr.tasks.push(task))
 
-        let tasksCounter = 0
-        props.tasks.map((task) => {
-            if (tasksCounter === 2) return
-            else obj.tasks.push(task)
-            tasksCounter++
-        })
-
-        setObj(obj)
+        setArr(preArr)
     }, [props])
 
     const handleOpenEventInfo = (event: IEvent) => {
@@ -65,28 +54,26 @@ const DashboardCalendarDayRenderer: React.FC<Props> = (props) => {
         })
     }
 
-    if (!obj) return null
+    if (!arr) return null
 
     return (
         <>
-            {obj.events.map((event, i) => (
+            {arr.events.map((event, i) => (
                 <div className={classes.event} key={i} onClick={() => handleOpenEventInfo(event)}>
-                    <Text lineClamp={1} color="#fff" size="sm">
+                    <Text lineClamp={1} color="#fff" size="xs">
                         <b>{dayjs(event.start).format('HH:mm')}</b> {event.summary || event.title}
                     </Text>
                 </div>
             ))}
 
-            {obj.tasks.map((task, i) => (
+            {arr.tasks.map((task, i) => (
                 <Box
-                    sx={{
-                        backgroundColor: theme.colors[task.color][5]
-                    }}
+                    sx={{ backgroundColor: theme.colors[task.color][5] }}
                     className={classes.task}
                     key={i}
                     onClick={() => handleEditTask(task)}
                 >
-                    <Text lineClamp={1} color="#fff" size="sm">
+                    <Text lineClamp={1} color="#fff" size="xs">
                         <b>{dayjs(task.deadline).format('HH:mm')}</b> {task.title}
                     </Text>
                 </Box>
@@ -100,15 +87,17 @@ export default DashboardCalendarDayRenderer
 const useStyles = createStyles((theme) => {
     return {
         event: {
-            padding: '2px',
             paddingLeft: '4px',
+            marginBottom: '2px',
             borderRadius: theme.radius.sm,
             cursor: 'pointer',
-            marginBottom: '2px',
-            backgroundColor: theme.colors.blue[5]
+            transition: '.3s',
+
+            '&:hover': {
+                background: 'rgba(10, 10, 10, 0.5)'
+            }
         },
         task: {
-            padding: '2px',
             paddingLeft: '4px',
             borderRadius: theme.radius.sm,
             cursor: 'pointer',

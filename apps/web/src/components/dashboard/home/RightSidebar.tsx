@@ -1,16 +1,47 @@
+import { Task } from '../../../config/types'
+
 import { useHookstate } from '@hookstate/core'
 import state from '../../../state'
 
 import { Box, Center, createStyles, Text, useMantineTheme } from '@mantine/core'
+import { TrashSimple } from 'phosphor-react'
 
 import dayjs from 'dayjs'
+import { errorHandler, trpc } from '../../../utils'
+import { openConfirmModal } from '@mantine/modals'
 
 const DashboardHomeRightSidebar: React.FC = () => {
     const theme = useMantineTheme()
     const { classes } = useStyles()
 
+    const tu = trpc.useContext()
+    const deleteTaskMutation = trpc.tasks.delete.useMutation()
+
     const now = dayjs()
     const { value: tasks } = useHookstate(state.data.tasks)
+
+    const handleDeleteTask = (task: Task) => {
+        openConfirmModal({
+            title: `Are you sure you want to delete "${task.title}"`,
+            labels: { cancel: 'No', confirm: 'Yes' },
+            cancelProps: { variant: 'outline' },
+            onConfirm: () => {
+                deleteTaskMutation.mutate(
+                    {
+                        taskId: task.id
+                    },
+                    {
+                        onError: (err) => {
+                            errorHandler(err.message)
+                        },
+                        onSuccess: () => {
+                            tu.tasks.get.invalidate()
+                        }
+                    }
+                )
+            }
+        })
+    }
 
     return (
         <div className={classes.sidebar}>
@@ -20,9 +51,9 @@ const DashboardHomeRightSidebar: React.FC = () => {
 
             <Box p="md">
                 {tasks.map((task) => {
-                    const date = dayjs(task.deadline).date()
+                    const deadlineDate = dayjs(task.deadline).date()
 
-                    if (date !== now.date() && date <= now.date() + 2)
+                    if (deadlineDate !== now.date() && deadlineDate <= now.date() + 2)
                         return (
                             <div className={classes.taskBox} key={task.id}>
                                 <Center>
@@ -42,6 +73,13 @@ const DashboardHomeRightSidebar: React.FC = () => {
                                         {dayjs(task.deadline).format('DD.MM.YYYY')}
                                     </Text>
                                 </Center>
+
+                                <Box
+                                    sx={{ marginLeft: 'auto', cursor: 'pointer' }}
+                                    onClick={() => handleDeleteTask(task)}
+                                >
+                                    <TrashSimple size={22} />
+                                </Box>
                             </div>
                         )
                 })}
@@ -63,6 +101,7 @@ const useStyles = createStyles((theme) => {
         },
         taskBox: {
             display: 'flex',
+            alignItems: 'center',
             height: '60px',
             marginBottom: theme.spacing.md
         },
