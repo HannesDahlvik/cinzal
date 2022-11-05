@@ -7,7 +7,7 @@
         "packages/*"
     ],
     "scripts": {
-        "dev": "turbo run dev --parallel",
+        "web": "turbo run dev --parallel --filter @cz/server --filter @cz/web",
         "build": "turbo run build",
         "build-web": "yarn workspace @cz/web build",
         "build-server": "yarn workspace @cz/server build",

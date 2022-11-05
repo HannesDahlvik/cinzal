@@ -196,7 +196,7 @@ const useStyles = createStyles((theme) => {
             gridTemplateRows: 'repeat(24, 100px)'
         },
         tasksWrapper: {
-            position: 'relative',
+            position: 'absolute',
             display: 'flex',
             width: '100%',
             height: '100%'
@@ -233,7 +233,12 @@ const useStyles = createStyles((theme) => {
             position: 'absolute',
             width: '100%',
             height: '2px',
-            backgroundColor: colors.red[6]
+            backgroundColor: colors.red[6],
+            boxShadow: `0px 0px 4.5px ${colors.red[6]},
+            0px 0px 12.5px ${colors.red[6]},
+            0px 0px 30.1px ${colors.red[6]},
+            0px 0px 100px ${colors.red[6]}
+          ;`
         }
     }
 })

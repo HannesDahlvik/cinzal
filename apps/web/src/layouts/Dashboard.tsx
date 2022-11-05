@@ -1,3 +1,4 @@
+import { Suspense } from 'react'
 import { Task } from '../config/types'
 
 import { Outlet } from 'react-router-dom'
@@ -58,7 +59,9 @@ const DashboardLayout: React.FC = () => {
             <DashboardSidebar />
 
             <div className={classes.innerWrapper}>
-                <Outlet />
+                <Suspense fallback={<LoadingPage />}>
+                    <Outlet />
+                </Suspense>
             </div>
         </div>
     )
