@@ -30,7 +30,7 @@ const LandingNavbar: React.FC = () => {
                 sx={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}
                 onClick={() => navigate('/')}
             >
-                <Image src={Logo} alt="Cinzal logo" width="32px" withPlaceholder />
+                <Image src={Logo} alt="Cinzal logo" width={32} height={32} withPlaceholder />
 
                 <Text ml="xs" size="xl" weight="bold">
                     Cinzal
@@ -42,8 +42,15 @@ const LandingNavbar: React.FC = () => {
                     className={classes.link}
                     href="https://github.com/HannesDahlvik/cinzal"
                     target="_blank"
+                    aria-label="Link to github repo"
                 >
-                    <img className={classes.icon} src={githubLogo} width={30} />
+                    <img
+                        className={classes.icon}
+                        src={githubLogo}
+                        alt="Github logo"
+                        width={30}
+                        height={30}
+                    />
                 </a>
             </Group>
         </Box>
