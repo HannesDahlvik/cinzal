@@ -50,6 +50,9 @@ const HomePage: React.FC = () => {
                             }
                         }}
                         src={dashboardHome}
+                        alt="Dashboard home"
+                        width="100%"
+                        height="100%"
                         radius="lg"
                         withPlaceholder
                     />
