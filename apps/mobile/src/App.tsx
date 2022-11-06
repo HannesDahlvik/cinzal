@@ -1,22 +1,16 @@
 import React from 'react'
+import { StatusBar } from 'expo-status-bar'
 
-import { StyleSheet } from 'react-native'
-import { Box, Heading } from 'native-base'
+import HomeScreen from './screens/Home'
 
 const App: React.FC = () => {
     return (
-        <Box style={styles.container} bg="dark.900">
-            <Heading>Cinzal Mobile App</Heading>
-        </Box>
+        <>
+            <StatusBar style="light" />
+
+            <HomeScreen />
+        </>
     )
 }
 
 export default App
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        alignItems: 'center',
-        justifyContent: 'center'
-    }
-})
