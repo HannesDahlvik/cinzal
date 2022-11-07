@@ -92,7 +92,7 @@ const theme = extendTheme({
             200: '#b2f2bb',
             300: '#8ce99a',
             400: '#69db7c',
-            500: '51cf66',
+            500: '#51cf66',
             600: '#40c057',
             700: '#37b24d',
             800: '#2f9e44',
@@ -121,6 +121,13 @@ const theme = extendTheme({
             700: '#f76707',
             800: '#e8590c',
             900: '#d9480f'
+        }
+    },
+    components: {
+        Button: {
+            defaultProps: {
+                colorScheme: 'blue'
+            }
         }
     },
     config: {

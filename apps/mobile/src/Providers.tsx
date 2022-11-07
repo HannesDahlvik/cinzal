@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { StatusBar } from 'expo-status-bar'
 
 import config from './config'
 import theme from './config/theme'
@@ -32,6 +33,7 @@ const Providers: React.FC<Props> = ({ children }) => {
             <QueryClientProvider client={queryClient}>
                 <NativeBaseProvider theme={theme}>
                     <IconContext.Provider value={{ weight: 'fill', color: '#fff' }}>
+                        <StatusBar style="light" />
                         {children}
                     </IconContext.Provider>
                 </NativeBaseProvider>

@@ -4,6 +4,7 @@
         "baseUrl": "src",
         "target": "ESNext",
         "module": "ESNext",
+        "strict": true,
         "paths": {
             "~/*": ["*"]
         },

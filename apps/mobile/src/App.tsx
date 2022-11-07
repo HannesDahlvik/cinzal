@@ -1,15 +1,22 @@
 import React from 'react'
-import { StatusBar } from 'expo-status-bar'
 
-import HomeScreen from './screens/Home'
+import { DefaultTheme, NavigationContainer } from '@react-navigation/native'
+import RootNavigator from './navigation/Root'
+
+import { useTheme } from 'native-base'
 
 const App: React.FC = () => {
-    return (
-        <>
-            <StatusBar style="light" />
+    const { colors } = useTheme()
 
-            <HomeScreen />
-        </>
+    return (
+        <NavigationContainer
+            theme={{
+                ...DefaultTheme,
+                colors: { ...DefaultTheme.colors, background: colors.dark[900] }
+            }}
+        >
+            <RootNavigator />
+        </NavigationContainer>
     )
 }
 
