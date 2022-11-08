@@ -7,7 +7,7 @@ const WelcomeScreen: React.FC<RootStackScreenProps<'Welcome'>> = ({ navigation }
         <Stack style={styles.wrapper} space={3}>
             <Center mt="1/4">
                 <Image
-                    source={require('../../assets/logo.png')}
+                    source={require('../../assets/icon.png')}
                     alt="Cinzal logo"
                     width={32}
                     height={32}

@@ -2,6 +2,18 @@ import { extendTheme } from 'native-base'
 
 const theme = extendTheme({
     colors: {
+        primary: {
+            50: '#e7f5ff',
+            100: '#d0ebff',
+            200: '#a5d8ff',
+            300: '#74c0fc',
+            400: '#4dabf7',
+            500: '#339af0',
+            600: '#228be6',
+            700: '#1c7ed6',
+            800: '#1971c2',
+            900: '#1864ab'
+        },
         dark: {
             50: '#C1C2C5',
             100: '#A6A7AB',
@@ -121,13 +133,6 @@ const theme = extendTheme({
             700: '#f76707',
             800: '#e8590c',
             900: '#d9480f'
-        }
-    },
-    components: {
-        Button: {
-            defaultProps: {
-                colorScheme: 'blue'
-            }
         }
     },
     config: {

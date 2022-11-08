@@ -12,7 +12,7 @@ const App: React.FC = () => {
         <NavigationContainer
             theme={{
                 ...DefaultTheme,
-                colors: { ...DefaultTheme.colors, background: colors.dark[900] }
+                colors: { ...DefaultTheme.colors, background: colors.dark[700] }
             }}
         >
             <RootNavigator />
