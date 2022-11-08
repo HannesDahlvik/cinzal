@@ -22,6 +22,7 @@
         "@trpc/react": "^10.0.0-proxy-beta.8",
         "dayjs": "^1.11.6",
         "expo": "~46.0.16",
+        "expo-secure-store": "~11.3.0",
         "expo-splash-screen": "~0.16.2",
         "expo-status-bar": "~1.4.0",
         "native-base": "^3.4.21",

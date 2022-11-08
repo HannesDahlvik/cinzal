@@ -6,7 +6,7 @@ import { RootStackScreenProps } from '~/navigation/Root'
 import { Box, Button, FormControl, Heading, Icon, Input, Pressable, Stack } from 'native-base'
 import { Eye, EyeSlash } from 'phosphor-react-native'
 
-import { trpc, useErrorHandler } from '../../utils'
+import { setAuth, trpc, useErrorHandler } from '../../utils'
 import { Controller, useForm } from 'react-hook-form'
 
 interface FormVals {
@@ -23,17 +23,21 @@ const AuthSignupScreen: React.FC<RootStackScreenProps<'Signup'>> = () => {
     const { control, handleSubmit } = useForm<FormVals>()
 
     const [showPassword, setShowPassword] = useState(false)
+    const [loading, setLoading] = useState(false)
 
     const handleSignup = (data: FormVals) => {
         if (!data.username || !data.email || !data.password)
             return errorHandler('Insert email and/or password')
+        setLoading(false)
 
         signupMutation.mutate(data, {
             onError: (err) => {
+                setLoading(false)
                 errorHandler(err.message)
             },
             onSuccess: (data) => {
-                console.log(data)
+                setLoading(false)
+                setAuth(data.token, data.user)
             }
         })
     }
@@ -104,7 +108,7 @@ const AuthSignupScreen: React.FC<RootStackScreenProps<'Signup'>> = () => {
                 </FormControl>
             </Box>
 
-            <Button w="75%" mt="2" onPress={handleSubmit(handleSignup)}>
+            <Button w="75%" mt="2" isLoading={loading} onPress={handleSubmit(handleSignup)}>
                 Signup
             </Button>
         </Stack>
