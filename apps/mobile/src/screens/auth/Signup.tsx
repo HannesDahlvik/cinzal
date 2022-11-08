@@ -3,20 +3,10 @@ import { StyleSheet } from 'react-native'
 
 import { RootStackScreenProps } from '~/navigation/Root'
 
-import {
-    Box,
-    Button,
-    FormControl,
-    Heading,
-    Icon,
-    Input,
-    Pressable,
-    Stack,
-    useToast
-} from 'native-base'
+import { Box, Button, FormControl, Heading, Icon, Input, Pressable, Stack } from 'native-base'
 import { Eye, EyeSlash } from 'phosphor-react-native'
 
-import { trpc } from '../../utils'
+import { trpc, useErrorHandler } from '../../utils'
 import { Controller, useForm } from 'react-hook-form'
 
 interface FormVals {
@@ -26,19 +16,22 @@ interface FormVals {
 }
 
 const AuthSignupScreen: React.FC<RootStackScreenProps<'Signup'>> = () => {
+    const errorHandler = useErrorHandler()
+
     const signupMutation = trpc.auth.signup.useMutation()
 
     const { control, handleSubmit } = useForm<FormVals>()
 
     const [showPassword, setShowPassword] = useState(false)
 
-    const toast = useToast()
-
     const handleSignup = (data: FormVals) => {
-        if (!data.email && !data.password)
-            return toast.show({ title: 'Insert email and/or password' })
+        if (!data.username || !data.email || !data.password)
+            return errorHandler('Insert email and/or password')
 
         signupMutation.mutate(data, {
+            onError: (err) => {
+                errorHandler(err.message)
+            },
             onSuccess: (data) => {
                 console.log(data)
             }

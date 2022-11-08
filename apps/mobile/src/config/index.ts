@@ -1,3 +1,3 @@
 export default {
-    serverURL: 'http://localhost:8080/trpc'
+    serverURL: 'http://api.cinzal.com/trpc'
 }

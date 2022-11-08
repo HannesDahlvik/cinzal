@@ -12,6 +12,8 @@ import { httpBatchLink } from '@trpc/client'
 import { NativeBaseProvider } from 'native-base'
 import { IconContext } from 'phosphor-react-native'
 
+import SuperJSON from 'superjson'
+
 interface Props {
     children: React.ReactNode
 }
@@ -20,6 +22,7 @@ const Providers: React.FC<Props> = ({ children }) => {
     const [queryClient] = useState(() => new QueryClient())
     const [trpcClient] = useState(() =>
         trpc.createClient({
+            transformer: SuperJSON,
             links: [
                 httpBatchLink({
                     url: config.serverURL
