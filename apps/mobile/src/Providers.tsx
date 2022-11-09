@@ -1,5 +1,6 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { StatusBar } from 'expo-status-bar'
+import * as SecureStore from 'expo-secure-store'
 
 import config from './config'
 import theme from './config/theme'
@@ -19,30 +20,49 @@ interface Props {
 }
 
 const Providers: React.FC<Props> = ({ children }) => {
-    const [queryClient] = useState(() => new QueryClient())
-    const [trpcClient] = useState(() =>
-        trpc.createClient({
-            transformer: SuperJSON,
-            links: [
-                httpBatchLink({
-                    url: config.serverURL
-                })
-            ]
-        })
-    )
+    const [queryClient, setQueryClient] = useState<any>()
+    const [trpcClient, setTrpcClient] = useState<any>()
 
-    return (
-        <trpc.Provider client={trpcClient} queryClient={queryClient}>
-            <QueryClientProvider client={queryClient}>
-                <NativeBaseProvider theme={theme}>
-                    <IconContext.Provider value={{ weight: 'fill', color: '#fff' }}>
-                        <StatusBar style="light" />
-                        {children}
-                    </IconContext.Provider>
-                </NativeBaseProvider>
-            </QueryClientProvider>
-        </trpc.Provider>
-    )
+    useEffect(() => {
+        const getToken = async () => {
+            const token = await SecureStore.getItemAsync('token')
+
+            setQueryClient(() => new QueryClient())
+            setTrpcClient(() =>
+                trpc.createClient({
+                    transformer: SuperJSON,
+                    links: [
+                        httpBatchLink({
+                            url: config.serverURL,
+                            headers() {
+                                if (token)
+                                    return {
+                                        Authorization: token
+                                    }
+                                else return {}
+                            }
+                        })
+                    ]
+                })
+            )
+        }
+        getToken()
+    }, [])
+
+    if (trpcClient && queryClient)
+        return (
+            <trpc.Provider client={trpcClient} queryClient={queryClient}>
+                <QueryClientProvider client={queryClient}>
+                    <NativeBaseProvider theme={theme}>
+                        <IconContext.Provider value={{ weight: 'fill', color: '#fff' }}>
+                            <StatusBar style="light" />
+                            {children}
+                        </IconContext.Provider>
+                    </NativeBaseProvider>
+                </QueryClientProvider>
+            </trpc.Provider>
+        )
+    else return null
 }
 
 export default Providers
