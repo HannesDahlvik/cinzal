@@ -1,3 +1,5 @@
+import ical from 'node-ical'
+
 export interface UserData {
     id: number
     uuid: string
@@ -31,6 +33,8 @@ export interface Event {
     updatedAt: Date
     uuid: string
 }
+
+export type IEvent = ical.VEvent & Event
 
 export interface Calendar {
     id: number

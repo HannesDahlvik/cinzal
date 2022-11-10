@@ -1,5 +1,5 @@
 import { StatusBar } from 'react-native'
-import { View } from "native-base"
+import { View } from 'native-base'
 
 interface Props {
     children: React.ReactNode
