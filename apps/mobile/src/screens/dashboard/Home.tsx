@@ -5,6 +5,7 @@ import TabScreenWrapper from '../../navigation/TabScreenWrapper'
 import { TabStackScreenProps } from '~/navigation/TabNavigator'
 
 import LoadingScreen from '../Loading'
+import DashboardHomeDayChanger from '../../components/dashboard/home/DayChanger'
 import DashboardHomeTimeline from '../../components/dashboard/home/Timeline'
 
 import dayjs from 'dayjs'
@@ -47,6 +48,8 @@ const DashboardHomeScreen: React.FC<TabStackScreenProps<'DashboardHome'>> = () =
     if (needlePos)
         return (
             <TabScreenWrapper>
+                <DashboardHomeDayChanger />
+
                 <DashboardHomeTimeline
                     hours={hours}
                     needlePos={needlePos}

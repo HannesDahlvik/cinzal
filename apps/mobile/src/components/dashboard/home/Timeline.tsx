@@ -154,13 +154,15 @@ const DashboardHomeTimeline: React.FC<Props> = ({ hours, needlePos, tasks, event
                 </View>
             ))}
 
-            <Box
-                position="absolute"
-                top={needlePos}
-                width="100%"
-                height="1px"
-                backgroundColor="red.600"
-            />
+            {checkRenderBox(dayjs()) ? (
+                <Box
+                    position="absolute"
+                    top={needlePos}
+                    width="100%"
+                    height="1px"
+                    backgroundColor="red.600"
+                />
+            ) : null}
         </ScrollView>
     )
 }
