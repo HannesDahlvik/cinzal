@@ -4,12 +4,12 @@ import { IEvent, Task } from '~/config/types'
 import { RefreshControl, StyleSheet } from 'react-native'
 
 import { useHookstate } from '@hookstate/core'
-import state from '../../state'
+import state from '../../../state'
 
 import { Box, Flex, ScrollView, Text, View } from 'native-base'
 
 import dayjs from 'dayjs'
-import { trpc } from '../../utils'
+import { trpc } from '../../../utils'
 
 interface Props {
     hours: number[]

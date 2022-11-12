@@ -5,7 +5,7 @@ import TabScreenWrapper from '../../navigation/TabScreenWrapper'
 import { TabStackScreenProps } from '~/navigation/TabNavigator'
 
 import LoadingScreen from '../Loading'
-import DashboardHomeTimeline from '../../dashboard/home/Timeline'
+import DashboardHomeTimeline from '../../components/dashboard/home/Timeline'
 
 import dayjs from 'dayjs'
 import { trpc } from '../../utils'

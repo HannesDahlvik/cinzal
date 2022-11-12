@@ -7,7 +7,6 @@ import state from '../state'
 import TabNavigator, { TabParamList } from './TabNavigator'
 
 import WelcomeScreen from '../screens/Welcome'
-
 import AuthLoginScreen from '../screens/auth/Login'
 import AuthSignupScreen from '../screens/auth/Signup'
 
