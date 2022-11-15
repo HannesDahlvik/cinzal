@@ -17,7 +17,6 @@ export interface Task {
     completed: boolean
     color: string
     uuid: String
-    user: UserData
     createdAt: Date
     updatedAt: Date
 }
