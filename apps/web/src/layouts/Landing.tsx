@@ -1,11 +1,26 @@
-import { Outlet } from 'react-router-dom'
+import { Outlet, useNavigate } from 'react-router-dom'
+
+import { useHookstate } from '@hookstate/core'
+import state from '../state'
 
 import { createStyles } from '@mantine/core'
 
 import LandingNavbar from '../components/landing/Navbar'
+import { useShallowEffect } from '@mantine/hooks'
 
 const LandingLayout: React.FC = () => {
     const { classes } = useStyles()
+
+    const navigate = useNavigate()
+
+    const { value: user } = useHookstate(state.auth.user)
+
+    useShallowEffect(() => {
+        console.log(user)
+        if (user?.redirectDashboard) {
+            navigate('/dashboard')
+        }
+    }, [1])
 
     return (
         <div>

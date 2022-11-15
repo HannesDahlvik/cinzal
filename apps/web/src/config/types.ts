@@ -3,6 +3,7 @@ export interface UserData {
     uuid: string
     username: string
     email: string
+    redirectDashboard: boolean
     createdAt: Date
     updatedAt: Date
 }
