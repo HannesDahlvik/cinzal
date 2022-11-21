@@ -1,4 +1,4 @@
-import { IEvent } from '../../../state'
+import { IEvent } from '../../../config/types'
 
 import { Button, createStyles, Group, Text } from '@mantine/core'
 import { closeAllModals, openConfirmModal, openModal } from '@mantine/modals'

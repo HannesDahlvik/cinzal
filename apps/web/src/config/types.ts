@@ -1,3 +1,5 @@
+import ical from 'node-ical'
+
 export interface UserData {
     id: number
     uuid: string
@@ -16,7 +18,6 @@ export interface Task {
     completed: boolean
     color: string
     uuid: String
-    user: UserData
     createdAt: Date
     updatedAt: Date
 }
@@ -32,6 +33,8 @@ export interface Event {
     updatedAt: Date
     uuid: string
 }
+
+export type IEvent = ical.VEvent & Event
 
 export interface Calendar {
     id: number

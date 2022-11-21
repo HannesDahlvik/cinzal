@@ -8,28 +8,14 @@ import { NotificationsProvider } from '@mantine/notifications'
 
 import { IconContext } from 'phosphor-react'
 
-import { errorHandler, setAuth, trpc } from './utils'
+import { trpc } from './utils'
 import { httpBatchLink } from '@trpc/client'
 import SuperJSON from 'superjson'
 
 const queryClient = new QueryClient({
     defaultOptions: {
         queries: {
-            refetchOnWindowFocus: false,
-            onError(err: any) {
-                if (err.message.includes('jwt malformed')) {
-                    setAuth(null, null)
-                    errorHandler('Invalid token')
-                }
-            }
-        },
-        mutations: {
-            onError(err: any) {
-                if (err.message.includes('jwt malformed')) {
-                    setAuth(null, null)
-                    errorHandler('Invalid token')
-                }
-            }
+            refetchOnWindowFocus: false
         }
     }
 })

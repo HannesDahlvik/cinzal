@@ -1,8 +1,8 @@
-import { useEffect, useRef, useState } from 'react'
-import { Task } from '../../../config/types'
+import { useEffect, useRef } from 'react'
+import { IEvent, Task } from '../../../config/types'
 
-import state, { IEvent } from '../../../state'
 import { useHookstate } from '@hookstate/core'
+import state from '../../../state'
 
 import { Box, createStyles, Stack, Text, useMantineTheme } from '@mantine/core'
 import { openModal } from '@mantine/modals'
@@ -11,61 +11,56 @@ import dayjs from 'dayjs'
 import DashboardEditTaskModal from '../modals/EditTask'
 import DashboardEventInfoModal from '../modals/EventInfo'
 
-const DashboardHomeTimeline: React.FC = () => {
+interface Props {
+    hours: number[]
+    needlePos: number
+    tasks: Task[]
+    events: IEvent[]
+}
+
+const DashboardHomeTimeline: React.FC<Props> = ({ events, hours, needlePos, tasks }) => {
     const { classes } = useStyles()
     const theme = useMantineTheme()
 
     const { value: globalDate } = useHookstate(state.date)
-    const { value: tasks } = useHookstate(state.data.tasks)
-    const { value: events } = useHookstate(state.data.events)
 
     const wrapperEl = useRef<HTMLDivElement>(null)
 
-    const [needlePos, setNeedlePos] = useState(0)
-
-    const hours = Array.from<number>({ length: 24 }).fill(0)
-
     useEffect(() => {
-        const el = document.querySelector<HTMLDivElement>(`#time-${dayjs().hour()}`)
-
-        if (wrapperEl.current && el) {
+        if (wrapperEl.current) {
             wrapperEl.current.scrollTo({
-                top: el.offsetTop - 200,
+                top: needlePos - 200,
                 behavior: 'smooth'
             })
         }
-
-        calcNeedlePos()
-        const interval = setInterval(() => calcNeedlePos(), 1000)
-
-        return () => clearInterval(interval)
     }, [])
 
-    const calcNeedlePos = () => {
-        const time = dayjs()
-        const hour = time.hour()
-        const minute = time.minute()
-
-        const hourPos = hour * 100
-        const minutePos = 100 / (60 / minute)
-        const finalPos = hourPos + minutePos
-
-        setNeedlePos(finalPos)
-    }
-
-    const calcBoxFinalPos = (boxDate: dayjs.Dayjs) => {
+    /**
+     * Checks if element should be rendered based on todays date
+     */
+    const checkRenderBox = (boxDate: dayjs.Dayjs) => {
         if (
             boxDate.date() === globalDate.date() &&
             boxDate.month() === globalDate.month() &&
             boxDate.year() === globalDate.year()
-        ) {
-            const hourPos = boxDate.hour() * 100
-            const minutePos = 100 / (60 / boxDate.minute())
-            const finalPos = hourPos + minutePos
-            return finalPos
-        } else return null
+        )
+            return true
+        else return false
     }
 
+    /**
+     * Calculates box top position
+     */
+    const calcBoxPos = (boxDate: dayjs.Dayjs): number => {
+        const hourPos = boxDate.hour() * 100
+        const minutePos = 100 / (60 / boxDate.minute())
+        const finalPos = hourPos + minutePos
+        return finalPos
+    }
+
+    /**
+     * Calculates event height based on start and end date
+     */
     const calcEventBoxHeight = (event: IEvent) => {
         const start = dayjs(new Date(event.start))
         const end = dayjs(new Date(event.end))
@@ -98,7 +93,7 @@ const DashboardHomeTimeline: React.FC = () => {
         <div className={classes.wrapper} ref={wrapperEl}>
             <div className={classes.timeWrapper}>
                 {hours.map((_, hour) => (
-                    <Text className={classes.timeBox} id={`time-${hour}`} key={hour}>
+                    <Text className={classes.timeBox} key={hour}>
                         {hour}:00
                     </Text>
                 ))}
@@ -107,19 +102,21 @@ const DashboardHomeTimeline: React.FC = () => {
             <div className={classes.innerWrapper}>
                 <div className={classes.tasksWrapper}>
                     {events.map((event, i) => {
-                        const finalPos = calcBoxFinalPos(dayjs(event.start))
+                        const render = checkRenderBox(dayjs(event.start))
 
-                        if (finalPos) {
+                        if (render) {
+                            const topPos = calcBoxPos(dayjs(event.start))
                             const height = calcEventBoxHeight(event)
 
                             return (
                                 <Box
-                                    className={classes.eventBox}
-                                    sx={{ top: finalPos, height: `${height}px` }}
+                                    className={classes.box}
+                                    sx={{ top: topPos, height: `${height}px`, minHeight: '60px' }}
                                     key={i}
                                 >
                                     <Box
                                         className={classes.innerBox}
+                                        sx={{ backgroundColor: theme.colors.blue[7] }}
                                         onClick={() => handleOpenEventInfo(event)}
                                     >
                                         <Stack spacing={2}>
@@ -135,12 +132,14 @@ const DashboardHomeTimeline: React.FC = () => {
                     })}
 
                     {tasks.map((task) => {
-                        const finalPos = calcBoxFinalPos(dayjs(task.deadline))
-                        if (finalPos)
+                        const render = checkRenderBox(dayjs(task.deadline))
+                        if (render) {
+                            const topPos = calcBoxPos(dayjs(task.deadline))
+
                             return (
                                 <Box
-                                    className={classes.taskBox}
-                                    sx={{ top: finalPos }}
+                                    className={classes.box}
+                                    sx={{ top: topPos, height: '30px' }}
                                     key={task.id}
                                 >
                                     <Box
@@ -155,11 +154,11 @@ const DashboardHomeTimeline: React.FC = () => {
                                     </Box>
                                 </Box>
                             )
-                        else return null
+                        } else return null
                     })}
                 </div>
 
-                {hours.map((row, hour) => (
+                {hours.map((_, hour) => (
                     <div className={classes.timeBox} key={hour}></div>
                 ))}
 
@@ -201,26 +200,18 @@ const useStyles = createStyles((theme) => {
             width: '100%',
             height: '100%'
         },
-        taskBox: {
+        box: {
             position: 'relative',
             width: '100%',
-            height: '30px',
             padding: '0 3px'
         },
         innerBox: {
             display: 'flex',
             height: '100%',
             borderRadius: theme.radius.sm,
-            backgroundColor: colors.blue[7],
             color: '#fff',
             padding: '2px',
             cursor: 'pointer'
-        },
-        eventBox: {
-            position: 'relative',
-            width: '100%',
-            minHeight: '60px',
-            padding: '0 3px'
         },
         timeBox: {
             width: '100%',
@@ -233,12 +224,7 @@ const useStyles = createStyles((theme) => {
             position: 'absolute',
             width: '100%',
             height: '2px',
-            backgroundColor: colors.red[6],
-            boxShadow: `0px 0px 4.5px ${colors.red[6]},
-            0px 0px 12.5px ${colors.red[6]},
-            0px 0px 30.1px ${colors.red[6]},
-            0px 0px 100px ${colors.red[6]}
-          ;`
+            backgroundColor: colors.red[6]
         }
     }
 })

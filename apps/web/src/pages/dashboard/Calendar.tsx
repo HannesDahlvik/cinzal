@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react'
-import { Task } from '../../config/types'
+import { IEvent, Task } from '../../config/types'
 
 import { useHookstate } from '@hookstate/core'
-import state, { IEvent } from '../../state'
+import state from '../../state'
 
 import { createStyles, Text } from '@mantine/core'
 
@@ -28,8 +28,6 @@ const DashboardCalendarPage: React.FC = () => {
     const { classes } = useStyles()
 
     const { value: globalDate } = useHookstate(state.date)
-    const { value: tasks } = useHookstate(state.data.tasks)
-    const { value: events } = useHookstate(state.data.events)
 
     const [month, setMonth] = useState<IFormatedDate[][]>([])
 

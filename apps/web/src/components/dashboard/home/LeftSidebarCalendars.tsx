@@ -1,5 +1,4 @@
-import { useHookstate } from '@hookstate/core'
-import state from '../../../state'
+import { Calendar } from '../../../config/types'
 
 import { Box, Menu, Stack, Text } from '@mantine/core'
 import { closeAllModals, openConfirmModal, openModal } from '@mantine/modals'
@@ -10,11 +9,13 @@ import DashboardAddCalendarModal from '../modals/AddCalendar'
 import { errorHandler, trpc } from '../../../utils'
 import DashboaredEditCalendarModal from '../modals/EditCalendar'
 
-const HomeLeftSidebarCalendars: React.FC = () => {
+interface Props {
+    calendars: Calendar[]
+}
+
+const HomeLeftSidebarCalendars: React.FC<Props> = ({ calendars }) => {
     const tu = trpc.useContext()
     const deleteCalendarMutation = trpc.calendar.delete.useMutation()
-
-    const { value: calendars } = useHookstate(state.data.calendars)
 
     const handleAddCalendar = () => {
         openModal({
