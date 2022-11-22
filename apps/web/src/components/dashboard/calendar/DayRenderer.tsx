@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Task } from '../../../config/types'
-import { IEvent } from '../../../state'
+import { Task, IEvent } from '../../../config/types'
 
 import { Box, createStyles, Text, useMantineTheme } from '@mantine/core'
 import { openModal } from '@mantine/modals'

@@ -4,9 +4,9 @@ import { useHookstate } from '@hookstate/core'
 import state from '../state'
 
 import { createStyles } from '@mantine/core'
+import { useShallowEffect } from '@mantine/hooks'
 
 import LandingNavbar from '../components/landing/Navbar'
-import { useShallowEffect } from '@mantine/hooks'
 
 const LandingLayout: React.FC = () => {
     const { classes } = useStyles()
@@ -16,11 +16,10 @@ const LandingLayout: React.FC = () => {
     const { value: user } = useHookstate(state.auth.user)
 
     useShallowEffect(() => {
-        console.log(user)
         if (user?.redirectDashboard) {
             navigate('/dashboard')
         }
-    }, [1])
+    }, [0])
 
     return (
         <div>
