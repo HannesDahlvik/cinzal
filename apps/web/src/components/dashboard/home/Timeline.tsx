@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { IEvent, Task } from '../../../config/types'
 
 import { useHookstate } from '@hookstate/core'
@@ -10,6 +10,13 @@ import { openModal } from '@mantine/modals'
 import dayjs from 'dayjs'
 import DashboardEditTaskModal from '../modals/EditTask'
 import DashboardEventInfoModal from '../modals/EventInfo'
+
+interface IParsedEvent {
+    event: IEvent
+    width: number
+    height: number
+    left: number
+}
 
 interface Props {
     hours: number[]
@@ -24,6 +31,8 @@ const DashboardHomeTimeline: React.FC<Props> = ({ events, hours, needlePos, task
 
     const { value: globalDate } = useHookstate(state.date)
 
+    const [parsedEvents, setParsedEvents] = useState<IParsedEvent[] | null>(null)
+
     const wrapperEl = useRef<HTMLDivElement>(null)
 
     useEffect(() => {
@@ -35,8 +44,65 @@ const DashboardHomeTimeline: React.FC<Props> = ({ events, hours, needlePos, task
         }
     }, [])
 
+    useEffect(() => {
+        /**
+         * All these calculations only work for two events that
+         * are beside each other, but it's good progress.
+         */
+        const dayEvents = events.filter((event) => checkRenderBox(dayjs(event.start)))
+        const parsedDayEvents: IParsedEvent[] = []
+        /**
+         * Check if events are happening during the same time and
+         * change width on them
+         */
+        dayEvents.map((event) => {
+            const eventStart = dayjs(event.start)
+            dayEvents.map((row) => {
+                if (row !== event) {
+                    const rowStart = dayjs(row.start)
+                    const rowEnd = dayjs(row.end)
+
+                    if (eventStart.isBetween(rowStart, rowEnd)) {
+                        parsedDayEvents.push(
+                            {
+                                event: row,
+                                height: calcEventBoxHeight(row),
+                                width: 50,
+                                left: 0
+                            },
+                            {
+                                event,
+                                height: calcEventBoxHeight(event),
+                                width: 50,
+                                left: 50
+                            }
+                        )
+                    }
+                }
+            })
+        })
+
+        /**
+         * Add all other events that dont need another width
+         */
+        dayEvents.map((event) => {
+            const eventHeight = calcEventBoxHeight(event)
+            const index = parsedDayEvents.findIndex((obj) => obj.event === event)
+            if (index === -1) {
+                parsedDayEvents.push({
+                    event,
+                    height: eventHeight,
+                    left: 0,
+                    width: 100
+                })
+            }
+        })
+
+        setParsedEvents(parsedDayEvents)
+    }, [events, globalDate])
+
     /**
-     * Checks if element should be rendered based on todays date
+     * Checks if element should be rendered based on global date
      */
     const checkRenderBox = (boxDate: dayjs.Dayjs) => {
         if (
@@ -89,6 +155,8 @@ const DashboardHomeTimeline: React.FC<Props> = ({ events, hours, needlePos, task
         })
     }
 
+    if (!parsedEvents) return null
+
     return (
         <div className={classes.wrapper} ref={wrapperEl}>
             <div className={classes.timeWrapper}>
@@ -101,34 +169,35 @@ const DashboardHomeTimeline: React.FC<Props> = ({ events, hours, needlePos, task
 
             <div className={classes.innerWrapper}>
                 <div className={classes.tasksWrapper}>
-                    {events.map((event, i) => {
-                        const render = checkRenderBox(dayjs(event.start))
+                    {parsedEvents.map((row, i) => {
+                        const topPos = calcBoxPos(dayjs(row.event.start))
 
-                        if (render) {
-                            const topPos = calcBoxPos(dayjs(event.start))
-                            const height = calcEventBoxHeight(event)
-
-                            return (
+                        return (
+                            <Box
+                                className={classes.box}
+                                sx={{
+                                    top: topPos,
+                                    height: `${row.height}px`,
+                                    minHeight: '60px',
+                                    width: `${row.width}%`,
+                                    left: `${row.left}%`
+                                }}
+                                key={i}
+                            >
                                 <Box
-                                    className={classes.box}
-                                    sx={{ top: topPos, height: `${height}px`, minHeight: '60px' }}
-                                    key={i}
+                                    className={classes.innerBox}
+                                    sx={{ backgroundColor: theme.colors.blue[7] }}
+                                    onClick={() => handleOpenEventInfo(row.event)}
                                 >
-                                    <Box
-                                        className={classes.innerBox}
-                                        sx={{ backgroundColor: theme.colors.blue[7] }}
-                                        onClick={() => handleOpenEventInfo(event)}
-                                    >
-                                        <Stack spacing={2}>
-                                            <Text lineClamp={1}>
-                                                {event.summary || event.title}
-                                            </Text>
-                                            <Text lineClamp={1}>{event.location}</Text>
-                                        </Stack>
-                                    </Box>
+                                    <Stack spacing={2}>
+                                        <Text lineClamp={1}>
+                                            {row.event.summary || row.event.title}
+                                        </Text>
+                                        <Text lineClamp={1}>{row.event.location}</Text>
+                                    </Stack>
                                 </Box>
-                            )
-                        } else return null
+                            </Box>
+                        )
                     })}
 
                     {tasks.map((task) => {
@@ -201,14 +270,15 @@ const useStyles = createStyles((theme) => {
             height: '100%'
         },
         box: {
-            position: 'relative',
-            width: '100%',
+            position: 'absolute',
             padding: '0 3px'
         },
         innerBox: {
             display: 'flex',
             height: '100%',
             borderRadius: theme.radius.sm,
+            border: '1px solid',
+            borderColor: colors.dark[7],
             color: '#fff',
             padding: '2px',
             cursor: 'pointer'
