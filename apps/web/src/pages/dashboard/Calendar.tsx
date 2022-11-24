@@ -1,15 +1,19 @@
 import { useEffect, useState } from 'react'
-import { Task } from '../../config/types'
+import { IEvent, Task } from '../../config/types'
 
 import { useHookstate } from '@hookstate/core'
-import state, { IEvent } from '../../state'
+import state from '../../state'
 
 import { createStyles, Text } from '@mantine/core'
+
+import ErrorPage from '../Error'
+import LoadingPage from '../Loading'
 
 import DashboardDateChanger from '../../components/dashboard/DateChanger'
 import DashboardCalendarDayRenderer from '../../components/dashboard/calendar/DayRenderer'
 
 import dayjs, { Dayjs } from 'dayjs'
+import { trpc } from '../../utils'
 
 interface IFormatedDate {
     date: Dayjs
@@ -27,15 +31,21 @@ interface IMonthData {
 const DashboardCalendarPage: React.FC = () => {
     const { classes } = useStyles()
 
+    const tasksQuery = trpc.tasks.get.useQuery()
+    const calendarLinks = trpc.calendar.links.useQuery()
+    const eventsQuery = trpc.events.all.useQuery(
+        { calendarUrls: calendarLinks.data },
+        { enabled: !!calendarLinks.isSuccess }
+    )
+
     const { value: globalDate } = useHookstate(state.date)
-    const { value: tasks } = useHookstate(state.data.tasks)
-    const { value: events } = useHookstate(state.data.events)
 
     const [month, setMonth] = useState<IFormatedDate[][]>([])
 
     useEffect(() => {
-        createMonth()
-    }, [globalDate])
+        if (eventsQuery.data && tasksQuery.data)
+            createMonth(tasksQuery.data as Task[], eventsQuery.data as IEvent[])
+    }, [globalDate, eventsQuery.isFetched, tasksQuery.isFetched])
 
     const formatDateObject = (date: Dayjs, data: IMonthData): IFormatedDate => {
         const formatedObj: IFormatedDate = {
@@ -48,10 +58,10 @@ const DashboardCalendarPage: React.FC = () => {
         return formatedObj
     }
 
-    const createMonth = () => {
+    const createMonth = (tasks: Task[], events: IEvent[]) => {
         let currentDate = globalDate.startOf('month').weekday(0)
         const nextMonth = globalDate.add(1, 'month').month()
-        const monthData = createMonthData(globalDate.month())
+        const monthData = createMonthData(globalDate.month(), tasks, events)
         let allDates = []
         let weekDates = []
         let weekCounter = 1
@@ -69,7 +79,7 @@ const DashboardCalendarPage: React.FC = () => {
         setMonth(allDates)
     }
 
-    const createMonthData = (month: number) => {
+    const createMonthData = (month: number, tasks: Task[], events: IEvent[]) => {
         const obj: IMonthData = {
             tasks: [],
             events: []
@@ -89,6 +99,20 @@ const DashboardCalendarPage: React.FC = () => {
 
         return obj
     }
+
+    if (tasksQuery.error || calendarLinks.error || eventsQuery.error)
+        return (
+            <ErrorPage
+                error={
+                    tasksQuery.error?.message ||
+                    calendarLinks.error?.message ||
+                    eventsQuery.error?.message
+                }
+            />
+        )
+
+    if (calendarLinks.isLoading || eventsQuery.isLoading || tasksQuery.isLoading)
+        return <LoadingPage />
 
     return (
         <div className={classes.calendar}>

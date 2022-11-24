@@ -1,8 +1,5 @@
 import { Task } from '../../../config/types'
 
-import { useHookstate } from '@hookstate/core'
-import state from '../../../state'
-
 import { Box, Center, createStyles, Text, useMantineTheme } from '@mantine/core'
 import { TrashSimple } from 'phosphor-react'
 
@@ -10,7 +7,11 @@ import dayjs from 'dayjs'
 import { errorHandler, trpc } from '../../../utils'
 import { openConfirmModal } from '@mantine/modals'
 
-const DashboardHomeRightSidebar: React.FC = () => {
+interface Props {
+    tasks: Task[]
+}
+
+const DashboardHomeRightSidebar: React.FC<Props> = ({ tasks }) => {
     const theme = useMantineTheme()
     const { classes } = useStyles()
 
@@ -18,7 +19,6 @@ const DashboardHomeRightSidebar: React.FC = () => {
     const deleteTaskMutation = trpc.tasks.delete.useMutation()
 
     const now = dayjs()
-    const { value: tasks } = useHookstate(state.data.tasks)
 
     const handleDeleteTask = (task: Task) => {
         openConfirmModal({
