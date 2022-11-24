@@ -53,25 +53,16 @@ const DashboardCalendarPage: React.FC = () => {
             date: date,
             isThisMonth: globalDate.month() === date.month(),
             isToday: date.isToday(),
-            tasks: data.tasks
-                .filter(
-                    (task) =>
-                        dayjs(task.deadline).date() === date.date() &&
-                        dayjs(task.deadline).month() === date.month()
-                )
-                .sort(
-                    (a, b) =>
-                        dayjs(a.deadline).toDate().getTime() - dayjs(b.deadline).toDate().getTime()
-                ),
-            events: data.events
-                .filter(
-                    (event) =>
-                        dayjs(event.start).date() === date.date() &&
-                        dayjs(event.start).month() === date.month()
-                )
-                .sort(
-                    (a, b) => dayjs(a.start).toDate().getTime() - dayjs(b.start).toDate().getTime()
-                )
+            tasks: data.tasks.filter(
+                (task) =>
+                    dayjs(task.deadline).date() === date.date() &&
+                    dayjs(task.deadline).month() === date.month()
+            ),
+            events: data.events.filter(
+                (event) =>
+                    dayjs(event.start).date() === date.date() &&
+                    dayjs(event.start).month() === date.month()
+            )
         }
         return formatedObj
     }
