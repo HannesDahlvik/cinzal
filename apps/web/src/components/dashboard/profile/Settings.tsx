@@ -27,8 +27,6 @@ const DashboardProfileSettings = () => {
         )
     }
 
-    console.log(user)
-
     if (user)
         return (
             <Stack>
@@ -41,6 +39,7 @@ const DashboardProfileSettings = () => {
                 </Group>
             </Stack>
         )
+    else return null
 }
 
 export default DashboardProfileSettings
