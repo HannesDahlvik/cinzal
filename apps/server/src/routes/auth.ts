@@ -114,8 +114,10 @@ const authRouter = t.router({
                         uuid: ctx.user.uuid
                     },
                     data: {
-                        username: input.username,
+                        username: input.username ? input.username : ctx.user.username,
                         redirectDashboard: input.redirectDashboard
+                            ? input.redirectDashboard
+                            : ctx.user.redirectDashboard
                     }
                 })
                 .catch((err) => {
