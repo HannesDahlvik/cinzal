@@ -1,4 +1,6 @@
 import { lazy, Suspense, useEffect, useState } from 'react'
+import { UserData } from './config/types'
+
 import { createBrowserRouter, Navigate, RouterProvider } from 'react-router-dom'
 
 import { useMantineTheme } from '@mantine/core'
