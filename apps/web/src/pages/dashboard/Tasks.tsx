@@ -1,11 +1,11 @@
 import { Task } from '../../config/types'
 
-import { useHookstate } from '@hookstate/core'
-import state from '../../state'
-
 import { Box, Button, Checkbox, createStyles, Text, Title, useMantineTheme } from '@mantine/core'
 import { openModal } from '@mantine/modals'
 import { TrashSimple } from 'phosphor-react'
+
+import ErrorPage from '../Error'
+import LoadingPage from '../Loading'
 
 import DashboardCreateTaskModal from '../../components/dashboard/modals/CreateTask'
 
@@ -17,10 +17,9 @@ const DashboardTasksPage: React.FC = () => {
     const { classes } = useStyles()
 
     const tu = trpc.useContext()
+    const tasksQuery = trpc.tasks.get.useQuery()
     const taskToggleCompletedMutation = trpc.tasks.toggle.useMutation()
     const taskDeleteMutation = trpc.tasks.delete.useMutation()
-
-    const { value: tasks } = useHookstate(state.data.tasks)
 
     const handleCreateTask = () => {
         openModal({
@@ -62,6 +61,10 @@ const DashboardTasksPage: React.FC = () => {
         )
     }
 
+    if (tasksQuery.error) return <ErrorPage error={tasksQuery.error?.message} />
+
+    if (tasksQuery.isLoading) return <LoadingPage />
+
     return (
         <div className={classes.wrapper}>
             <Title mt="md">All tasks</Title>
@@ -69,13 +72,13 @@ const DashboardTasksPage: React.FC = () => {
             <div className={classes.tasksWrapper}>
                 <Button onClick={handleCreateTask}>Create task</Button>
 
-                {tasks.length === 0 && (
+                {tasksQuery.data.length === 0 && (
                     <Text align="center" color="dimmed">
                         You have no tasks
                     </Text>
                 )}
 
-                {tasks.map((task) => (
+                {tasksQuery.data.map((task) => (
                     <div className={classes.task} key={task.id}>
                         <Checkbox
                             size="md"
