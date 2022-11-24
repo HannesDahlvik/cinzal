@@ -14,7 +14,8 @@ const eventsRouter = t.router({
                     .object({
                         id: z.number(),
                         url: z.string(),
-                        uuid: z.string()
+                        uuid: z.string(),
+                        show: z.boolean()
                     })
                     .array()
                     .optional()
@@ -24,7 +25,8 @@ const eventsRouter = t.router({
             if (input.calendarUrls) {
                 const arr = await Promise.all(
                     input.calendarUrls.map(async (row) => {
-                        return await ical.async.fromURL(row.url)
+                        if (row.show) return await ical.async.fromURL(row.url)
+                        else return []
                     })
                 )
 

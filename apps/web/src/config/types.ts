@@ -41,6 +41,7 @@ export interface Calendar {
     name: string
     url: string
     uuid: string
+    show: boolean
 }
 
 export interface DashboardSidebarLinks {
