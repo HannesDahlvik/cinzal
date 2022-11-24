@@ -1,10 +1,10 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { IEvent, Task } from '../../config/types'
 
 import { useHookstate } from '@hookstate/core'
 import state from '../../state'
 
-import { createStyles, Text } from '@mantine/core'
+import { Box, createStyles, Text } from '@mantine/core'
 
 import ErrorPage from '../Error'
 import LoadingPage from '../Loading'
@@ -41,10 +41,11 @@ const DashboardCalendarPage: React.FC = () => {
     const { value: globalDate } = useHookstate(state.date)
 
     const [month, setMonth] = useState<IFormatedDate[][]>([])
+    const calendarInnerWrapperRef = useRef<HTMLDivElement>(null)
 
     useEffect(() => {
         if (eventsQuery.data && tasksQuery.data)
-            createMonth(tasksQuery.data as Task[], eventsQuery.data as IEvent[])
+            createMonth(tasksQuery.data, eventsQuery.data as IEvent[])
     }, [globalDate, eventsQuery.isFetched, tasksQuery.isFetched])
 
     const formatDateObject = (date: Dayjs, data: IMonthData): IFormatedDate => {
@@ -52,8 +53,16 @@ const DashboardCalendarPage: React.FC = () => {
             date: date,
             isThisMonth: globalDate.month() === date.month(),
             isToday: date.isToday(),
-            tasks: data.tasks.filter((task) => dayjs(task.deadline).date() === date.date()),
-            events: data.events.filter((event) => dayjs(event.start).date() === date.date())
+            tasks: data.tasks.filter(
+                (task) =>
+                    dayjs(task.deadline).date() === date.date() &&
+                    dayjs(task.deadline).month() === date.month()
+            ),
+            events: data.events.filter(
+                (event) =>
+                    dayjs(event.start).date() === date.date() &&
+                    dayjs(event.start).month() === date.month()
+            )
         }
         return formatedObj
     }
@@ -76,7 +85,14 @@ const DashboardCalendarPage: React.FC = () => {
             weekCounter++
             currentDate = currentDate.add(1, 'day')
         }
+
+        calcCalendarWeekHeight(allDates.length)
         setMonth(allDates)
+    }
+
+    const calcCalendarWeekHeight = (numOfWeeks: number) => {
+        if (calendarInnerWrapperRef.current)
+            calendarInnerWrapperRef.current.style.gridTemplateRows = `repeat(${numOfWeeks}, calc(100% / ${numOfWeeks}))`
     }
 
     const createMonthData = (month: number, tasks: Task[], events: IEvent[]) => {
@@ -128,7 +144,7 @@ const DashboardCalendarPage: React.FC = () => {
                 ))}
             </div>
 
-            <div className={classes.innerWrapper}>
+            <div className={classes.innerWrapper} ref={calendarInnerWrapperRef}>
                 {month.map((week, i) => (
                     <div className={classes.week} key={i}>
                         {week.map((day, j) => (
@@ -140,12 +156,10 @@ const DashboardCalendarPage: React.FC = () => {
                             >
                                 <Text className={`${classes.dayText} `}>{day.date.date()}</Text>
 
-                                <div>
-                                    <DashboardCalendarDayRenderer
-                                        tasks={day.tasks}
-                                        events={day.events}
-                                    />
-                                </div>
+                                <DashboardCalendarDayRenderer
+                                    tasks={day.tasks}
+                                    events={day.events}
+                                />
                             </div>
                         ))}
                     </div>
@@ -164,20 +178,17 @@ const useStyles = createStyles((theme) => {
 
     return {
         calendar: {
-            display: 'flex',
-            alignItems: 'center',
-            flexDirection: 'column',
+            display: 'grid',
+            gridTemplateRows: '60px 30px 1fr',
             height: '100%'
         },
         dateChanger: {
-            padding: spacing.md,
-            width: '100%'
+            padding: spacing.md
         },
         weekNames: {
             display: 'flex',
             justifyContent: 'center',
-            alignItems: 'center',
-            width: '100%'
+            alignItems: 'center'
         },
         weekName: {
             textAlign: 'center',
@@ -187,8 +198,7 @@ const useStyles = createStyles((theme) => {
             borderColor: isDark ? colors.dark[5] : colors.gray[4]
         },
         innerWrapper: {
-            display: 'flex',
-            flexDirection: 'column',
+            display: 'grid',
             height: '100%',
             width: '100%'
         },
