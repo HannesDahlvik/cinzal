@@ -13,6 +13,7 @@ const DashboardProfileSettings = () => {
     const handleUpdateUser = (redirect: boolean) => {
         updateUserMutation.mutate(
             {
+                username: user?.username as string,
                 redirectDashboard: redirect
             },
             {

@@ -103,8 +103,8 @@ const authRouter = t.router({
     update: ap
         .input(
             z.object({
-                username: z.string().optional(),
-                redirectDashboard: z.boolean().optional()
+                username: z.string(),
+                redirectDashboard: z.boolean()
             })
         )
         .mutation(async ({ ctx, input }) => {
@@ -114,10 +114,8 @@ const authRouter = t.router({
                         uuid: ctx.user.uuid
                     },
                     data: {
-                        username: input.username ? input.username : ctx.user.username,
+                        username: input.username,
                         redirectDashboard: input.redirectDashboard
-                            ? input.redirectDashboard
-                            : ctx.user.redirectDashboard
                     }
                 })
                 .catch((err) => {
