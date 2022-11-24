@@ -41,7 +41,9 @@ const eventsRouter = t.router({
                         throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: err.message })
                     })
 
-                return [...events, ...data]
+                const returnArr = [...events, ...data]
+                returnArr.sort((a, b) => new Date(a.start).getTime() - new Date(b.start).getTime())
+                return returnArr
             }
 
             const events = await prisma.event
