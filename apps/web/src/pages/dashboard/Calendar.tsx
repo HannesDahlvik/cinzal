@@ -46,7 +46,7 @@ const DashboardCalendarPage: React.FC = () => {
     useEffect(() => {
         if (eventsQuery.data && tasksQuery.data)
             createMonth(tasksQuery.data, eventsQuery.data as IEvent[])
-    }, [globalDate, eventsQuery.isFetched, tasksQuery.isFetched])
+    }, [globalDate, eventsQuery.data, tasksQuery.data])
 
     const formatDateObject = (date: Dayjs, data: IMonthData): IFormatedDate => {
         const formatedObj: IFormatedDate = {
