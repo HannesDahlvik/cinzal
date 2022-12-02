@@ -103,8 +103,8 @@ const authRouter = t.router({
     update: ap
         .input(
             z.object({
-                username: z.string().optional(),
-                redirectDashboard: z.boolean().optional()
+                username: z.string(),
+                redirectDashboard: z.boolean()
             })
         )
         .mutation(async ({ ctx, input }) => {

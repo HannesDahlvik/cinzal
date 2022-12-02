@@ -13,6 +13,7 @@ const DashboardProfileSettings = () => {
     const handleUpdateUser = (redirect: boolean) => {
         updateUserMutation.mutate(
             {
+                username: user?.username as string,
                 redirectDashboard: redirect
             },
             {
@@ -27,8 +28,6 @@ const DashboardProfileSettings = () => {
         )
     }
 
-    console.log(user)
-
     if (user)
         return (
             <Stack>
@@ -41,6 +40,7 @@ const DashboardProfileSettings = () => {
                 </Group>
             </Stack>
         )
+    else return null
 }
 
 export default DashboardProfileSettings

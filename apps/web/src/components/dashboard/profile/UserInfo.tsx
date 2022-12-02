@@ -26,7 +26,8 @@ const DashboardProfileUserInfo: React.FC = () => {
     const handleUpdateUser = (vals: FormVals) => {
         updateUserMutation.mutate(
             {
-                username: vals.username
+                username: vals.username,
+                redirectDashboard: user?.redirectDashboard as boolean
             },
             {
                 onError: (err) => {
