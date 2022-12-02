@@ -16,7 +16,7 @@ import morgan from 'morgan'
 
 export const prisma = new PrismaClient()
 const app = express()
-const PORT = 8080 || process.env.SERVER_PORT
+const PORT = process.env.SERVER_PORT
 const isProd = process.env.NODE_ENV === 'prod'
 
 /**
@@ -49,9 +49,12 @@ app.use(
  */
 if (isProd)
     https
-        .createServer({
-            key: fs.readFileSync('key.pem'),
-            cert: fs.readFileSync('cert.pem')
-        })
+        .createServer(
+            {
+                key: fs.readFileSync('key.pem'),
+                cert: fs.readFileSync('cert.pem')
+            },
+            app
+        )
         .listen(PORT, () => console.log(`Server running on port ${PORT} - PROD`))
 else app.listen(PORT, () => console.log(`Server running on port ${PORT} - DEV`))
