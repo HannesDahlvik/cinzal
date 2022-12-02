@@ -42,7 +42,8 @@ const DashboaredEditCalendarModal: React.FC<Props> = ({ calendar }) => {
             {
                 id: calendar.id,
                 name: vals.name,
-                url: vals.url
+                url: vals.url,
+                show: calendar.show
             },
             {
                 onError: (err) => {
