@@ -50,3 +50,8 @@ export interface DashboardSidebarLinks {
     icon: React.ReactNode
     iconActive: React.ReactNode
 }
+
+export interface DasboardTimelineCheckEvents {
+    start: number
+    end: number
+}
