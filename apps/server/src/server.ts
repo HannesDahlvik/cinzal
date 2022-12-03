@@ -2,6 +2,7 @@ import express from 'express'
 import https from 'node:https'
 import fs from 'node:fs'
 import 'dotenv/config'
+import config from './config'
 
 import appRouter from './router'
 import { createContext } from './context'
@@ -51,8 +52,8 @@ if (isProd)
     https
         .createServer(
             {
-                key: fs.readFileSync('key.pem'),
-                cert: fs.readFileSync('cert.pem')
+                key: fs.readFileSync(config.certificate.key),
+                cert: fs.readFileSync(config.certificate.cert)
             },
             app
         )
