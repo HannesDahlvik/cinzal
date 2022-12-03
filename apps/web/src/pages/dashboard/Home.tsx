@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { IEvent, Task } from '../../config/types'
+import { Calendar, IEvent, Task } from '../../config/types'
 
 import { createStyles } from '@mantine/core'
 
@@ -19,7 +19,7 @@ const DashboardHomePage: React.FC = () => {
     const tasksQuery = trpc.tasks.get.useQuery()
     const calendarLinks = trpc.calendar.links.useQuery()
     const eventsQuery = trpc.events.all.useQuery(
-        { calendarUrls: calendarLinks.data },
+        { calendarUrls: calendarLinks.data as Calendar[] },
         { enabled: !!calendarLinks.isSuccess }
     )
 
@@ -29,7 +29,6 @@ const DashboardHomePage: React.FC = () => {
     useEffect(() => {
         calcNeedlePos()
         const interval = setInterval(() => calcNeedlePos(), 1000)
-
         return () => clearInterval(interval)
     }, [])
 
@@ -61,7 +60,7 @@ const DashboardHomePage: React.FC = () => {
 
     return (
         <div className={classes.wrapper}>
-            <DashboardHomeLeftSidebar calendars={calendarLinks.data} />
+            <DashboardHomeLeftSidebar calendars={calendarLinks.data as Calendar[]} />
 
             <DashboardHomeTimeline
                 hours={hours}
