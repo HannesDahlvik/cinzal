@@ -40,12 +40,11 @@ const DashboardHomeTimeline: React.FC<Props> = ({ events, hours, needlePos, task
     const { ref: tasksWrapperRef, width: containerWidth } = useElementSize()
 
     useEffect(() => {
-        if (wrapperEl.current) {
+        if (wrapperEl.current)
             wrapperEl.current.scrollTo({
                 top: needlePos - 200,
                 behavior: 'smooth'
             })
-        }
     }, [])
 
     useEffect(() => {
@@ -217,7 +216,9 @@ const DashboardHomeTimeline: React.FC<Props> = ({ events, hours, needlePos, task
                     <div className={classes.timeBox} key={hour}></div>
                 ))}
 
-                <Box className={classes.needle} sx={{ top: needlePos }} />
+                {checkRenderBox(dayjs()) && (
+                    <Box className={classes.needle} sx={{ top: needlePos }} />
+                )}
             </div>
         </div>
     )
