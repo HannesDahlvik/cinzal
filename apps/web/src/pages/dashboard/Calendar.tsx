@@ -1,5 +1,7 @@
-import { useState } from 'react'
-import { IEvent } from '../../config/types'
+import { CalendarViews, IEvent } from '../../config/types'
+
+import { useHookstate } from '@hookstate/core'
+import state from '../../state'
 
 import { createStyles, Select } from '@mantine/core'
 
@@ -12,10 +14,10 @@ import DashboardCalendarWeekView from '../../components/dashboard/calendar/WeekV
 
 import { trpc } from '../../utils'
 
-type CalendarViews = 'month' | 'week'
-
 const DashboardCalendarPage: React.FC = () => {
     const { classes } = useStyles()
+
+    const { value: view, set: setView } = useHookstate(state.calendarView)
 
     const tasksQuery = trpc.tasks.get.useQuery()
     const calendarLinks = trpc.calendar.links.useQuery()
@@ -23,8 +25,6 @@ const DashboardCalendarPage: React.FC = () => {
         { calendarUrls: calendarLinks.data },
         { enabled: !!calendarLinks.isSuccess }
     )
-
-    const [view, setView] = useState<CalendarViews>('month')
 
     if (tasksQuery.error || calendarLinks.error || eventsQuery.error)
         return (

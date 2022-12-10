@@ -37,9 +37,9 @@ const DashboardCalendarWeekView: React.FC<Props> = ({ events, tasks }) => {
 
     const { value: globalDate } = useHookstate(state.date)
 
-    const [weekDays, setWeekDays] = useState<IWeekDays[]>([])
-    const [needlePos, setNeedlePos] = useState(0)
     const [render, setRender] = useState(false)
+    const [needlePos, setNeedlePos] = useState(0)
+    const [weekDays, setWeekDays] = useState<IWeekDays[]>([])
     const [week, setWeek] = useState<IFormatedDate[]>([])
     const hours = useMemo(() => Array.from<number>({ length: 24 }).fill(0), [])
     const wrapperEl = useRef<HTMLDivElement>(null)
