@@ -7,12 +7,12 @@ import state from '../../../state'
 import { Box, createStyles, Text } from '@mantine/core'
 
 import LoadingPage from '../../../pages/Loading'
+import DashboardCalendarWeekViewTimeline from './WeekViewTimeline'
 
 import dayjs, { Dayjs } from 'dayjs'
 
 interface IFormatedDate {
     date: Dayjs
-    isBeforeNow: boolean
     tasks: Task[]
     events: IEvent[]
 }
@@ -97,12 +97,11 @@ const DashboardCalendarWeekView: React.FC<Props> = ({ events, tasks }) => {
         const weekEnd = globalDate.endOf('week')
         const weekData = createWeekData(weekStart, weekEnd)
         const data: IFormatedDate[] = []
-        for (let i = weekStart.date(); i <= weekEnd.date(); i++) {
+        for (let i = 0; i < 7; i++) {
             const formatted = formatDateObject(currentDate, weekData)
             data.push(formatted)
             currentDate = currentDate.add(1, 'day')
         }
-
         setWeek(data)
     }
 
@@ -111,26 +110,22 @@ const DashboardCalendarWeekView: React.FC<Props> = ({ events, tasks }) => {
             tasks: [],
             events: []
         }
-
         tasks.map((task) => {
             const taskDeadline = dayjs(task.deadline)
             if (taskDeadline.year() === globalDate.year() && taskDeadline.isBetween(start, end))
                 obj.tasks.push(task)
         })
-
         events.map((event) => {
             const eventStart = dayjs(event.start)
             if (eventStart.year() === globalDate.year() && eventStart.isBetween(start, end))
                 obj.events.push(event)
         })
-
         return obj
     }
 
     const formatDateObject = (date: Dayjs, data: IWeekData): IFormatedDate => {
         const formatedObj: IFormatedDate = {
             date: date,
-            isBeforeNow: false,
             tasks: data.tasks.filter(
                 (task) =>
                     dayjs(task.deadline).year() === date.year() &&
@@ -145,19 +140,6 @@ const DashboardCalendarWeekView: React.FC<Props> = ({ events, tasks }) => {
             )
         }
         return formatedObj
-    }
-
-    /**
-     * Checks if element should be rendered based on global date
-     */
-    const checkRenderBox = (boxDate: dayjs.Dayjs) => {
-        if (
-            boxDate.date() === globalDate.date() &&
-            boxDate.month() === globalDate.month() &&
-            boxDate.year() === globalDate.year()
-        )
-            return true
-        else return false
     }
 
     if (!render) return <LoadingPage />
@@ -186,9 +168,18 @@ const DashboardCalendarWeekView: React.FC<Props> = ({ events, tasks }) => {
                     ))}
                 </div>
 
-                {checkRenderBox(dayjs()) && (
-                    <Box className={classes.needle} sx={{ top: needlePos }} />
-                )}
+                <div className={classes.week}>
+                    {week.map((row, i) => (
+                        <DashboardCalendarWeekViewTimeline
+                            {...row}
+                            hours={hours}
+                            col={i}
+                            key={row.date.date()}
+                        />
+                    ))}
+                </div>
+
+                <Box className={classes.needle} sx={{ top: needlePos }} />
             </div>
         </div>
     )
@@ -243,6 +234,7 @@ const useStyles = createStyles((theme) => {
             borderColor: colors.dark[5]
         },
         week: {
+            position: 'relative',
             display: 'grid',
             gridTemplateColumns: 'repeat(7, 1fr)'
         },

@@ -60,7 +60,7 @@ const DashboardEventInfoModal: React.FC<Props> = ({ event }) => {
     return (
         <>
             <Text mb="md">
-                {dayjs(event.dtstamp).format('dddd, DD MMMM - ')}
+                {dayjs(event.start).format('dddd, DD MMMM - ')}
                 {dayjs(event.start).format('HH:mm')}
                 {' - '}
                 {dayjs(event.end).format('HH:mm')}
