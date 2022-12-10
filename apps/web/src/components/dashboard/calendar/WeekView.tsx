@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { IEvent, Task } from '../../../config/types'
 
 import { useHookstate } from '@hookstate/core'
@@ -42,6 +42,7 @@ const DashboardCalendarWeekView: React.FC<Props> = ({ events, tasks }) => {
     const [render, setRender] = useState(false)
     const [week, setWeek] = useState<IFormatedDate[]>([])
     const hours = useMemo(() => Array.from<number>({ length: 24 }).fill(0), [])
+    const wrapperEl = useRef<HTMLDivElement>(null)
 
     useEffect(() => {
         calcNeedlePos()
@@ -56,6 +57,14 @@ const DashboardCalendarWeekView: React.FC<Props> = ({ events, tasks }) => {
             createWeek()
         }
     }, [globalDate, events, tasks])
+
+    useEffect(() => {
+        if (render && wrapperEl.current)
+            wrapperEl.current.scrollTo({
+                top: needlePos - 300,
+                behavior: 'smooth'
+            })
+    }, [render])
 
     const calcNeedlePos = () => {
         const time = dayjs()
@@ -72,7 +81,7 @@ const DashboardCalendarWeekView: React.FC<Props> = ({ events, tasks }) => {
     const createWeekDays = () => {
         let currentDate = globalDate.startOf('week')
         const week: IWeekDays[] = []
-        for (let i = 0; i <= 6; i++) {
+        for (let i = 0; i < 7; i++) {
             week.push({
                 date: currentDate,
                 name: dayjs.weekdaysShort()[i]
@@ -168,7 +177,7 @@ const DashboardCalendarWeekView: React.FC<Props> = ({ events, tasks }) => {
                 ))}
             </div>
 
-            <div className={classes.weekWrapper}>
+            <div className={classes.weekWrapper} ref={wrapperEl}>
                 <div className={classes.hoursWrapper}>
                     {hours.map((_, hour) => (
                         <Text className={classes.timeBox} key={hour}>
@@ -193,15 +202,14 @@ const useStyles = createStyles((theme) => {
     return {
         wrapper: {
             position: 'relative',
-            display: 'flex',
-            flexDirection: 'column'
+            display: 'grid',
+            gridTemplateRows: '75px 1fr',
+            height: 'calc(100vh - 60px)'
         },
         weekDates: {
-            position: 'sticky',
             top: 60,
             display: 'flex',
             justifyContent: 'space-between',
-            height: '75px',
             paddingLeft: '75px',
             backgroundColor: colors.dark[7],
             borderBottom: '1px solid',
@@ -220,7 +228,8 @@ const useStyles = createStyles((theme) => {
             position: 'relative',
             display: 'grid',
             gridTemplateColumns: '75px 1fr',
-            overflowY: 'auto'
+            overflowY: 'auto',
+            scrollbarWidth: 'thin'
         },
         hoursWrapper: {
             display: 'grid',
@@ -232,6 +241,10 @@ const useStyles = createStyles((theme) => {
             height: '100%',
             borderBottom: '1px solid',
             borderColor: colors.dark[5]
+        },
+        week: {
+            display: 'grid',
+            gridTemplateColumns: 'repeat(7, 1fr)'
         },
         needle: {
             position: 'absolute',

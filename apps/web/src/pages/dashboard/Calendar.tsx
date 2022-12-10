@@ -86,17 +86,15 @@ const useStyles = createStyles((theme) => {
         calendar: {
             display: 'grid',
             gridTemplateRows: '60px 1fr',
-            height: '100%'
+            height: '100vh'
         },
         topBar: {
-            position: 'sticky',
-            top: 0,
-            left: 0,
             zIndex: 9,
             display: 'flex',
             alignItems: 'center',
             gap: spacing.md,
-            padding: spacing.md,
+            paddingLeft: spacing.md,
+            paddingRight: spacing.md,
             backgroundColor: colors.dark[7],
             borderBottom: '1px solid',
             borderBottomColor: theme.colors.dark[5]
