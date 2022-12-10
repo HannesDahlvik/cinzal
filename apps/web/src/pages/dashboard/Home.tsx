@@ -30,6 +30,7 @@ const DashboardHomePage: React.FC = () => {
     useEffect(() => {
         calcNeedlePos()
         const interval = setInterval(() => calcNeedlePos(), 1000)
+        setRender(true)
         return () => clearInterval(interval)
     }, [])
 
@@ -43,7 +44,6 @@ const DashboardHomePage: React.FC = () => {
         const finalPos = hourPos + minutePos
 
         setNeedlePos(finalPos)
-        setRender(true)
     }
 
     if (tasksQuery.error || calendarLinks.error || eventsQuery.error)

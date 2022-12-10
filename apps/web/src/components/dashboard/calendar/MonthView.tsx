@@ -90,11 +90,13 @@ const DashboardCalendarMonthView: React.FC<Props> = ({ events, tasks }) => {
             isToday: date.isToday(),
             tasks: data.tasks.filter(
                 (task) =>
+                    dayjs(task.deadline).year() === date.year() &&
                     dayjs(task.deadline).date() === date.date() &&
                     dayjs(task.deadline).month() === date.month()
             ),
             events: data.events.filter(
                 (event) =>
+                    dayjs(event.start).year() === date.year() &&
                     dayjs(event.start).date() === date.date() &&
                     dayjs(event.start).month() === date.month()
             )
@@ -108,7 +110,7 @@ const DashboardCalendarMonthView: React.FC<Props> = ({ events, tasks }) => {
     }
 
     return (
-        <>
+        <div>
             <div className={classes.weekNames}>
                 {dayjs.weekdays().map((day) => (
                     <Text className={classes.weekName} key={day}>
@@ -138,7 +140,7 @@ const DashboardCalendarMonthView: React.FC<Props> = ({ events, tasks }) => {
                     </div>
                 ))}
             </div>
-        </>
+        </div>
     )
 }
 
@@ -159,6 +161,7 @@ const useStyles = createStyles((theme) => {
             textAlign: 'center',
             width: '100%',
             border: '1px solid',
+            borderTop: 0,
             borderBottom: 0,
             borderColor: isDark ? colors.dark[5] : colors.gray[4]
         },
@@ -190,7 +193,7 @@ const useStyles = createStyles((theme) => {
             alignItems: 'center',
             width: '100%',
             height: '26px',
-            zIndex: 20,
+            zIndex: 1,
             color: isDark ? '#fff' : '#000'
         },
         isToday: {

@@ -43,7 +43,7 @@ const DashboardCalendarPage: React.FC = () => {
     return (
         <div className={classes.calendar}>
             <div className={classes.topBar}>
-                <DashboardDateChanger />
+                <DashboardDateChanger changeWeek={view === 'week'} />
 
                 <Select
                     value={view}
@@ -61,19 +61,17 @@ const DashboardCalendarPage: React.FC = () => {
                 />
             </div>
 
-            <div>
-                {view === 'month' ? (
-                    <DashboardCalendarMonthView
-                        events={eventsQuery.data as IEvent[]}
-                        tasks={tasksQuery.data}
-                    />
-                ) : view === 'week' ? (
-                    <DashboardCalendarWeekView
-                        events={eventsQuery.data as IEvent[]}
-                        tasks={tasksQuery.data}
-                    />
-                ) : null}
-            </div>
+            {view === 'month' ? (
+                <DashboardCalendarMonthView
+                    events={eventsQuery.data as IEvent[]}
+                    tasks={tasksQuery.data}
+                />
+            ) : view === 'week' ? (
+                <DashboardCalendarWeekView
+                    events={eventsQuery.data as IEvent[]}
+                    tasks={tasksQuery.data}
+                />
+            ) : null}
         </div>
     )
 }
@@ -81,6 +79,7 @@ const DashboardCalendarPage: React.FC = () => {
 export default DashboardCalendarPage
 
 const useStyles = createStyles((theme) => {
+    const colors = theme.colors
     const spacing = theme.spacing
 
     return {
@@ -90,10 +89,17 @@ const useStyles = createStyles((theme) => {
             height: '100%'
         },
         topBar: {
+            position: 'sticky',
+            top: 0,
+            left: 0,
+            zIndex: 9,
             display: 'flex',
             alignItems: 'center',
             gap: spacing.md,
-            padding: spacing.md
+            padding: spacing.md,
+            backgroundColor: colors.dark[7],
+            borderBottom: '1px solid',
+            borderBottomColor: theme.colors.dark[5]
         }
     }
 })
