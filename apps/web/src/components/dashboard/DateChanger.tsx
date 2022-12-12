@@ -7,7 +7,7 @@ import { CaretDoubleLeft, CaretDoubleRight, CaretLeft, CaretRight } from 'phosph
 import dayjs from 'dayjs'
 
 interface Props {
-    changeWeek: boolean
+    changeWeek?: boolean
 }
 
 const DashboardDateChanger: React.FC<Props> = ({ changeWeek = false }) => {
