@@ -6,6 +6,7 @@ export interface UserData {
     username: string
     email: string
     redirectDashboard: boolean
+    calendarView: string
     createdAt: Date
     updatedAt: Date
 }
@@ -43,6 +44,8 @@ export interface Calendar {
     uuid: string
     show: boolean
 }
+
+export type CalendarViews = 'month' | 'week'
 
 export interface DashboardSidebarLinks {
     title: string

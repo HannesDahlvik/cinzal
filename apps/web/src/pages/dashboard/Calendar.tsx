@@ -1,35 +1,23 @@
-import { useEffect, useRef, useState } from 'react'
-import { IEvent, Task } from '../../config/types'
+import { CalendarViews, IEvent } from '../../config/types'
 
 import { useHookstate } from '@hookstate/core'
 import state from '../../state'
 
-import { Box, createStyles, Text } from '@mantine/core'
+import { createStyles, Select } from '@mantine/core'
 
 import ErrorPage from '../Error'
 import LoadingPage from '../Loading'
 
 import DashboardDateChanger from '../../components/dashboard/DateChanger'
-import DashboardCalendarDayRenderer from '../../components/dashboard/calendar/DayRenderer'
+import DashboardCalendarMonthView from '../../components/dashboard/calendar/MonthView'
+import DashboardCalendarWeekView from '../../components/dashboard/calendar/WeekView'
 
-import dayjs, { Dayjs } from 'dayjs'
 import { trpc } from '../../utils'
-
-interface IFormatedDate {
-    date: Dayjs
-    isThisMonth: boolean
-    isToday: boolean
-    tasks: Task[]
-    events: IEvent[]
-}
-
-interface IMonthData {
-    tasks: Task[]
-    events: IEvent[]
-}
 
 const DashboardCalendarPage: React.FC = () => {
     const { classes } = useStyles()
+
+    const { value: view, set: setView } = useHookstate(state.calendarView)
 
     const tasksQuery = trpc.tasks.get.useQuery()
     const calendarLinks = trpc.calendar.links.useQuery()
@@ -37,84 +25,6 @@ const DashboardCalendarPage: React.FC = () => {
         { calendarUrls: calendarLinks.data },
         { enabled: !!calendarLinks.isSuccess }
     )
-
-    const { value: globalDate } = useHookstate(state.date)
-
-    const [month, setMonth] = useState<IFormatedDate[][]>([])
-    const calendarInnerWrapperRef = useRef<HTMLDivElement>(null)
-
-    useEffect(() => {
-        if (eventsQuery.data && tasksQuery.data)
-            createMonth(tasksQuery.data, eventsQuery.data as IEvent[])
-    }, [globalDate, eventsQuery.data, tasksQuery.data])
-
-    const formatDateObject = (date: Dayjs, data: IMonthData): IFormatedDate => {
-        const formatedObj: IFormatedDate = {
-            date: date,
-            isThisMonth: globalDate.month() === date.month(),
-            isToday: date.isToday(),
-            tasks: data.tasks.filter(
-                (task) =>
-                    dayjs(task.deadline).date() === date.date() &&
-                    dayjs(task.deadline).month() === date.month()
-            ),
-            events: data.events.filter(
-                (event) =>
-                    dayjs(event.start).date() === date.date() &&
-                    dayjs(event.start).month() === date.month()
-            )
-        }
-        return formatedObj
-    }
-
-    const createMonth = (tasks: Task[], events: IEvent[]) => {
-        let currentDate = globalDate.startOf('month').weekday(0)
-        const nextMonth = globalDate.add(1, 'month').month()
-        const monthData = createMonthData(globalDate.month(), tasks, events)
-        let allDates = []
-        let weekDates = []
-        let weekCounter = 1
-        while (currentDate.weekday(0).month() !== nextMonth) {
-            const formated = formatDateObject(currentDate, monthData)
-            weekDates.push(formated)
-            if (weekCounter === 7) {
-                allDates.push(weekDates)
-                weekDates = []
-                weekCounter = 0
-            }
-            weekCounter++
-            currentDate = currentDate.add(1, 'day')
-        }
-
-        calcCalendarWeekHeight(allDates.length)
-        setMonth(allDates)
-    }
-
-    const calcCalendarWeekHeight = (numOfWeeks: number) => {
-        if (calendarInnerWrapperRef.current)
-            calendarInnerWrapperRef.current.style.gridTemplateRows = `repeat(${numOfWeeks}, calc(100% / ${numOfWeeks}))`
-    }
-
-    const createMonthData = (month: number, tasks: Task[], events: IEvent[]) => {
-        const obj: IMonthData = {
-            tasks: [],
-            events: []
-        }
-
-        tasks.map((task) => {
-            const taskDeadline = dayjs(task.deadline)
-            if (taskDeadline.year() === globalDate.year() && taskDeadline.month() === month)
-                obj.tasks.push(task)
-        })
-
-        events.map((event) => {
-            const eventStart = dayjs(event.start)
-            if (eventStart.year() === globalDate.year() && eventStart.month() === month)
-                obj.events.push(event)
-        })
-
-        return obj
-    }
 
     if (tasksQuery.error || calendarLinks.error || eventsQuery.error)
         return (
@@ -132,39 +42,36 @@ const DashboardCalendarPage: React.FC = () => {
 
     return (
         <div className={classes.calendar}>
-            <div className={classes.dateChanger}>
-                <DashboardDateChanger />
+            <div className={classes.topBar}>
+                <DashboardDateChanger changeWeek={view === 'week'} />
+
+                <Select
+                    value={view}
+                    onChange={(ev) => setView(ev as CalendarViews)}
+                    data={[
+                        {
+                            label: 'Month',
+                            value: 'month'
+                        },
+                        {
+                            label: 'Week',
+                            value: 'week'
+                        }
+                    ]}
+                />
             </div>
 
-            <div className={classes.weekNames}>
-                {dayjs.weekdays().map((day) => (
-                    <Text className={classes.weekName} key={day}>
-                        {day}
-                    </Text>
-                ))}
-            </div>
-
-            <div className={classes.innerWrapper} ref={calendarInnerWrapperRef}>
-                {month.map((week, i) => (
-                    <div className={classes.week} key={i}>
-                        {week.map((day, j) => (
-                            <div
-                                className={`${classes.day} ${day.isToday ? classes.isToday : ''} ${
-                                    !day.isThisMonth ? classes.notThisMonth : ''
-                                }`}
-                                key={j}
-                            >
-                                <Text className={`${classes.dayText} `}>{day.date.date()}</Text>
-
-                                <DashboardCalendarDayRenderer
-                                    tasks={day.tasks}
-                                    events={day.events}
-                                />
-                            </div>
-                        ))}
-                    </div>
-                ))}
-            </div>
+            {view === 'month' ? (
+                <DashboardCalendarMonthView
+                    events={eventsQuery.data as IEvent[]}
+                    tasks={tasksQuery.data}
+                />
+            ) : view === 'week' ? (
+                <DashboardCalendarWeekView
+                    events={eventsQuery.data as IEvent[]}
+                    tasks={tasksQuery.data}
+                />
+            ) : null}
         </div>
     )
 }
@@ -172,80 +79,25 @@ const DashboardCalendarPage: React.FC = () => {
 export default DashboardCalendarPage
 
 const useStyles = createStyles((theme) => {
-    const isDark = theme.colorScheme === 'dark'
     const colors = theme.colors
     const spacing = theme.spacing
 
     return {
         calendar: {
             display: 'grid',
-            gridTemplateRows: '60px 30px 1fr',
-            height: '100%'
+            gridTemplateRows: '60px 1fr',
+            height: '100vh'
         },
-        dateChanger: {
-            padding: spacing.md
-        },
-        weekNames: {
+        topBar: {
+            zIndex: 9,
             display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center'
-        },
-        weekName: {
-            textAlign: 'center',
-            width: '100%',
-            border: '1px solid',
-            borderBottom: 0,
-            borderColor: isDark ? colors.dark[5] : colors.gray[4]
-        },
-        innerWrapper: {
-            display: 'grid',
-            height: '100%',
-            width: '100%'
-        },
-        week: {
-            display: 'flex',
-            justifyContent: 'space-between',
-            height: '100%'
-        },
-        day: {
-            position: 'relative',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '8px',
-            width: '100%',
-            padding: '2px',
-            paddingLeft: spacing.xs,
-            paddingRight: spacing.xs,
-            border: '1px solid',
-            borderColor: isDark ? colors.dark[5] : colors.gray[4]
-        },
-        dayText: {
-            display: 'flex',
-            justifyContent: 'center',
             alignItems: 'center',
-            width: '100%',
-            height: '26px',
-            zIndex: 20,
-            color: isDark ? '#fff' : '#000'
-        },
-        isToday: {
-            '&:after': {
-                content: `""`,
-                position: 'absolute',
-                top: 3,
-                left: 0,
-                right: 0,
-                marginLeft: 'auto',
-                marginRight: 'auto',
-                width: '26px',
-                height: '26px',
-                backgroundColor: colors.blue[5],
-                borderRadius: theme.radius.xl
-            }
-        },
-        notThisMonth: {
-            opacity: '0.75',
-            backgroundColor: isDark ? colors.dark[8] : colors.gray[3]
+            gap: spacing.md,
+            paddingLeft: spacing.md,
+            paddingRight: spacing.md,
+            backgroundColor: colors.dark[7],
+            borderBottom: '1px solid',
+            borderBottomColor: theme.colors.dark[5]
         }
     }
 })

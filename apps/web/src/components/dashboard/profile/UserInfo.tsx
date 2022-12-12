@@ -27,7 +27,8 @@ const DashboardProfileUserInfo: React.FC = () => {
         updateUserMutation.mutate(
             {
                 username: vals.username,
-                redirectDashboard: user?.redirectDashboard as boolean
+                redirectDashboard: user?.redirectDashboard as boolean,
+                calendarView: user?.calendarView as string
             },
             {
                 onError: (err) => {

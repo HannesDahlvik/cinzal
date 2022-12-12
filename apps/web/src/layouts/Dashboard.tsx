@@ -1,4 +1,8 @@
-import { Suspense } from 'react'
+import { Suspense, useEffect } from 'react'
+import { CalendarViews } from '../config/types'
+
+import { useHookstate } from '@hookstate/core'
+import state from '../state'
 
 import { Outlet } from 'react-router-dom'
 
@@ -9,6 +13,13 @@ import DashboardSidebar from '../components/dashboard/Sidebar'
 
 const DashboardLayout: React.FC = () => {
     const { classes } = useStyles()
+
+    const { value: user } = useHookstate(state.auth.user)
+    const { set: setCalenderView } = useHookstate(state.calendarView)
+
+    useEffect(() => {
+        setCalenderView(user?.calendarView as CalendarViews)
+    }, [user])
 
     return (
         <div className={classes.wrapper}>

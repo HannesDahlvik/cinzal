@@ -1,4 +1,5 @@
 import { hookstate } from '@hookstate/core'
+import { CalendarViews } from '../config/types'
 
 import auth from './auth'
 
@@ -6,7 +7,8 @@ import dayjs from 'dayjs'
 
 const state = {
     auth,
-    date: hookstate(dayjs())
+    date: hookstate(dayjs()),
+    calendarView: hookstate<CalendarViews>('month')
 }
 
 export default state
