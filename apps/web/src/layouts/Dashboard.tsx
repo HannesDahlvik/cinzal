@@ -16,9 +16,11 @@ const DashboardLayout: React.FC = () => {
 
     const { value: user } = useHookstate(state.auth.user)
     const { set: setCalenderView } = useHookstate(state.calendarView)
+    const { set: setHasRedirected } = useHookstate(state.hasRedirectedDashboard)
 
     useEffect(() => {
         setCalenderView(user?.calendarView as CalendarViews)
+        setHasRedirected(true)
     }, [user])
 
     return (
@@ -43,7 +45,7 @@ const useStyles = createStyles((theme) => {
     return {
         wrapper: {
             display: 'grid',
-            gridTemplateColumns: '150px 1fr',
+            gridTemplateColumns: '100px 1fr',
             minHeight: '100vh',
             backgroundColor: isDark ? colors.dark[7] : colors.gray[1]
         },

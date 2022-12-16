@@ -8,7 +8,8 @@ import dayjs from 'dayjs'
 const state = {
     auth,
     date: hookstate(dayjs()),
-    calendarView: hookstate<CalendarViews>('month')
+    calendarView: hookstate<CalendarViews>('month'),
+    hasRedirectedDashboard: hookstate(false)
 }
 
 export default state
