@@ -1,86 +1,123 @@
-import { Task } from '../../../config/types'
+import { Fragment, useEffect, useState } from 'react'
+import { IEvent, Task } from '../../../config/types'
 
-import { Box, Center, createStyles, Text, useMantineTheme } from '@mantine/core'
-import { TrashSimple } from 'phosphor-react'
+import { Box, createStyles, MantineColor, Text } from '@mantine/core'
 
-import dayjs from 'dayjs'
-import { errorHandler, trpc } from '../../../utils'
-import { openConfirmModal } from '@mantine/modals'
+import DashboardHomeRightSidebarItem from './RightSidebarItem'
+import dayjs, { Dayjs } from 'dayjs'
 
 interface Props {
+    events: IEvent[]
     tasks: Task[]
 }
 
-const DashboardHomeRightSidebar: React.FC<Props> = ({ tasks }) => {
-    const theme = useMantineTheme()
+interface Item {
+    title: string
+    description: string
+    color: MantineColor
+    deadline: Dayjs
+}
+
+interface Items {
+    date: Dayjs
+    items: Item[]
+}
+
+const DashboardHomeRightSidebar: React.FC<Props> = ({ events, tasks }) => {
     const { classes } = useStyles()
 
-    const tu = trpc.useContext()
-    const deleteTaskMutation = trpc.tasks.delete.useMutation()
+    const [items, setItems] = useState<Items[]>([])
+    const [nothingToShow, setNothingToShow] = useState(false)
 
     const now = dayjs()
 
-    const handleDeleteTask = (task: Task) => {
-        openConfirmModal({
-            title: `Are you sure you want to delete "${task.title}"`,
-            labels: { cancel: 'No', confirm: 'Yes' },
-            cancelProps: { variant: 'outline' },
-            onConfirm: () => {
-                deleteTaskMutation.mutate(
-                    {
-                        taskId: task.id
-                    },
-                    {
-                        onError: (err) => {
-                            errorHandler(err.message)
-                        },
-                        onSuccess: () => {
-                            tu.tasks.get.invalidate()
-                        }
-                    }
-                )
-            }
+    useEffect(() => {
+        const itemsArr: Items[] = []
+        const itemArr: Item[] = []
+
+        for (let i = 1; i <= 3; i++) {
+            itemsArr.push({
+                date: now.add(i, 'd'),
+                items: []
+            })
+        }
+
+        events.map((event) => {
+            const eventStart = dayjs(event.start)
+            if (eventStart.isBetween(now, now.add(3, 'd')))
+                itemArr.push({
+                    title: event.summary || event.title,
+                    description: event.description,
+                    color: 'blue',
+                    deadline: eventStart
+                })
         })
-    }
+        tasks.map((task) => {
+            const taskDeadline = dayjs(task.deadline)
+            if (taskDeadline.isBetween(now, now.add(3, 'day')))
+                itemArr.push({
+                    title: task.title,
+                    description: task.description,
+                    color: task.color,
+                    deadline: taskDeadline
+                })
+        })
+
+        itemArr.map((item) => {
+            const deadline = item.deadline
+            if (deadline.isAfter(now) && deadline.isBefore(now.add(1, 'd')))
+                itemsArr[0].items.push(item)
+            if (deadline.isAfter(now.add(1, 'd')) && deadline.isBefore(now.add(2, 'd')))
+                itemsArr[1].items.push(item)
+            if (deadline.isAfter(now.add(2, 'd')) && deadline.isBefore(now.add(3, 'd')))
+                itemsArr[2].items.push(item)
+        })
+
+        const checks = [false, false, false]
+        itemsArr.map((item, i) => {
+            if (item.items.length === 0) checks[i] = true
+            else checks[i] = false
+        })
+        let counter = 0
+        checks.map((row) => (row ? counter++ : counter--))
+        if (counter === 3) setNothingToShow(true)
+        else setNothingToShow(false)
+
+        setItems(itemsArr)
+    }, [events, tasks])
 
     return (
         <div className={classes.sidebar}>
             <Text size="xl" weight="bold" align="center" mt="md">
-                Upcoming tasks
+                Coming up
             </Text>
 
             <Box p="md">
-                {tasks.map((task) => {
-                    const deadlineDate = dayjs(task.deadline).date()
+                {nothingToShow && (
+                    <Text align="center">Nothing coming up in the next three days</Text>
+                )}
 
-                    if (deadlineDate !== now.date() && deadlineDate <= now.date() + 2)
+                {items.map((row, i) => {
+                    if (row.items.length > 0)
                         return (
-                            <div className={classes.taskBox} key={task.id}>
-                                <Center>
-                                    <Text size="lg" weight="bold">
-                                        {dayjs(task.deadline).format('HH:mm')}
-                                    </Text>
-                                </Center>
+                            <Box key={i}>
+                                <Text color="dimmed" mb="md">
+                                    {row.date.format('DD MMMM')}
+                                </Text>
 
-                                <Box
-                                    className={classes.divider}
-                                    sx={{ backgroundColor: theme.colors[task.color][5] }}
-                                />
-
-                                <Center sx={{ alignItems: 'flex-start', flexDirection: 'column' }}>
-                                    <Text lineClamp={1}>{task.title}</Text>
-                                    <Text lineClamp={1}>
-                                        {dayjs(task.deadline).format('DD.MM.YYYY')}
-                                    </Text>
-                                </Center>
-
-                                <Box
-                                    sx={{ marginLeft: 'auto', cursor: 'pointer' }}
-                                    onClick={() => handleDeleteTask(task)}
-                                >
-                                    <TrashSimple size={22} />
-                                </Box>
-                            </div>
+                                {row.items.map((item, j) => (
+                                    <Fragment key={j}>
+                                        {j < 3 && (
+                                            <DashboardHomeRightSidebarItem
+                                                title={item.title}
+                                                description={item.description}
+                                                color={item.color}
+                                                deadline={item.deadline}
+                                            />
+                                        )}
+                                    </Fragment>
+                                ))}
+                            </Box>
                         )
                 })}
             </Box>
@@ -98,19 +135,6 @@ const useStyles = createStyles((theme) => {
         sidebar: {
             borderLeft: '1px solid',
             borderLeftColor: isDark ? colors.dark[6] : colors.gray[4]
-        },
-        taskBox: {
-            display: 'flex',
-            alignItems: 'center',
-            height: '60px',
-            marginBottom: theme.spacing.md
-        },
-        divider: {
-            height: '100%',
-            width: '6px',
-            marginLeft: theme.spacing.sm,
-            marginRight: theme.spacing.sm,
-            borderRadius: theme.radius.xl
         }
     }
 })

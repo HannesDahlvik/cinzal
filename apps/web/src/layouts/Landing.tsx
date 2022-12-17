@@ -14,9 +14,10 @@ const LandingLayout: React.FC = () => {
     const navigate = useNavigate()
 
     const { value: user } = useHookstate(state.auth.user)
+    const { value: hasRedirectedDashboard } = useHookstate(state.hasRedirectedDashboard)
 
     useShallowEffect(() => {
-        if (user?.redirectDashboard) {
+        if (user?.redirectDashboard && !hasRedirectedDashboard) {
             navigate('/dashboard')
         }
     }, [0])
