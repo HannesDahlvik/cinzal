@@ -72,7 +72,10 @@ const DashboardHomePage: React.FC = () => {
                     events={eventsQuery.data as IEvent[]}
                 />
 
-                <DashboardHomeRightSidebar tasks={tasksQuery.data as Task[]} />
+                <DashboardHomeRightSidebar
+                    tasks={tasksQuery.data as Task[]}
+                    events={eventsQuery.data as IEvent[]}
+                />
             </div>
         )
     else return <LoadingPage />

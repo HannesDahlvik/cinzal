@@ -125,7 +125,9 @@ const DashboardCreateTaskModal: React.FC = () => {
                                     color={theme.colors[color][5]}
                                     onClick={() => setSelectedColor(color)}
                                 >
-                                    {selectedColor === color && <Check />}
+                                    {selectedColor === color && (
+                                        <Check weight="bold" color="#000" />
+                                    )}
                                 </ColorSwatch>
                             )
                         )}
