@@ -85,8 +85,7 @@ const useStyles = createStyles((theme) => {
     return {
         calendar: {
             display: 'grid',
-            gridTemplateRows: '60px 1fr',
-            height: '100vh'
+            gridTemplateRows: '60px 1fr'
         },
         topBar: {
             zIndex: 9,

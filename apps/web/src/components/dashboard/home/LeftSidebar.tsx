@@ -99,7 +99,8 @@ const useStyles = createStyles((theme) => {
             alignItems: 'center',
             flexDirection: 'column',
             borderRight: '1px solid',
-            borderRightColor: theme.colors.dark[5]
+            borderRightColor: theme.colors.dark[5],
+            height: '100vh'
         },
         create: {
             width: '100%'

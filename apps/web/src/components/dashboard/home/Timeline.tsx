@@ -4,9 +4,10 @@ import { DasboardTimelineCheckEvents, IEvent, Task } from '../../../config/types
 import { useHookstate } from '@hookstate/core'
 import state from '../../../state'
 
-import { Box, createStyles, Stack, Text, useMantineTheme } from '@mantine/core'
-import { useElementSize } from '@mantine/hooks'
+import { Affix, Box, Button, createStyles, Stack, Text, useMantineTheme } from '@mantine/core'
+import { useElementSize, useMediaQuery } from '@mantine/hooks'
 import { openModal } from '@mantine/modals'
+import { Clock, List } from 'phosphor-react'
 
 import dayjs from 'dayjs'
 import DashboardEditTaskModal from '../modals/EditTask'
@@ -33,11 +34,16 @@ const DashboardHomeTimeline: React.FC<Props> = ({ events, hours, needlePos, task
     const theme = useMantineTheme()
 
     const { value: globalDate } = useHookstate(state.date)
+    const { value: rightDrawer, set: setRightDrawer } = useHookstate(state.drawers.homeRightDrawer)
+    const { value: leftDrawer, set: setLeftDrawer } = useHookstate(state.drawers.homeLeftDrawer)
 
     const [parsedEvents, setParsedEvents] = useState<IParsedEvent[]>([])
 
     const wrapperEl = useRef<HTMLDivElement>(null)
     const { ref: tasksWrapperRef, width: containerWidth } = useElementSize()
+
+    const showRightDrawer = useMediaQuery(`(max-width: ${theme.breakpoints.lg}px)`)
+    const showLeftDrawer = useMediaQuery(`(max-width: ${theme.breakpoints.md}px)`)
 
     useEffect(() => {
         if (wrapperEl.current)
@@ -148,6 +154,29 @@ const DashboardHomeTimeline: React.FC<Props> = ({ events, hours, needlePos, task
 
     return (
         <div className={classes.wrapper} ref={wrapperEl}>
+            {showLeftDrawer && (
+                <Box sx={{ position: 'fixed', bottom: 100, left: 20, zIndex: 99 }}>
+                    <Button size="sm" p="8px" onClick={() => setLeftDrawer(!leftDrawer)}>
+                        <List size={22} />
+                    </Button>
+                </Box>
+            )}
+
+            {showRightDrawer && (
+                <Box
+                    sx={{
+                        position: 'fixed',
+                        bottom: showLeftDrawer ? 100 : 20,
+                        right: 20,
+                        zIndex: 99
+                    }}
+                >
+                    <Button size="sm" p="8px" onClick={() => setRightDrawer(!rightDrawer)}>
+                        <Clock size={22} />
+                    </Button>
+                </Box>
+            )}
+
             <div className={classes.timeWrapper}>
                 {hours.map((_, hour) => (
                     <Text className={classes.timeBox} key={hour}>
@@ -238,7 +267,11 @@ const useStyles = createStyles((theme) => {
             backgroundColor: !isDark ? colors.gray[2] : '',
             overflowY: 'auto',
             scrollbarWidth: 'thin',
-            position: 'relative'
+            position: 'relative',
+
+            [`@media (max-width: ${theme.breakpoints.md}px)`]: {
+                gridTemplateColumns: '75px 1fr'
+            }
         },
         timeWrapper: {
             display: 'grid',
