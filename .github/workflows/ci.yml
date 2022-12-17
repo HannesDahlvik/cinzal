@@ -3,26 +3,8 @@ name: CI
 on:
   push:
     branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v3
-    - name: Install Node.js 16
-      uses: actions/setup-node@v3
-      with:
-        node-version: 16
-    - name: Install packages
-      uses: borales/actions-yarn@v4
-      with:
-        cmd: install
-    - name: Build server
-      uses: borales/actions-yarn@v4
-      with:
-        cmd: build-server
   deploy:
     runs-on: ubuntu-latest
     steps:
