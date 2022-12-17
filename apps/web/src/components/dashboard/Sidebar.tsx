@@ -1,34 +1,32 @@
 import type { DashboardSidebarLinks } from '../../config/types'
 
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 
-import { createStyles } from '@mantine/core'
-import { CalendarBlank, CirclesFour, ListChecks, Notebook, SignOut, User } from 'phosphor-react'
+import { createStyles, Image } from '@mantine/core'
+import { CalendarBlank, House, ListChecks, Notebook, SignOut, User } from 'phosphor-react'
 
 import DashboardSidebarLink from './SidebarLink'
 import { setAuth } from '../../utils'
 
+import Logo from '../../assets/imgs/logo.png'
+
 const links: DashboardSidebarLinks[] = [
     {
-        title: 'Home',
         path: 'home',
-        icon: <CirclesFour weight="regular" />,
-        iconActive: <CirclesFour weight="fill" />
+        icon: <House weight="regular" />,
+        iconActive: <House weight="fill" />
     },
     {
-        title: 'Calendar',
         path: 'calendar',
         icon: <CalendarBlank weight="regular" />,
         iconActive: <CalendarBlank weight="fill" />
     },
     {
-        title: 'Tasks',
         path: 'tasks',
         icon: <ListChecks weight="regular" />,
         iconActive: <ListChecks weight="fill" />
     },
     {
-        title: 'Notes',
         path: 'notes',
         icon: <Notebook weight="regular" />,
         iconActive: <Notebook weight="fill" />
@@ -47,11 +45,14 @@ const DashboardSidebar: React.FC = () => {
 
     return (
         <div className={classes.sidebar}>
+            <Link to="/" className={classes.sidebarTop}>
+                <Image src={Logo} width={38} />
+            </Link>
+
             <div className={classes.sidebarMiddle}>
                 {links.map((row) => (
                     <DashboardSidebarLink
-                        key={row.title}
-                        title={row.title}
+                        key={row.path}
                         to={row.path}
                         icon={row.icon}
                         iconActive={row.iconActive}
@@ -61,14 +62,9 @@ const DashboardSidebar: React.FC = () => {
             </div>
 
             <div className={classes.sidebarBottom}>
-                <DashboardSidebarLink
-                    title="Sign out"
-                    icon={<SignOut weight="regular" />}
-                    onClick={handleSignOut}
-                />
+                <DashboardSidebarLink icon={<SignOut weight="regular" />} onClick={handleSignOut} />
 
                 <DashboardSidebarLink
-                    title="Profile"
                     icon={<User weight="regular" />}
                     iconActive={<User weight="fill" />}
                     active={location.pathname.includes('/profile')}
@@ -98,9 +94,10 @@ const useStyles = createStyles((theme) => {
             height: '100vh'
         },
         sidebarTop: {
+            display: 'flex',
+            justifyContent: 'center',
             width: '100%',
             textAlign: 'center',
-            marginBottom: theme.spacing.xl,
             padding: theme.spacing.md
         },
         sidebarTitle: {
@@ -112,7 +109,8 @@ const useStyles = createStyles((theme) => {
             display: 'flex',
             flexDirection: 'column',
             justifyContent: 'center',
-            width: '100%'
+            width: '100%',
+            marginTop: 'auto'
         },
         sidebarBottom: {
             display: 'flex',
