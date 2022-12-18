@@ -26,7 +26,7 @@ const DashboardLayout: React.FC = () => {
     useEffect(() => {
         setCalenderView(user?.calendarView as CalendarViews)
         setHasRedirected(true)
-    }, [user])
+    }, [])
 
     return (
         <div className={classes.wrapper}>

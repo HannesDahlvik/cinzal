@@ -78,6 +78,7 @@ const DashboardHomePage: React.FC = () => {
                     <DashboardHomeLeftSidebar calendars={calendarLinks.data as Calendar[]} />
                 ) : (
                     <Drawer
+                        size="75%"
                         withCloseButton={false}
                         position="left"
                         opened={leftDrawer}
@@ -101,6 +102,7 @@ const DashboardHomePage: React.FC = () => {
                     />
                 ) : (
                     <Drawer
+                        size={showLeftDrawer ? '75%' : 'md'}
                         withCloseButton={false}
                         position="right"
                         opened={rightDrawer}

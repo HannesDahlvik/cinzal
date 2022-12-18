@@ -4,7 +4,7 @@ import { DasboardTimelineCheckEvents, IEvent, Task } from '../../../config/types
 import { useHookstate } from '@hookstate/core'
 import state from '../../../state'
 
-import { Affix, Box, Button, createStyles, Stack, Text, useMantineTheme } from '@mantine/core'
+import { Box, Button, createStyles, Stack, Text, useMantineTheme } from '@mantine/core'
 import { useElementSize, useMediaQuery } from '@mantine/hooks'
 import { openModal } from '@mantine/modals'
 import { Clock, List } from 'phosphor-react'
