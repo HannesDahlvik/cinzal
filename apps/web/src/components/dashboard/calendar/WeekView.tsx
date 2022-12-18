@@ -267,7 +267,7 @@ const useStyles = createStyles((theme) => {
             backgroundColor: colors.red[6],
 
             [`@media (max-width: ${theme.breakpoints.md}px)`]: {
-                width: 'calc(100% - 60px)'
+                width: 'calc(100% - 50px)'
             }
         }
     }
