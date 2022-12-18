@@ -134,7 +134,8 @@ const useStyles = createStyles((theme) => {
     return {
         sidebar: {
             borderLeft: '1px solid',
-            borderLeftColor: isDark ? colors.dark[6] : colors.gray[4]
+            borderLeftColor: isDark ? colors.dark[6] : colors.gray[4],
+            height: '100vh'
         }
     }
 })

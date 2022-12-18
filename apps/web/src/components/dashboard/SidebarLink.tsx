@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom'
 
-import { createStyles, Text } from '@mantine/core'
+import { createStyles } from '@mantine/core'
 
 interface Props {
     icon: React.ReactNode

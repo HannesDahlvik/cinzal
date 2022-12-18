@@ -4,7 +4,8 @@ import { IEvent, Task } from '../../../config/types'
 import { useHookstate } from '@hookstate/core'
 import state from '../../../state'
 
-import { Box, createStyles, Text } from '@mantine/core'
+import { Box, createStyles, Text, useMantineTheme } from '@mantine/core'
+import { useMediaQuery } from '@mantine/hooks'
 
 import LoadingPage from '../../../pages/Loading'
 import DashboardCalendarWeekViewTimeline from './WeekViewTimeline'
@@ -34,6 +35,7 @@ interface Props {
 
 const DashboardCalendarWeekView: React.FC<Props> = ({ events, tasks }) => {
     const { classes } = useStyles()
+    const theme = useMantineTheme()
 
     const { value: globalDate } = useHookstate(state.date)
 
@@ -43,6 +45,8 @@ const DashboardCalendarWeekView: React.FC<Props> = ({ events, tasks }) => {
     const [week, setWeek] = useState<IFormatedDate[]>([])
     const hours = useMemo(() => Array.from<number>({ length: 24 }).fill(0), [])
     const wrapperEl = useRef<HTMLDivElement>(null)
+
+    const showBottomBar = useMediaQuery(`(max-width: ${theme.breakpoints.md}px)`)
 
     useEffect(() => {
         calcNeedlePos()
@@ -149,10 +153,10 @@ const DashboardCalendarWeekView: React.FC<Props> = ({ events, tasks }) => {
             <div className={classes.weekDates}>
                 {weekDays.map((day) => (
                     <div className={classes.weekDate} key={day.name}>
-                        <Text size="sm" transform="uppercase">
+                        <Text size={showBottomBar ? 'xs' : 'sm'} transform="uppercase">
                             {day.name}
                         </Text>
-                        <Text size="xl" weight="bold">
+                        <Text size={showBottomBar ? 'md' : 'xl'} weight="bold">
                             {day.date.date()}
                         </Text>
                     </div>
@@ -162,7 +166,11 @@ const DashboardCalendarWeekView: React.FC<Props> = ({ events, tasks }) => {
             <div className={classes.weekWrapper} ref={wrapperEl}>
                 <div className={classes.hoursWrapper}>
                     {hours.map((_, hour) => (
-                        <Text className={classes.timeBox} key={hour}>
+                        <Text
+                            className={classes.timeBox}
+                            size={showBottomBar ? 'sm' : 'md'}
+                            key={hour}
+                        >
                             {hour}:00
                         </Text>
                     ))}
@@ -195,7 +203,12 @@ const useStyles = createStyles((theme) => {
             position: 'relative',
             display: 'grid',
             gridTemplateRows: '75px 1fr',
-            height: 'calc(100vh - 60px)'
+            height: 'calc(100vh - 60px)',
+
+            [`@media (max-width: ${theme.breakpoints.md}px)`]: {
+                gridTemplateRows: '50px 1fr',
+                height: 'calc(100vh - 140px)'
+            }
         },
         weekDates: {
             top: 60,
@@ -205,7 +218,11 @@ const useStyles = createStyles((theme) => {
             backgroundColor: colors.dark[7],
             borderBottom: '1px solid',
             borderColor: colors.dark[5],
-            zIndex: 1
+            zIndex: 1,
+
+            [`@media (max-width: ${theme.breakpoints.md}px)`]: {
+                paddingLeft: '50px'
+            }
         },
         weekDate: {
             display: 'flex',
@@ -220,7 +237,11 @@ const useStyles = createStyles((theme) => {
             display: 'grid',
             gridTemplateColumns: '75px 1fr',
             overflowY: 'auto',
-            scrollbarWidth: 'thin'
+            scrollbarWidth: 'thin',
+
+            [`@media (max-width: ${theme.breakpoints.md}px)`]: {
+                gridTemplateColumns: '50px 1fr'
+            }
         },
         hoursWrapper: {
             display: 'grid',
@@ -243,7 +264,11 @@ const useStyles = createStyles((theme) => {
             right: 0,
             width: 'calc(100% - 75px)',
             height: '1px',
-            backgroundColor: colors.red[6]
+            backgroundColor: colors.red[6],
+
+            [`@media (max-width: ${theme.breakpoints.md}px)`]: {
+                width: 'calc(100% - 50px)'
+            }
         }
     }
 })

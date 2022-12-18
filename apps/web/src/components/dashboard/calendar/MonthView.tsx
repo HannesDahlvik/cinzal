@@ -1,10 +1,11 @@
-import { useEffect, useRef, useState } from 'react'
+import { Fragment, useEffect, useRef, useState } from 'react'
 import { IEvent, Task } from '../../../config/types'
 
 import { useHookstate } from '@hookstate/core'
 import state from '../../../state'
 
-import { createStyles, Text } from '@mantine/core'
+import { Box, createStyles, Text, useMantineTheme } from '@mantine/core'
+import { useMediaQuery, useViewportSize } from '@mantine/hooks'
 
 import dayjs, { Dayjs } from 'dayjs'
 import DashboardCalendarDayRenderer from './DayRenderer'
@@ -29,11 +30,14 @@ interface Props {
 
 const DashboardCalendarMonthView: React.FC<Props> = ({ events, tasks }) => {
     const { classes } = useStyles()
+    const theme = useMantineTheme()
 
     const { value: globalDate } = useHookstate(state.date)
 
     const [month, setMonth] = useState<IFormatedDate[][]>([])
     const wrapperRef = useRef<HTMLDivElement>(null)
+    const showBottomBar = useMediaQuery(`(max-width: ${theme.breakpoints.md}px)`)
+    const { width: windowWidth } = useViewportSize()
 
     useEffect(() => {
         if (events && tasks) createMonth(tasks, events)
@@ -112,7 +116,7 @@ const DashboardCalendarMonthView: React.FC<Props> = ({ events, tasks }) => {
     return (
         <div>
             <div className={classes.weekNames}>
-                {dayjs.weekdays().map((day) => (
+                {dayjs[!showBottomBar ? 'weekdays' : 'weekdaysShort']().map((day) => (
                     <Text className={classes.weekName} key={day}>
                         {day}
                     </Text>
@@ -121,7 +125,15 @@ const DashboardCalendarMonthView: React.FC<Props> = ({ events, tasks }) => {
 
             <div className={classes.innerWrapper} ref={wrapperRef}>
                 {month.map((week, i) => (
-                    <div className={classes.week} key={i}>
+                    <Box
+                        className={classes.week}
+                        key={i}
+                        sx={{
+                            gridTemplateColumns: `repeat(7, ${
+                                (showBottomBar ? windowWidth : windowWidth - 100) / 7
+                            }px)`
+                        }}
+                    >
                         {week.map((day, j) => (
                             <div
                                 className={`${classes.day} ${day.isToday ? classes.isToday : ''} ${
@@ -137,7 +149,7 @@ const DashboardCalendarMonthView: React.FC<Props> = ({ events, tasks }) => {
                                 />
                             </div>
                         ))}
-                    </div>
+                    </Box>
                 ))}
             </div>
         </div>
@@ -171,8 +183,7 @@ const useStyles = createStyles((theme) => {
             width: '100%'
         },
         week: {
-            display: 'flex',
-            justifyContent: 'space-between',
+            display: 'grid',
             height: '100%'
         },
         day: {
@@ -185,7 +196,13 @@ const useStyles = createStyles((theme) => {
             paddingLeft: spacing.xs,
             paddingRight: spacing.xs,
             border: '1px solid',
-            borderColor: isDark ? colors.dark[5] : colors.gray[4]
+            borderColor: isDark ? colors.dark[5] : colors.gray[4],
+
+            [`@media (max-width: ${theme.breakpoints.md}px)`]: {
+                paddingLeft: 0,
+                paddingRight: 0,
+                padding: '4px'
+            }
         },
         dayText: {
             display: 'flex',
