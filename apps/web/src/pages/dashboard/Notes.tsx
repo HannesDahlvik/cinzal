@@ -1,65 +1,66 @@
-import { Outlet, useLocation, useNavigate } from 'react-router-dom'
+import { Note } from '../../config/types'
 
-import { Box, Button, createStyles, Text } from '@mantine/core'
-import { openModal } from '@mantine/modals'
-import { Plus } from 'phosphor-react'
+import { useHookstate } from '@hookstate/core'
+import state from '../../state'
 
+import { Outlet, useLocation } from 'react-router-dom'
+
+import { Box, Button, Center, Drawer, Title, createStyles, useMantineTheme } from '@mantine/core'
+import { useMediaQuery } from '@mantine/hooks'
+import { List } from 'phosphor-react'
+
+import DashboardNotesSidebar from '../../components/dashboard/notes/NotesSidebar'
 import LoadingPage from '../Loading'
-import DashboardCreateNoteModal from '../../components/dashboard/modals/CreateNote'
 
 import { trpc } from '../../utils'
-import dayjs from 'dayjs'
 
 const DashboardNotesPage: React.FC = () => {
     const { classes } = useStyles()
+    const theme = useMantineTheme()
 
     const { data: notes } = trpc.notes.all.useQuery()
 
-    const navigate = useNavigate()
+    const { value: notesDrawer, set: setNotesDrawer } = useHookstate(state.drawers.notesDrawer)
+
     const location = useLocation()
 
-    const handleCreateNote = () => {
-        openModal({
-            title: 'New note',
-            children: <DashboardCreateNoteModal />
-        })
-    }
-
-    const handleOpenNote = (note: any) => {
-        navigate(`${note.id}`)
-    }
+    const smBreakpoint = useMediaQuery(`(max-width: ${theme.breakpoints.sm}px)`)
 
     if (!notes) return <LoadingPage />
 
     return (
         <div className={classes.wrapper}>
-            <Box className={classes.notesWrapper} p="md">
-                <Button fullWidth onClick={handleCreateNote}>
-                    <Plus size={18} />
-                    New note
-                </Button>
+            {!smBreakpoint && <DashboardNotesSidebar notes={notes as Note[]} />}
 
-                <Box mt="md">
-                    {notes.map((row) => (
-                        <Box
-                            className={`${classes.box} ${
-                                location.pathname.includes(String(row.id)) ? classes.boxSlected : ''
-                            }`}
-                            onClick={() => handleOpenNote(row)}
-                            key={row.id}
-                        >
-                            <Text size="sm" color="dimmed">
-                                {dayjs(row.createdAt).format('DD MMM')}
-                            </Text>
-                            <Text size="lg" lineClamp={1} sx={{ fontWeight: 'bold' }}>
-                                {row.title}
-                            </Text>
-                        </Box>
-                    ))}
-                </Box>
-            </Box>
+            {location.pathname === '/dashboard/notes' && (
+                <Center>
+                    <Title align="center">
+                        {notes?.length === 0 ? 'Create a note' : 'Select a note'}
+                    </Title>
+                </Center>
+            )}
 
             <Outlet />
+
+            {smBreakpoint && (
+                <>
+                    <Box sx={{ position: 'fixed', bottom: 100, right: 20, zIndex: 99 }}>
+                        <Button size="sm" p="8px" onClick={() => setNotesDrawer(!notesDrawer)}>
+                            <List size={22} />
+                        </Button>
+                    </Box>
+
+                    <Drawer
+                        position="right"
+                        size={smBreakpoint ? '75%' : 'md'}
+                        withCloseButton={false}
+                        opened={notesDrawer}
+                        onClose={() => setNotesDrawer(!notesDrawer)}
+                    >
+                        <DashboardNotesSidebar notes={notes as Note[]} />
+                    </Drawer>
+                </>
+            )}
         </div>
     )
 }
@@ -75,7 +76,15 @@ const useStyles = createStyles((theme) => {
             display: 'grid',
             gridTemplateColumns: '1fr 4fr',
             gap: theme.spacing.xs,
-            height: '100%'
+            height: '100%',
+
+            [`@media (max-width: ${theme.breakpoints.md}px)`]: {
+                gridTemplateColumns: '1fr 2fr'
+            },
+
+            [`@media (max-width: ${theme.breakpoints.sm}px)`]: {
+                gridTemplateColumns: '1fr'
+            }
         },
         notesWrapper: {
             display: 'flex',

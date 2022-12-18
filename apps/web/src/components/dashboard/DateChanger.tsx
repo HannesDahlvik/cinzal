@@ -1,7 +1,8 @@
 import { useHookstate } from '@hookstate/core'
 import state from '../../state'
 
-import { createStyles, Badge, Text } from '@mantine/core'
+import { createStyles, Badge, Text, useMantineTheme } from '@mantine/core'
+import { useMediaQuery } from '@mantine/hooks'
 import { CaretDoubleLeft, CaretDoubleRight, CaretLeft, CaretRight } from 'phosphor-react'
 
 import dayjs from 'dayjs'
@@ -12,8 +13,10 @@ interface Props {
 
 const DashboardDateChanger: React.FC<Props> = ({ changeWeek = false }) => {
     const { classes } = useStyles()
+    const theme = useMantineTheme()
 
     const { value: globalDate, set: setGlobalDate } = useHookstate(state.date)
+    const xsBreakpoint = useMediaQuery(`(max-width: ${theme.breakpoints.xs}px)`)
 
     const handlePrev = () => {
         if (changeWeek) setGlobalDate(globalDate.clone().subtract(1, 'week'))
@@ -41,11 +44,13 @@ const DashboardDateChanger: React.FC<Props> = ({ changeWeek = false }) => {
     return (
         <div className={classes.root}>
             <div className={classes.icons}>
-                <CaretDoubleLeft
-                    className={classes.icon}
-                    weight="regular"
-                    onClick={handlePrevYear}
-                />
+                {!xsBreakpoint && (
+                    <CaretDoubleLeft
+                        className={classes.icon}
+                        weight="regular"
+                        onClick={handlePrevYear}
+                    />
+                )}
                 <CaretLeft className={classes.icon} weight="regular" onClick={handlePrev} />
             </div>
 
@@ -56,11 +61,13 @@ const DashboardDateChanger: React.FC<Props> = ({ changeWeek = false }) => {
 
             <div className={classes.icons}>
                 <CaretRight className={classes.icon} weight="regular" onClick={handleNext} />
-                <CaretDoubleRight
-                    className={classes.icon}
-                    weight="regular"
-                    onClick={handleNextYear}
-                />
+                {!xsBreakpoint && (
+                    <CaretDoubleRight
+                        className={classes.icon}
+                        weight="regular"
+                        onClick={handleNextYear}
+                    />
+                )}
             </div>
         </div>
     )

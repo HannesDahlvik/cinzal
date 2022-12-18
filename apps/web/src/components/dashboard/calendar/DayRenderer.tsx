@@ -1,6 +1,7 @@
 import { Task, IEvent } from '../../../config/types'
 
 import { Box, createStyles, Text, useMantineTheme } from '@mantine/core'
+import { useMediaQuery } from '@mantine/hooks'
 import { openModal } from '@mantine/modals'
 
 import DashboardEventInfoModal from '../modals/EventInfo'
@@ -16,6 +17,8 @@ interface Props {
 const DashboardCalendarDayRenderer: React.FC<Props> = ({ events, tasks }) => {
     const theme = useMantineTheme()
     const { classes } = useStyles()
+
+    const showBottomBar = useMediaQuery(`(max-width: ${theme.breakpoints.md}px)`)
 
     const handleOpenEventInfo = (event: IEvent) => {
         openModal({
@@ -43,7 +46,8 @@ const DashboardCalendarDayRenderer: React.FC<Props> = ({ events, tasks }) => {
             {events.map((event, i) => (
                 <div className={classes.event} key={i} onClick={() => handleOpenEventInfo(event)}>
                     <Text lineClamp={1} color="#fff" size="xs">
-                        <b>{dayjs(event.start).format('HH:mm')}</b> {event.summary || event.title}
+                        {!showBottomBar && <b>{dayjs(event.start).format('HH:mm')}</b>}{' '}
+                        {event.summary || event.title}
                     </Text>
                 </div>
             ))}

@@ -5,7 +5,7 @@ import { useHookstate } from '@hookstate/core'
 import state from '../../../state'
 
 import { Box, createStyles, Stack, Text, useMantineTheme } from '@mantine/core'
-import { useElementSize } from '@mantine/hooks'
+import { useElementSize, useMediaQuery } from '@mantine/hooks'
 import { openModal } from '@mantine/modals'
 
 import DashboardEventInfoModal from '../modals/EventInfo'
@@ -43,6 +43,8 @@ const DashboardCalendarWeekViewTimeline: React.FC<Props> = ({
 
     const [parsedEvents, setParsedEvents] = useState<IParsedEvent[]>([])
     const { ref: wrapperRef, width: containerWidth } = useElementSize()
+
+    const showBottomBar = useMediaQuery(`(max-width: ${theme.breakpoints.md}px)`)
 
     useEffect(() => {
         const dayEvents = events.filter((event) => checkRenderBox(dayjs(event.start)))
@@ -155,14 +157,19 @@ const DashboardCalendarWeekViewTimeline: React.FC<Props> = ({
                         sx={{ backgroundColor: theme.colors.blue[7] }}
                         onClick={() => handleOpenEventInfo(row.event)}
                     >
-                        <Stack spacing={2}>
-                            <Text size="sm" lineClamp={1} weight="bold">
-                                {row.event.summary || row.event.title}
-                            </Text>
-                            <Text size="sm" lineClamp={1}>
-                                {row.event.location}
-                            </Text>
-                        </Stack>
+                        <Text
+                            size={showBottomBar ? 'xs' : 'sm'}
+                            lineClamp={showBottomBar ? 10 : 1}
+                            weight="bold"
+                        >
+                            {row.event.summary || row.event.title}
+
+                            {!showBottomBar && (
+                                <Text size="sm" lineClamp={1} weight="normal">
+                                    {row.event.location}
+                                </Text>
+                            )}
+                        </Text>
                     </Box>
                 </Box>
             ))}
