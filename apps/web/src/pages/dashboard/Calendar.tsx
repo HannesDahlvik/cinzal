@@ -1,132 +1,77 @@
-import { useEffect, useState } from 'react'
-import { Task } from '../../config/types'
+import { CalendarViews, IEvent } from '../../config/types'
 
 import { useHookstate } from '@hookstate/core'
-import state, { IEvent } from '../../state'
+import state from '../../state'
 
-import { createStyles, Text } from '@mantine/core'
+import { createStyles, Select } from '@mantine/core'
+
+import ErrorPage from '../Error'
+import LoadingPage from '../Loading'
 
 import DashboardDateChanger from '../../components/dashboard/DateChanger'
-import DashboardCalendarDayRenderer from '../../components/dashboard/calendar/DayRenderer'
+import DashboardCalendarMonthView from '../../components/dashboard/calendar/MonthView'
+import DashboardCalendarWeekView from '../../components/dashboard/calendar/WeekView'
 
-import dayjs, { Dayjs } from 'dayjs'
-
-interface IFormatedDate {
-    date: Dayjs
-    isThisMonth: boolean
-    isToday: boolean
-    tasks: Task[]
-    events: IEvent[]
-}
-
-interface IMonthData {
-    tasks: Task[]
-    events: IEvent[]
-}
+import { trpc } from '../../utils'
 
 const DashboardCalendarPage: React.FC = () => {
     const { classes } = useStyles()
 
-    const { value: globalDate } = useHookstate(state.date)
-    const { value: tasks } = useHookstate(state.data.tasks)
-    const { value: events } = useHookstate(state.data.events)
+    const { value: view, set: setView } = useHookstate(state.calendarView)
 
-    const [month, setMonth] = useState<IFormatedDate[][]>([])
+    const tasksQuery = trpc.tasks.get.useQuery()
+    const calendarLinks = trpc.calendar.links.useQuery()
+    const eventsQuery = trpc.events.all.useQuery(
+        { calendarUrls: calendarLinks.data },
+        { enabled: !!calendarLinks.isSuccess }
+    )
 
-    useEffect(() => {
-        createMonth()
-    }, [globalDate])
+    if (tasksQuery.error || calendarLinks.error || eventsQuery.error)
+        return (
+            <ErrorPage
+                error={
+                    tasksQuery.error?.message ||
+                    calendarLinks.error?.message ||
+                    eventsQuery.error?.message
+                }
+            />
+        )
 
-    const formatDateObject = (date: Dayjs, data: IMonthData): IFormatedDate => {
-        const formatedObj: IFormatedDate = {
-            date: date,
-            isThisMonth: globalDate.month() === date.month(),
-            isToday: date.isToday(),
-            tasks: data.tasks.filter((task) => dayjs(task.deadline).date() === date.date()),
-            events: data.events.filter((event) => dayjs(event.start).date() === date.date())
-        }
-        return formatedObj
-    }
-
-    const createMonth = () => {
-        let currentDate = globalDate.startOf('month').weekday(0)
-        const nextMonth = globalDate.add(1, 'month').month()
-        const monthData = createMonthData(globalDate.month())
-        let allDates = []
-        let weekDates = []
-        let weekCounter = 1
-        while (currentDate.weekday(0).month() !== nextMonth) {
-            const formated = formatDateObject(currentDate, monthData)
-            weekDates.push(formated)
-            if (weekCounter === 7) {
-                allDates.push(weekDates)
-                weekDates = []
-                weekCounter = 0
-            }
-            weekCounter++
-            currentDate = currentDate.add(1, 'day')
-        }
-        setMonth(allDates)
-    }
-
-    const createMonthData = (month: number) => {
-        const obj: IMonthData = {
-            tasks: [],
-            events: []
-        }
-
-        tasks.map((task) => {
-            const taskDeadline = dayjs(task.deadline)
-            if (taskDeadline.year() === globalDate.year() && taskDeadline.month() === month)
-                obj.tasks.push(task)
-        })
-
-        events.map((event) => {
-            const eventStart = dayjs(event.start)
-            if (eventStart.year() === globalDate.year() && eventStart.month() === month)
-                obj.events.push(event)
-        })
-
-        return obj
-    }
+    if (calendarLinks.isLoading || eventsQuery.isLoading || tasksQuery.isLoading)
+        return <LoadingPage />
 
     return (
         <div className={classes.calendar}>
-            <div className={classes.dateChanger}>
-                <DashboardDateChanger />
+            <div className={classes.topBar}>
+                <DashboardDateChanger changeWeek={view === 'week'} />
+
+                <Select
+                    value={view}
+                    onChange={(ev) => setView(ev as CalendarViews)}
+                    data={[
+                        {
+                            label: 'Month',
+                            value: 'month'
+                        },
+                        {
+                            label: 'Week',
+                            value: 'week'
+                        }
+                    ]}
+                />
             </div>
 
-            <div className={classes.weekNames}>
-                {dayjs.weekdays().map((day) => (
-                    <Text className={classes.weekName} key={day}>
-                        {day}
-                    </Text>
-                ))}
-            </div>
-
-            <div className={classes.innerWrapper}>
-                {month.map((week, i) => (
-                    <div className={classes.week} key={i}>
-                        {week.map((day, j) => (
-                            <div
-                                className={`${classes.day} ${day.isToday ? classes.isToday : ''} ${
-                                    !day.isThisMonth ? classes.notThisMonth : ''
-                                }`}
-                                key={j}
-                            >
-                                <Text className={`${classes.dayText} `}>{day.date.date()}</Text>
-
-                                <div>
-                                    <DashboardCalendarDayRenderer
-                                        tasks={day.tasks}
-                                        events={day.events}
-                                    />
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                ))}
-            </div>
+            {view === 'month' ? (
+                <DashboardCalendarMonthView
+                    events={eventsQuery.data as IEvent[]}
+                    tasks={tasksQuery.data}
+                />
+            ) : view === 'week' ? (
+                <DashboardCalendarWeekView
+                    events={eventsQuery.data as IEvent[]}
+                    tasks={tasksQuery.data}
+                />
+            ) : null}
         </div>
     )
 }
@@ -134,84 +79,26 @@ const DashboardCalendarPage: React.FC = () => {
 export default DashboardCalendarPage
 
 const useStyles = createStyles((theme) => {
-    const isDark = theme.colorScheme === 'dark'
     const colors = theme.colors
     const spacing = theme.spacing
 
     return {
         calendar: {
-            display: 'flex',
-            alignItems: 'center',
-            flexDirection: 'column',
+            display: 'grid',
+            gridTemplateRows: '60px 1fr',
             height: '100%'
         },
-        dateChanger: {
-            padding: spacing.md,
-            width: '100%'
-        },
-        weekNames: {
-            display: 'flex',
-            justifyContent: 'center',
+        topBar: {
+            zIndex: 9,
+            display: 'grid',
+            gridTemplateColumns: '300px 150px',
             alignItems: 'center',
-            width: '100%'
-        },
-        weekName: {
-            textAlign: 'center',
-            width: '100%',
-            border: '1px solid',
-            borderBottom: 0,
-            borderColor: isDark ? colors.dark[5] : colors.gray[4]
-        },
-        innerWrapper: {
-            display: 'flex',
-            flexDirection: 'column',
-            height: '100%',
-            width: '100%'
-        },
-        week: {
-            display: 'flex',
-            justifyContent: 'space-between',
-            height: '100%'
-        },
-        day: {
-            position: 'relative',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '8px',
-            width: '100%',
-            padding: '2px',
-            paddingLeft: spacing.xs,
-            paddingRight: spacing.xs,
-            border: '1px solid',
-            borderColor: isDark ? colors.dark[5] : colors.gray[4]
-        },
-        dayText: {
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            width: '100%',
-            height: '26px',
-            zIndex: 20,
-            color: isDark ? '#fff' : '#000'
-        },
-        isToday: {
-            '&:after': {
-                content: `""`,
-                position: 'absolute',
-                top: 3,
-                left: 0,
-                right: 0,
-                marginLeft: 'auto',
-                marginRight: 'auto',
-                width: '26px',
-                height: '26px',
-                backgroundColor: colors.blue[5],
-                borderRadius: theme.radius.xl
-            }
-        },
-        notThisMonth: {
-            opacity: '0.75',
-            backgroundColor: isDark ? colors.dark[8] : colors.gray[3]
+            gap: spacing.md,
+            paddingLeft: spacing.md,
+            paddingRight: spacing.md,
+            backgroundColor: colors.dark[7],
+            borderBottom: '1px solid',
+            borderBottomColor: theme.colors.dark[5]
         }
     }
 })

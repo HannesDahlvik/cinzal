@@ -1,68 +1,44 @@
-import { Suspense } from 'react'
-import { Task } from '../config/types'
+import { Suspense, useEffect } from 'react'
+import { CalendarViews } from '../config/types'
+
+import { useHookstate } from '@hookstate/core'
+import state from '../state'
 
 import { Outlet } from 'react-router-dom'
 
-import state, { IEvent } from '../state'
-import { useHookstate } from '@hookstate/core'
+import { createStyles, useMantineTheme } from '@mantine/core'
+import { useMediaQuery } from '@mantine/hooks'
 
-import { createStyles } from '@mantine/core'
-
-import ErrorPage from '../pages/Error'
 import LoadingPage from '../pages/Loading'
 import DashboardSidebar from '../components/dashboard/Sidebar'
-
-import { trpc } from '../utils'
+import DashboardBottomBar from '../components/dashboard/BottomBar'
 
 const DashboardLayout: React.FC = () => {
+    const theme = useMantineTheme()
     const { classes } = useStyles()
 
     const { value: user } = useHookstate(state.auth.user)
+    const { set: setCalenderView } = useHookstate(state.calendarView)
+    const { set: setHasRedirected } = useHookstate(state.hasRedirectedDashboard)
 
-    const calendarLinks = trpc.calendar.links.useQuery(undefined, {
-        onSuccess: (data) => {
-            state.data.calendars.set(data)
-        }
-    })
-    const eventsQuery = trpc.events.all.useQuery(
-        { calendarUrls: calendarLinks.data },
-        {
-            enabled: !!calendarLinks.isSuccess,
-            onSuccess: (data) => {
-                state.data.events.set(data as unknown as IEvent[])
-            }
-        }
-    )
-    const tasksQuery = trpc.tasks.get.useQuery(undefined, {
-        enabled: !!user,
-        onSuccess: (data) => {
-            state.data.tasks.set(data as unknown as Task[])
-        }
-    })
+    const showBottomBar = useMediaQuery(`(max-width: ${theme.breakpoints.md}px)`)
 
-    if (tasksQuery.error || calendarLinks.error || eventsQuery.error)
-        return (
-            <ErrorPage
-                error={
-                    tasksQuery.error?.message ||
-                    calendarLinks.error?.message ||
-                    eventsQuery.error?.message
-                }
-            />
-        )
-
-    if (tasksQuery.isLoading || eventsQuery.isLoading || calendarLinks.isLoading)
-        return <LoadingPage />
+    useEffect(() => {
+        setCalenderView(user?.calendarView as CalendarViews)
+        setHasRedirected(true)
+    }, [])
 
     return (
         <div className={classes.wrapper}>
-            <DashboardSidebar />
+            {!showBottomBar && <DashboardSidebar />}
 
             <div className={classes.innerWrapper}>
                 <Suspense fallback={<LoadingPage />}>
                     <Outlet />
                 </Suspense>
             </div>
+
+            {showBottomBar && <DashboardBottomBar />}
         </div>
     )
 }
@@ -76,12 +52,21 @@ const useStyles = createStyles((theme) => {
     return {
         wrapper: {
             display: 'grid',
-            gridTemplateColumns: '150px 1fr',
+            gridTemplateColumns: '100px 1fr',
             minHeight: '100vh',
-            backgroundColor: isDark ? colors.dark[7] : colors.gray[1]
+            backgroundColor: isDark ? colors.dark[7] : colors.gray[1],
+
+            [`@media (max-width: ${theme.breakpoints.md}px)`]: {
+                gridTemplateColumns: '1fr',
+                gridTemplateRows: '1fr 80px'
+            }
         },
         innerWrapper: {
-            height: '100%'
+            height: '100%',
+
+            [`@media (max-width: ${theme.breakpoints.md}px)`]: {
+                height: 'calc(100vh - 80px)'
+            }
         }
     }
 })

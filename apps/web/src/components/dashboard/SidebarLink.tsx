@@ -1,9 +1,8 @@
 import { useNavigate } from 'react-router-dom'
 
-import { createStyles, Text } from '@mantine/core'
+import { createStyles } from '@mantine/core'
 
 interface Props {
-    title: string
     icon: React.ReactNode
     iconActive?: React.ReactNode
     to?: string
@@ -33,7 +32,6 @@ const DashboardSidebarLink: React.FC<Props> = (props) => {
             <div className={classes.sidebarLinkIcon}>
                 {props.active ? props.iconActive : props.icon}
             </div>
-            <Text className={classes.sidebarLinkText}>{props.title}</Text>
         </div>
     )
 }
@@ -79,12 +77,12 @@ const useStyles = createStyles((theme) => {
             }
         },
         sidebarLinkIcon: {
-            width: '24px',
-            height: '24px',
+            width: '28px',
+            height: '28px',
 
             svg: {
-                width: '24px',
-                height: '24px'
+                width: '28px',
+                height: '28px'
             }
         },
         sidebarLinkText: {

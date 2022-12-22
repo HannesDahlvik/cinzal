@@ -1,5 +1,8 @@
 import express from 'express'
+import https from 'node:https'
+import fs from 'node:fs'
 import 'dotenv/config'
+import config from './config'
 
 import appRouter from './router'
 import { createContext } from './context'
@@ -14,7 +17,8 @@ import morgan from 'morgan'
 
 export const prisma = new PrismaClient()
 const app = express()
-const PORT = 8080 || process.env.SERVER_PORT
+const PORT = process.env.SERVER_PORT
+const isProd = process.env.NODE_ENV === 'prod'
 
 /**
  * SERVER MIDDLEWARE
@@ -44,4 +48,14 @@ app.use(
 /**
  * START SERVER
  */
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`))
+if (isProd)
+    https
+        .createServer(
+            {
+                key: fs.readFileSync(config.certificate.key),
+                cert: fs.readFileSync(config.certificate.cert)
+            },
+            app
+        )
+        .listen(PORT, () => console.log(`Server running on port ${PORT} - PROD`))
+else app.listen(PORT, () => console.log(`Server running on port ${PORT} - DEV`))

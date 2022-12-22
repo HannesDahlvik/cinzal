@@ -1,71 +1,129 @@
 import { useEffect, useRef, useState } from 'react'
-import { Task } from '../../../config/types'
+import { DasboardTimelineCheckEvents, IEvent, Task } from '../../../config/types'
 
-import state, { IEvent } from '../../../state'
 import { useHookstate } from '@hookstate/core'
+import state from '../../../state'
 
-import { Box, createStyles, Stack, Text, useMantineTheme } from '@mantine/core'
+import { Box, Button, createStyles, Stack, Text, useMantineTheme } from '@mantine/core'
+import { useElementSize, useMediaQuery } from '@mantine/hooks'
 import { openModal } from '@mantine/modals'
+import { Clock, List } from 'phosphor-react'
 
 import dayjs from 'dayjs'
 import DashboardEditTaskModal from '../modals/EditTask'
 import DashboardEventInfoModal from '../modals/EventInfo'
+import { timelineGetAttributes, timelineGetCollisions } from '../../../utils'
 
-const DashboardHomeTimeline: React.FC = () => {
+interface IParsedEvent {
+    event: IEvent
+    width: number
+    height: number
+    top: number
+    left: number
+}
+
+interface Props {
+    hours: number[]
+    tasks: Task[]
+    needlePos: number
+    events: IEvent[]
+}
+
+const DashboardHomeTimeline: React.FC<Props> = ({ events, hours, needlePos, tasks }) => {
     const { classes } = useStyles()
     const theme = useMantineTheme()
 
     const { value: globalDate } = useHookstate(state.date)
-    const { value: tasks } = useHookstate(state.data.tasks)
-    const { value: events } = useHookstate(state.data.events)
+    const { value: rightDrawer, set: setRightDrawer } = useHookstate(state.drawers.homeRightDrawer)
+    const { value: leftDrawer, set: setLeftDrawer } = useHookstate(state.drawers.homeLeftDrawer)
+
+    const [parsedEvents, setParsedEvents] = useState<IParsedEvent[]>([])
 
     const wrapperEl = useRef<HTMLDivElement>(null)
+    const { ref: tasksWrapperRef, width: containerWidth } = useElementSize()
 
-    const [needlePos, setNeedlePos] = useState(0)
-
-    const hours = Array.from<number>({ length: 24 }).fill(0)
+    const showRightDrawer = useMediaQuery(`(max-width: ${theme.breakpoints.lg}px)`)
+    const showLeftDrawer = useMediaQuery(`(max-width: ${theme.breakpoints.md}px)`)
 
     useEffect(() => {
-        const el = document.querySelector<HTMLDivElement>(`#time-${dayjs().hour()}`)
-
-        if (wrapperEl.current && el) {
+        if (wrapperEl.current)
             wrapperEl.current.scrollTo({
-                top: el.offsetTop - 200,
+                top: needlePos - 200,
                 behavior: 'smooth'
             })
-        }
-
-        calcNeedlePos()
-        const interval = setInterval(() => calcNeedlePos(), 1000)
-
-        return () => clearInterval(interval)
     }, [])
 
-    const calcNeedlePos = () => {
-        const time = dayjs()
-        const hour = time.hour()
-        const minute = time.minute()
+    useEffect(() => {
+        const dayEvents = events.filter((event) => checkRenderBox(dayjs(event.start)))
+        const parsedEvents: IParsedEvent[] = []
 
-        const hourPos = hour * 100
-        const minutePos = 100 / (60 / minute)
-        const finalPos = hourPos + minutePos
+        if (dayEvents.length !== 0) {
+            const eventsToCheckCollisions: DasboardTimelineCheckEvents[] = dayEvents.map(
+                (event) => {
+                    const startDate = dayjs(event.start)
+                    const endDate = dayjs(event.end)
+                    const start = startDate.hour() * 60 + 60 / (60 / startDate.minute())
+                    let minute = endDate.diff(startDate, 'minute')
+                    const end = start + minute
 
-        setNeedlePos(finalPos)
-    }
+                    return {
+                        start: Math.floor(start),
+                        end: Math.floor(end)
+                    }
+                }
+            )
 
-    const calcBoxFinalPos = (boxDate: dayjs.Dayjs) => {
+            const collisions = timelineGetCollisions(eventsToCheckCollisions)
+            const { leftOffSet, width } = timelineGetAttributes(eventsToCheckCollisions, collisions)
+
+            dayEvents.map((event, i) => {
+                const eventHeight = calcEventBoxHeight(event)
+                let eventLeft = (containerWidth / width[i]) * (leftOffSet[i] - 1)
+                if (!eventLeft || eventLeft < 0) eventLeft = 0
+                let units = width[i]
+                if (!units) units = 1
+                const eventTop = calcBoxTopPos(dayjs(event.start))
+                const eventWidth = containerWidth / units
+                parsedEvents.push({
+                    event,
+                    width: eventWidth,
+                    height: eventHeight,
+                    top: eventTop,
+                    left: eventLeft
+                })
+            })
+            setParsedEvents(parsedEvents)
+            return
+        }
+        setParsedEvents([])
+    }, [events, globalDate, containerWidth])
+
+    /**
+     * Checks if element should be rendered based on global date
+     */
+    const checkRenderBox = (boxDate: dayjs.Dayjs) => {
         if (
             boxDate.date() === globalDate.date() &&
             boxDate.month() === globalDate.month() &&
             boxDate.year() === globalDate.year()
-        ) {
-            const hourPos = boxDate.hour() * 100
-            const minutePos = 100 / (60 / boxDate.minute())
-            const finalPos = hourPos + minutePos
-            return finalPos
-        } else return null
+        )
+            return true
+        else return false
     }
 
+    /**
+     * Calculates box top position
+     */
+    const calcBoxTopPos = (boxDate: dayjs.Dayjs): number => {
+        const hourPos = boxDate.hour() * 100
+        const minutePos = 100 / (60 / boxDate.minute())
+        const topPos = hourPos + minutePos
+        return topPos
+    }
+
+    /**
+     * Calculates event height based on start and end date
+     */
     const calcEventBoxHeight = (event: IEvent) => {
         const start = dayjs(new Date(event.start))
         const end = dayjs(new Date(event.end))
@@ -96,51 +154,75 @@ const DashboardHomeTimeline: React.FC = () => {
 
     return (
         <div className={classes.wrapper} ref={wrapperEl}>
+            {showLeftDrawer && (
+                <Box sx={{ position: 'fixed', bottom: 100, left: 20, zIndex: 99 }}>
+                    <Button size="sm" p="8px" onClick={() => setLeftDrawer(!leftDrawer)}>
+                        <List size={22} />
+                    </Button>
+                </Box>
+            )}
+
+            {showRightDrawer && (
+                <Box
+                    sx={{
+                        position: 'fixed',
+                        bottom: showLeftDrawer ? 100 : 20,
+                        right: 20,
+                        zIndex: 99
+                    }}
+                >
+                    <Button size="sm" p="8px" onClick={() => setRightDrawer(!rightDrawer)}>
+                        <Clock size={22} />
+                    </Button>
+                </Box>
+            )}
+
             <div className={classes.timeWrapper}>
                 {hours.map((_, hour) => (
-                    <Text className={classes.timeBox} id={`time-${hour}`} key={hour}>
+                    <Text className={classes.timeBox} key={hour}>
                         {hour}:00
                     </Text>
                 ))}
             </div>
 
             <div className={classes.innerWrapper}>
-                <div className={classes.tasksWrapper}>
-                    {events.map((event, i) => {
-                        const finalPos = calcBoxFinalPos(dayjs(event.start))
-
-                        if (finalPos) {
-                            const height = calcEventBoxHeight(event)
-
-                            return (
-                                <Box
-                                    className={classes.eventBox}
-                                    sx={{ top: finalPos, height: `${height}px` }}
-                                    key={i}
-                                >
-                                    <Box
-                                        className={classes.innerBox}
-                                        onClick={() => handleOpenEventInfo(event)}
-                                    >
-                                        <Stack spacing={2}>
-                                            <Text lineClamp={1}>
-                                                {event.summary || event.title}
-                                            </Text>
-                                            <Text lineClamp={1}>{event.location}</Text>
-                                        </Stack>
-                                    </Box>
-                                </Box>
-                            )
-                        } else return null
-                    })}
+                <div className={classes.tasksWrapper} ref={tasksWrapperRef}>
+                    {parsedEvents.map((row, i) => (
+                        <Box
+                            className={classes.box}
+                            sx={{
+                                top: row.top,
+                                height: row.height,
+                                minHeight: '60px',
+                                width: row.width,
+                                left: row.left
+                            }}
+                            key={i}
+                        >
+                            <Box
+                                className={classes.innerBox}
+                                sx={{ backgroundColor: theme.colors.blue[7] }}
+                                onClick={() => handleOpenEventInfo(row.event)}
+                            >
+                                <Stack spacing={2}>
+                                    <Text lineClamp={1} weight="bold">
+                                        {row.event.summary || row.event.title}
+                                    </Text>
+                                    <Text lineClamp={1}>{row.event.location}</Text>
+                                </Stack>
+                            </Box>
+                        </Box>
+                    ))}
 
                     {tasks.map((task) => {
-                        const finalPos = calcBoxFinalPos(dayjs(task.deadline))
-                        if (finalPos)
+                        const render = checkRenderBox(dayjs(task.deadline))
+                        if (render) {
+                            const topPos = calcBoxTopPos(dayjs(task.deadline))
+
                             return (
                                 <Box
-                                    className={classes.taskBox}
-                                    sx={{ top: finalPos }}
+                                    className={classes.box}
+                                    sx={{ top: topPos, height: '30px' }}
                                     key={task.id}
                                 >
                                     <Box
@@ -155,15 +237,17 @@ const DashboardHomeTimeline: React.FC = () => {
                                     </Box>
                                 </Box>
                             )
-                        else return null
+                        } else return null
                     })}
                 </div>
 
-                {hours.map((row, hour) => (
+                {hours.map((_, hour) => (
                     <div className={classes.timeBox} key={hour}></div>
                 ))}
 
-                <Box className={classes.needle} sx={{ top: needlePos }} />
+                {checkRenderBox(dayjs()) && (
+                    <Box className={classes.needle} sx={{ top: needlePos }} />
+                )}
             </div>
         </div>
     )
@@ -183,7 +267,11 @@ const useStyles = createStyles((theme) => {
             backgroundColor: !isDark ? colors.gray[2] : '',
             overflowY: 'auto',
             scrollbarWidth: 'thin',
-            position: 'relative'
+            position: 'relative',
+
+            [`@media (max-width: ${theme.breakpoints.md}px)`]: {
+                gridTemplateColumns: '75px 1fr'
+            }
         },
         timeWrapper: {
             display: 'grid',
@@ -201,26 +289,19 @@ const useStyles = createStyles((theme) => {
             width: '100%',
             height: '100%'
         },
-        taskBox: {
-            position: 'relative',
-            width: '100%',
-            height: '30px',
+        box: {
+            position: 'absolute',
             padding: '0 3px'
         },
         innerBox: {
             display: 'flex',
             height: '100%',
             borderRadius: theme.radius.sm,
-            backgroundColor: colors.blue[7],
+            border: '1px solid',
+            borderColor: colors.dark[7],
             color: '#fff',
             padding: '2px',
             cursor: 'pointer'
-        },
-        eventBox: {
-            position: 'relative',
-            width: '100%',
-            minHeight: '60px',
-            padding: '0 3px'
         },
         timeBox: {
             width: '100%',
@@ -233,12 +314,7 @@ const useStyles = createStyles((theme) => {
             position: 'absolute',
             width: '100%',
             height: '2px',
-            backgroundColor: colors.red[6],
-            boxShadow: `0px 0px 4.5px ${colors.red[6]},
-            0px 0px 12.5px ${colors.red[6]},
-            0px 0px 30.1px ${colors.red[6]},
-            0px 0px 100px ${colors.red[6]}
-          ;`
+            backgroundColor: colors.red[6]
         }
     }
 })

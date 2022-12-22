@@ -11,6 +11,8 @@ const genJwtToken = (user: User) => {
             uuid: user.uuid,
             username: user.username,
             email: user.email,
+            redirectDashboard: user.redirectDashboard,
+            calendarView: user.calendarView,
             createdAt: user.createdAt,
             updatedAt: user.updatedAt
         }

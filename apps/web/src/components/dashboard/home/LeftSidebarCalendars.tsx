@@ -1,20 +1,46 @@
-import { useHookstate } from '@hookstate/core'
-import state from '../../../state'
+import { Calendar } from '../../../config/types'
 
-import { Box, Menu, Stack, Text } from '@mantine/core'
+import { Box, Button, Group, Menu, Stack, Text } from '@mantine/core'
 import { closeAllModals, openConfirmModal, openModal } from '@mantine/modals'
-import { DotsThreeOutlineVertical, PencilSimple, Plus, TrashSimple } from 'phosphor-react'
+import {
+    DotsThreeOutlineVertical,
+    Eye,
+    EyeSlash,
+    PencilSimple,
+    Plus,
+    TrashSimple
+} from 'phosphor-react'
 
 import DashboardAddCalendarModal from '../modals/AddCalendar'
 
 import { errorHandler, trpc } from '../../../utils'
 import DashboaredEditCalendarModal from '../modals/EditCalendar'
 
-const HomeLeftSidebarCalendars: React.FC = () => {
+interface Props {
+    calendars: Calendar[]
+}
+
+const HomeLeftSidebarCalendars: React.FC<Props> = ({ calendars }) => {
     const tu = trpc.useContext()
+    const editCalendarMutation = trpc.calendar.edit.useMutation()
     const deleteCalendarMutation = trpc.calendar.delete.useMutation()
 
-    const { value: calendars } = useHookstate(state.data.calendars)
+    const handleEditShowCalendar = (calendar: Calendar) => {
+        editCalendarMutation.mutate(
+            {
+                ...calendar,
+                show: !calendar.show
+            },
+            {
+                onError: (err) => {
+                    errorHandler(err.message)
+                },
+                onSuccess: () => {
+                    tu.calendar.links.invalidate()
+                }
+            }
+        )
+    }
 
     const handleAddCalendar = () => {
         openModal({
@@ -63,28 +89,37 @@ const HomeLeftSidebarCalendars: React.FC = () => {
             {calendars.map((row, i) => (
                 <Box sx={{ display: 'flex', justifyContent: 'space-between' }} key={i}>
                     <Text>{row.name}</Text>
-                    <Menu position="right" withArrow>
-                        <Menu.Target>
-                            <DotsThreeOutlineVertical cursor="pointer" size={20} />
-                        </Menu.Target>
 
-                        <Menu.Dropdown>
-                            <Menu.Item
-                                icon={<PencilSimple />}
-                                onClick={() => handleEditCalendar(row)}
-                            >
-                                Edit
-                            </Menu.Item>
-                            <Menu.Divider />
-                            <Menu.Item
-                                color="red"
-                                icon={<TrashSimple />}
-                                onClick={() => handleDeleteCalendar(row)}
-                            >
-                                Delete
-                            </Menu.Item>
-                        </Menu.Dropdown>
-                    </Menu>
+                    <Group>
+                        <Menu position="right" withArrow>
+                            <Menu.Target>
+                                <DotsThreeOutlineVertical cursor="pointer" size={20} />
+                            </Menu.Target>
+
+                            <Menu.Dropdown>
+                                <Menu.Item
+                                    icon={<PencilSimple />}
+                                    onClick={() => handleEditCalendar(row)}
+                                >
+                                    Edit
+                                </Menu.Item>
+                                <Menu.Item
+                                    icon={row.show ? <EyeSlash /> : <Eye />}
+                                    onClick={() => handleEditShowCalendar(row)}
+                                >
+                                    {row.show ? 'Hide' : 'Show'}
+                                </Menu.Item>
+                                <Menu.Divider />
+                                <Menu.Item
+                                    color="red"
+                                    icon={<TrashSimple />}
+                                    onClick={() => handleDeleteCalendar(row)}
+                                >
+                                    Delete
+                                </Menu.Item>
+                            </Menu.Dropdown>
+                        </Menu>
+                    </Group>
                 </Box>
             ))}
         </Stack>

@@ -48,7 +48,8 @@ const calendarRouter = t.router({
             z.object({
                 id: z.number(),
                 name: z.string(),
-                url: z.string()
+                url: z.string(),
+                show: z.boolean()
             })
         )
         .mutation(async ({ ctx, input }) => {
@@ -57,6 +58,7 @@ const calendarRouter = t.router({
                     data: {
                         url: input.url,
                         name: input.name,
+                        show: input.show,
                         uuid: ctx.user.uuid
                     },
                     where: { id: input.id }

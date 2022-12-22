@@ -1,6 +1,5 @@
 import { useState } from 'react'
-
-import { IEvent } from '../../../state'
+import { IEvent } from '../../../config/types'
 
 import { Group, TextInput, Textarea, Stack, Button, Text } from '@mantine/core'
 import { DatePicker, TimeRangeInput } from '@mantine/dates'

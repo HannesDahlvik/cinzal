@@ -1,3 +1,5 @@
+import { Calendar } from '../../../config/types'
+
 import state from '../../../state'
 import { useHookstate } from '@hookstate/core'
 
@@ -12,7 +14,11 @@ import HomeLeftSidebarCalendars from './LeftSidebarCalendars'
 
 import dayjs from 'dayjs'
 
-const DashboardHomeLeftSidebar: React.FC = () => {
+interface Props {
+    calendars: Calendar[]
+}
+
+const DashboardHomeLeftSidebar: React.FC<Props> = ({ calendars }) => {
     const { classes } = useStyles()
     const theme = useMantineTheme()
 
@@ -79,19 +85,22 @@ const DashboardHomeLeftSidebar: React.FC = () => {
 
             <Divider sx={{ width: '100%' }} />
 
-            <HomeLeftSidebarCalendars />
+            <HomeLeftSidebarCalendars calendars={calendars} />
         </div>
     )
 }
 
 export default DashboardHomeLeftSidebar
 
-const useStyles = createStyles(() => {
+const useStyles = createStyles((theme) => {
     return {
         sidebar: {
             display: 'flex',
             alignItems: 'center',
-            flexDirection: 'column'
+            flexDirection: 'column',
+            borderRight: '1px solid',
+            borderRightColor: theme.colors.dark[5],
+            height: '100vh'
         },
         create: {
             width: '100%'

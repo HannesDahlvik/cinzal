@@ -14,7 +14,8 @@ const eventsRouter = t.router({
                     .object({
                         id: z.number(),
                         url: z.string(),
-                        uuid: z.string()
+                        uuid: z.string(),
+                        show: z.boolean()
                     })
                     .array()
                     .optional()
@@ -24,7 +25,8 @@ const eventsRouter = t.router({
             if (input.calendarUrls) {
                 const arr = await Promise.all(
                     input.calendarUrls.map(async (row) => {
-                        return await ical.async.fromURL(row.url)
+                        if (row.show) return await ical.async.fromURL(row.url)
+                        else return []
                     })
                 )
 
@@ -41,7 +43,9 @@ const eventsRouter = t.router({
                         throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: err.message })
                     })
 
-                return [...events, ...data]
+                const returnArr = [...events, ...data]
+                returnArr.sort((a, b) => new Date(a.start).getTime() - new Date(b.start).getTime())
+                return returnArr
             }
 
             const events = await prisma.event

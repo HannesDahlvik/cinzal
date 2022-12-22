@@ -1,8 +1,12 @@
+import ical from 'node-ical'
+
 export interface UserData {
     id: number
     uuid: string
     username: string
     email: string
+    redirectDashboard: boolean
+    calendarView: string
     createdAt: Date
     updatedAt: Date
 }
@@ -15,7 +19,6 @@ export interface Task {
     completed: boolean
     color: string
     uuid: String
-    user: UserData
     createdAt: Date
     updatedAt: Date
 }
@@ -32,16 +35,33 @@ export interface Event {
     uuid: string
 }
 
+export type IEvent = ical.VEvent & Event
+
+export interface Note {
+    id: number
+    title: string
+    data: string
+    createdAt: Date
+    updatedAt: Date
+}
+
 export interface Calendar {
     id: number
     name: string
     url: string
     uuid: string
+    show: boolean
 }
 
+export type CalendarViews = 'month' | 'week'
+
 export interface DashboardSidebarLinks {
-    title: string
     path: string
     icon: React.ReactNode
     iconActive: React.ReactNode
+}
+
+export interface DasboardTimelineCheckEvents {
+    start: number
+    end: number
 }

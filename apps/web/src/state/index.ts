@@ -1,16 +1,17 @@
 import { hookstate } from '@hookstate/core'
+import { CalendarViews } from '../config/types'
 
-import data from './data'
 import auth from './auth'
+import drawers from './drawers'
 
 import dayjs from 'dayjs'
 
 const state = {
-    data,
     auth,
-    date: hookstate(dayjs())
+    drawers,
+    date: hookstate(dayjs()),
+    calendarView: hookstate<CalendarViews>('month'),
+    hasRedirectedDashboard: hookstate(false)
 }
-
-export * from './data'
 
 export default state
