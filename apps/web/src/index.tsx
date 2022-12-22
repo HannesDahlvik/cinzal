@@ -14,7 +14,7 @@ import weekOfYear from 'dayjs/plugin/weekOfYear'
 
 dayjs.locale({
     ...en,
-    weekStart: 0
+    weekStart: 1
 })
 dayjs.extend(isBetween)
 dayjs.extend(localeData)
