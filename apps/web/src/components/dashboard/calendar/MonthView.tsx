@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { IEvent, Task } from '../../../config/types'
 
 import { useHookstate } from '@hookstate/core'
@@ -6,8 +6,9 @@ import state from '../../../state'
 
 import { Box, createStyles, Text, useMantineTheme } from '@mantine/core'
 import { useMediaQuery, useViewportSize } from '@mantine/hooks'
+import { getWeekdaysNames } from '@mantine/dates'
 
-import dayjs, { Dayjs } from 'dayjs'
+import dayjs, { Dayjs, locale } from 'dayjs'
 import DashboardCalendarDayRenderer from './DayRenderer'
 
 interface IFormatedDate {
@@ -116,11 +117,13 @@ const DashboardCalendarMonthView: React.FC<Props> = ({ events, tasks }) => {
     return (
         <div>
             <div className={classes.weekNames}>
-                {dayjs[!showBottomBar ? 'weekdays' : 'weekdaysShort']().map((day) => (
-                    <Text className={classes.weekName} key={day}>
-                        {day}
-                    </Text>
-                ))}
+                {getWeekdaysNames(locale(), 'monday', !showBottomBar ? 'dddd' : 'ddd').map(
+                    (day) => (
+                        <Text className={classes.weekName} key={day}>
+                            {day}
+                        </Text>
+                    )
+                )}
             </div>
 
             <div className={classes.innerWrapper} ref={wrapperRef}>
