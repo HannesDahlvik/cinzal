@@ -90,7 +90,8 @@ const useStyles = createStyles((theme) => {
         },
         topBar: {
             zIndex: 9,
-            display: 'flex',
+            display: 'grid',
+            gridTemplateColumns: '300px 150px',
             alignItems: 'center',
             gap: spacing.md,
             paddingLeft: spacing.md,
