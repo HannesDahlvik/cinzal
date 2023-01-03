@@ -9,7 +9,7 @@ import isTodayPlugin from 'dayjs/plugin/isToday'
 
 dayjs.locale({
     ...en,
-    weekStart: 0
+    weekStart: 1
 })
 dayjs.extend(localeData)
 dayjs.extend(weekdayPlugin)

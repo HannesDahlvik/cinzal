@@ -1,3 +1,3 @@
 export default {
-    serverURL: 'http://api.cinzal.com/trpc'
+    serverURL: 'https://api.cinzal.com/trpc'
 }

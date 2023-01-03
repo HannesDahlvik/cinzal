@@ -1,4 +1,5 @@
 export * from './parseUsername'
 export * from './setAuth'
+export * from './storage'
 export * from './trpc'
 export * from './useErrorHandler'

@@ -5,6 +5,8 @@ export interface UserData {
     uuid: string
     username: string
     email: string
+    redirectDashboard: boolean
+    calendarView: string
     createdAt: Date
     updatedAt: Date
 }
@@ -35,15 +37,25 @@ export interface Event {
 
 export type IEvent = ical.VEvent & Event
 
+export interface Note {
+    id: number
+    title: string
+    data: string
+    createdAt: Date
+    updatedAt: Date
+}
+
 export interface Calendar {
     id: number
     name: string
     url: string
     uuid: string
+    show: boolean
 }
 
+export type CalendarViews = 'month' | 'week'
+
 export interface DashboardSidebarLinks {
-    title: string
     path: string
     icon: React.ReactNode
     iconActive: React.ReactNode

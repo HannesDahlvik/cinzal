@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react'
-import * as SecureStore from 'expo-secure-store'
 
 import { DefaultTheme, NavigationContainer } from '@react-navigation/native'
 import RootNavigator from './navigation/Root'
@@ -7,7 +6,7 @@ import LoadingScreen from './screens/Loading'
 
 import { useTheme } from 'native-base'
 
-import { setAuth, trpc, useErrorHandler } from './utils'
+import { setAuth, storage, trpc, useErrorHandler } from './utils'
 
 const App: React.FC = () => {
     const errorHandler = useErrorHandler()
@@ -20,7 +19,8 @@ const App: React.FC = () => {
 
     useEffect(() => {
         const checkUser = async () => {
-            const token: string | null = await SecureStore.getItemAsync('token')
+            const token = await storage.get('token')
+
             if (token) {
                 authVerifyMutation(null, {
                     onError: (err) => {
@@ -41,7 +41,6 @@ const App: React.FC = () => {
                 })
             } else setRender(true)
         }
-
         checkUser()
     }, [])
 

@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react'
-import { IEvent, Task } from '~/config/types'
+import { Calendar, IEvent, Task } from '~/config/types'
 
 import TabScreenWrapper from '../../navigation/TabScreenWrapper'
 import { TabStackScreenProps } from '~/navigation/TabNavigator'
 
+import ErrorScreen from '../Error'
 import LoadingScreen from '../Loading'
 import DashboardHomeDayChanger from '../../components/dashboard/home/DayChanger'
 import DashboardHomeTimeline from '../../components/dashboard/home/Timeline'
@@ -14,19 +15,18 @@ import { trpc } from '../../utils'
 const DashboardHomeScreen: React.FC<TabStackScreenProps<'DashboardHome'>> = () => {
     const hours = Array.from<number>({ length: 24 }).fill(0)
 
+    const tasksQuery = trpc.tasks.get.useQuery()
     const calendarLinks = trpc.calendar.links.useQuery()
     const eventsQuery = trpc.events.all.useQuery(
-        { calendarUrls: calendarLinks.data },
+        { calendarUrls: calendarLinks.data as Calendar[] },
         { enabled: !!calendarLinks.isSuccess }
     )
-    const tasksQuery = trpc.tasks.get.useQuery()
 
     const [needlePos, setNeedlePos] = useState(0)
 
     useEffect(() => {
         calcNeedlePos()
         const interval = setInterval(() => calcNeedlePos(), 1000)
-
         return () => clearInterval(interval)
     }, [])
 
@@ -41,6 +41,19 @@ const DashboardHomeScreen: React.FC<TabStackScreenProps<'DashboardHome'>> = () =
 
         setNeedlePos(finalPos)
     }
+
+    if (tasksQuery.error || calendarLinks.error || eventsQuery.error)
+        return (
+            <TabScreenWrapper>
+                <ErrorScreen
+                    error={
+                        tasksQuery.error?.message ||
+                        calendarLinks.error?.message ||
+                        eventsQuery.error?.message
+                    }
+                />
+            </TabScreenWrapper>
+        )
 
     if (calendarLinks.isLoading || eventsQuery.isLoading || tasksQuery.isLoading)
         return <LoadingScreen />

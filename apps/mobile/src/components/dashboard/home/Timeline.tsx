@@ -101,7 +101,6 @@ const DashboardHomeTimeline: React.FC<Props> = ({ hours, needlePos, tasks, event
                                     padding="2px"
                                 >
                                     <Text fontWeight="bold" numberOfLines={1}>
-                                        {dayjs(event.start).format('HH:mm')}{' '}
                                         {event.summary || event.title}
                                     </Text>
                                     <Text numberOfLines={1}>{event.location}</Text>
