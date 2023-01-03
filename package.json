@@ -8,6 +8,7 @@
     ],
     "scripts": {
         "web": "turbo run dev --parallel --filter @cz/server --filter @cz/web",
+        "mobile": "turbo run dev --parallel --filter @cz/server --filter @cz/mobile",
         "build": "turbo run build",
         "build-web": "yarn workspace @cz/web build",
         "build-server": "yarn workspace @cz/server build",
