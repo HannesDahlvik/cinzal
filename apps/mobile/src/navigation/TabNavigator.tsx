@@ -5,7 +5,7 @@ import { CalendarBlank, CheckSquare, GearSix, House, Notebook } from 'phosphor-r
 
 import DashboardTasksScreen from '../screens/dashboard/Tasks'
 import DashboardCalendarScreen from '../screens/dashboard/Calendar'
-import DashboardHomeScreen from '../screens/dashboard/Home'
+import DashboardHomeNavigator from './DashboardHomeNavigator'
 import DashboardNotesScreen from '../screens/dashboard/Notes'
 import DashboardSettingsScreen from '../screens/dashboard/Settings'
 
@@ -51,7 +51,7 @@ const TabNavigator: React.FC = () => {
             />
             <Tab.Screen
                 name="DashboardHome"
-                component={DashboardHomeScreen}
+                component={DashboardHomeNavigator}
                 options={{
                     tabBarIcon: ({ focused }) => (
                         <House size={tabBarIconSize} weight={focused ? 'fill' : 'regular'} />

@@ -24,7 +24,8 @@ const App: React.FC = () => {
             if (token) {
                 authVerifyMutation(null, {
                     onError: (err) => {
-                        errorHandler(err.message)
+                        if (err.message.includes('jwt expired')) errorHandler('Auth expired')
+                        else errorHandler(err.message)
                         setAuth(null, null)
                         setRender(true)
                     },

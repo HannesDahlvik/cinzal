@@ -6,13 +6,14 @@ import { TabStackScreenProps } from '~/navigation/TabNavigator'
 
 import ErrorScreen from '../Error'
 import LoadingScreen from '../Loading'
+import DashboardHomeLeftSidebar from '../../components/dashboard/home/LeftSidebar'
 import DashboardHomeDayChanger from '../../components/dashboard/home/DayChanger'
 import DashboardHomeTimeline from '../../components/dashboard/home/Timeline'
 
 import dayjs from 'dayjs'
 import { trpc } from '../../utils'
 
-const DashboardHomeScreen: React.FC<TabStackScreenProps<'DashboardHome'>> = () => {
+const DashboardHomeScreen: React.FC<any> = (props) => {
     const hours = Array.from<number>({ length: 24 }).fill(0)
 
     const tasksQuery = trpc.tasks.get.useQuery()

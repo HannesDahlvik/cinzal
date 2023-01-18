@@ -4,6 +4,7 @@ import { createStackNavigator, StackScreenProps } from '@react-navigation/stack'
 import { useHookstate } from '@hookstate/core'
 import state from '../state'
 
+import DrawerNavigator from './DrawerNavigator'
 import TabNavigator, { TabParamList } from './TabNavigator'
 
 import WelcomeScreen from '../screens/Welcome'
@@ -18,7 +19,7 @@ const RootNavigator: React.FC = () => {
     return (
         <Stack.Navigator screenOptions={{ headerShown: false }}>
             {user ? (
-                <Stack.Screen name="Dashboard" component={TabNavigator} />
+                <Stack.Screen name="Dashboard" component={DrawerNavigator} />
             ) : (
                 <>
                     <Stack.Screen name="Welcome" component={WelcomeScreen} />

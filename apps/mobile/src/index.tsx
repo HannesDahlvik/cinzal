@@ -1,3 +1,5 @@
+import 'react-native-gesture-handler'
+
 import Providers from './Providers'
 import App from './App'
 
