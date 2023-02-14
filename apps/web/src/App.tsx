@@ -60,13 +60,11 @@ const router = createBrowserRouter([
             },
             {
                 path: 'notes',
-                element: <DashboardNotesPage />,
-                children: [
-                    {
-                        path: ':note_id',
-                        element: <DashboardNotesEditPage />
-                    }
-                ]
+                element: <DashboardNotesPage />
+            },
+            {
+                path: 'notes/:note_id',
+                element: <DashboardNotesEditPage />
             },
             {
                 path: 'profile',

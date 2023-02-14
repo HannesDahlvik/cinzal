@@ -1,66 +1,56 @@
 import { Note } from '../../config/types'
 
-import { useHookstate } from '@hookstate/core'
-import state from '../../state'
+import { useNavigate } from 'react-router-dom'
 
-import { Outlet, useLocation } from 'react-router-dom'
+import { Box, Text, createStyles, useMantineTheme } from '@mantine/core'
+import { openModal } from '@mantine/modals'
+import { Plus } from 'phosphor-react'
 
-import { Box, Button, Center, Drawer, Title, createStyles, useMantineTheme } from '@mantine/core'
-import { useMediaQuery } from '@mantine/hooks'
-import { List } from 'phosphor-react'
-
-import DashboardNotesSidebar from '../../components/dashboard/notes/NotesSidebar'
+import DashboardCreateNoteModal from '../../components/dashboard/modals/CreateNote'
 import LoadingPage from '../Loading'
 
 import { trpc } from '../../utils'
 
 const DashboardNotesPage: React.FC = () => {
-    const { classes } = useStyles()
     const theme = useMantineTheme()
+    const { classes } = useStyles()
 
     const { data: notes } = trpc.notes.all.useQuery()
 
-    const { value: notesDrawer, set: setNotesDrawer } = useHookstate(state.drawers.notesDrawer)
+    const navigate = useNavigate()
 
-    const location = useLocation()
+    const handleCreateNote = () => {
+        openModal({
+            title: 'New note',
+            children: <DashboardCreateNoteModal />
+        })
+    }
 
-    const smBreakpoint = useMediaQuery(`(max-width: ${theme.breakpoints.sm}px)`)
+    const handleOpenNote = (note: Note) => {
+        navigate(`${note.id}`, {
+            state: { note }
+        })
+    }
 
     if (!notes) return <LoadingPage />
 
     return (
         <div className={classes.wrapper}>
-            {!smBreakpoint && <DashboardNotesSidebar notes={notes as Note[]} />}
+            <Box
+                className={classes.box}
+                sx={{ border: '2px solid', borderColor: theme.colors.dark[4] }}
+                onClick={handleCreateNote}
+            >
+                <Plus size={32} />
+            </Box>
 
-            {location.pathname === '/dashboard/notes' && (
-                <Center>
-                    <Title align="center">
-                        {notes?.length === 0 ? 'Create a note' : 'Select a note'}
-                    </Title>
-                </Center>
-            )}
-
-            <Outlet />
-
-            {smBreakpoint && (
-                <>
-                    <Box sx={{ position: 'fixed', bottom: 100, right: 20, zIndex: 99 }}>
-                        <Button size="sm" p="8px" onClick={() => setNotesDrawer(!notesDrawer)}>
-                            <List size={22} />
-                        </Button>
-                    </Box>
-
-                    <Drawer
-                        position="right"
-                        size={smBreakpoint ? '75%' : 'md'}
-                        withCloseButton={false}
-                        opened={notesDrawer}
-                        onClose={() => setNotesDrawer(!notesDrawer)}
-                    >
-                        <DashboardNotesSidebar notes={notes as Note[]} />
-                    </Drawer>
-                </>
-            )}
+            {notes
+                .sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime())
+                .map((note) => (
+                    <div className={classes.box} onClick={() => handleOpenNote(note)} key={note.id}>
+                        <Text>{note.title}</Text>
+                    </div>
+                ))}
         </div>
     )
 }
@@ -70,13 +60,14 @@ export default DashboardNotesPage
 const useStyles = createStyles((theme) => {
     const isDark = theme.colorScheme === 'dark'
     const colors = theme.colors
+    const spacing = theme.spacing
 
     return {
         wrapper: {
-            display: 'grid',
-            gridTemplateColumns: '1fr 4fr',
-            gap: theme.spacing.xs,
-            height: '100%',
+            display: 'flex',
+            flexWrap: 'wrap',
+            gap: spacing.md,
+            padding: spacing.xl,
 
             [`@media (max-width: ${theme.breakpoints.md}px)`]: {
                 gridTemplateColumns: '1fr 2fr'
@@ -86,28 +77,25 @@ const useStyles = createStyles((theme) => {
                 gridTemplateColumns: '1fr'
             }
         },
-        notesWrapper: {
-            display: 'flex',
-            flexDirection: 'column',
-            position: 'sticky',
-            top: 0,
-            left: 0,
-            height: '100vh',
-            borderRight: '1px solid',
-            borderRightColor: isDark ? colors.dark[5] : colors.gray[4]
-        },
         box: {
+            position: 'relative',
             display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
             flexDirection: 'column',
+            width: '200px',
+            height: '200px',
             cursor: 'pointer',
             padding: theme.spacing.md,
             borderRadius: theme.radius.md,
-            backgroundColor: isDark ? colors.dark[8] : colors.gray[4],
+            backgroundColor: isDark ? colors.dark[6] : colors.gray[4],
             transition: '.2s',
-            marginBottom: theme.spacing.xs
-        },
-        boxSlected: {
-            backgroundColor: isDark ? colors.dark[6] : theme.white
+            marginBottom: theme.spacing.xs,
+
+            [`@media (max-width: ${theme.breakpoints.sm}px)`]: {
+                width: '100%',
+                height: '150px'
+            }
         }
     }
 })

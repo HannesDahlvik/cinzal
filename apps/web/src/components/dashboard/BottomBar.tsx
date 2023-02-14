@@ -61,9 +61,13 @@ const useStyles = createStyles((theme) => {
 
     return {
         wrapper: {
+            position: 'fixed',
+            bottom: 0,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-around',
+            width: '100%',
+            height: '80px',
             backgroundColor: colors.dark[7],
             borderTop: '1px solid',
             borderTopColor: colors.dark[5],

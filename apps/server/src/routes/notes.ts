@@ -22,7 +22,7 @@ const notesRouter = t.router({
     get: ap
         .input(
             z.object({
-                noteID: z.number()
+                noteID: z.string()
             })
         )
         .query(async ({ ctx, input }) => {
@@ -65,7 +65,7 @@ const notesRouter = t.router({
     save: ap
         .input(
             z.object({
-                noteID: z.number(),
+                noteID: z.string(),
                 title: z.string(),
                 data: z.string()
             })
@@ -88,7 +88,7 @@ const notesRouter = t.router({
     delete: ap
         .input(
             z.object({
-                noteID: z.number()
+                noteID: z.string()
             })
         )
         .mutation(async ({ input }) => {
