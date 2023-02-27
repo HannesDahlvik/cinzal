@@ -19,6 +19,7 @@ jobs:
           cd cinzal/
           git checkout main
           git pull
+          yarn install
           yarn build-server
           cd apps/server
           yarn db:push
