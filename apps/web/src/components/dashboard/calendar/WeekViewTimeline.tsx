@@ -57,7 +57,8 @@ const DashboardCalendarWeekViewTimeline: React.FC<Props> = ({
                     const endDate = dayjs(event.end)
                     const start = startDate.hour() * 60 + 60 / (60 / startDate.minute())
                     let minute = endDate.diff(startDate, 'minute')
-                    const end = start + minute
+                    let end = start + minute
+                    if (startDate.isSame(endDate)) end += 30
 
                     return {
                         start: Math.floor(start),
@@ -119,7 +120,8 @@ const DashboardCalendarWeekViewTimeline: React.FC<Props> = ({
      */
     const calcEventBoxHeight = (event: IEvent) => {
         const start = dayjs(new Date(event.start))
-        const end = dayjs(new Date(event.end))
+        let end = dayjs(new Date(event.end))
+        if (start.isSame(end)) end.add(30, 'minutes')
         const minute = end.diff(start, 'minute')
         return (minute / 60) * 100
     }

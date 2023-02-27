@@ -1,8 +1,9 @@
 import type { DashboardSidebarLinks } from '../../config/types'
+import * as packageJSON from '../../../package.json'
 
 import { Link, useNavigate } from 'react-router-dom'
 
-import { createStyles, Image } from '@mantine/core'
+import { createStyles, Image, Text } from '@mantine/core'
 import { CalendarBlank, House, ListChecks, Notebook, SignOut, User } from 'phosphor-react'
 
 import DashboardSidebarLink from './SidebarLink'
@@ -13,23 +14,19 @@ import Logo from '../../assets/imgs/logo.png'
 const links: DashboardSidebarLinks[] = [
     {
         path: 'home',
-        icon: <House weight="regular" />,
-        iconActive: <House weight="fill" />
+        icon: <House />
     },
     {
         path: 'calendar',
-        icon: <CalendarBlank weight="regular" />,
-        iconActive: <CalendarBlank weight="fill" />
+        icon: <CalendarBlank />
     },
     {
         path: 'tasks',
-        icon: <ListChecks weight="regular" />,
-        iconActive: <ListChecks weight="fill" />
+        icon: <ListChecks />
     },
     {
         path: 'notes',
-        icon: <Notebook weight="regular" />,
-        iconActive: <Notebook weight="fill" />
+        icon: <Notebook />
     }
 ]
 
@@ -45,9 +42,14 @@ const DashboardSidebar: React.FC = () => {
 
     return (
         <div className={classes.sidebar}>
-            <Link to="/" className={classes.sidebarTop}>
-                <Image src={Logo} width={38} />
-            </Link>
+            <div className={classes.sidebarTop}>
+                <Link to="/">
+                    <Image src={Logo} width={38} />
+                </Link>
+                <Text size="xs" mt="2px">
+                    {packageJSON.version}
+                </Text>
+            </div>
 
             <div className={classes.sidebarMiddle}>
                 {links.map((row) => (
@@ -55,7 +57,6 @@ const DashboardSidebar: React.FC = () => {
                         key={row.path}
                         to={row.path}
                         icon={row.icon}
-                        iconActive={row.iconActive}
                         active={location.pathname.includes(row.path)}
                     />
                 ))}
@@ -96,6 +97,8 @@ const useStyles = createStyles((theme) => {
         sidebarTop: {
             display: 'flex',
             justifyContent: 'center',
+            alignItems: 'center',
+            flexDirection: 'column',
             width: '100%',
             textAlign: 'center',
             padding: theme.spacing.md

@@ -88,7 +88,7 @@ const DashboardCalendarWeekView: React.FC<Props> = ({ events, tasks }) => {
         for (let i = 0; i < 7; i++) {
             week.push({
                 date: currentDate,
-                name: dayjs.weekdaysShort()[i]
+                name: dayjs.weekdaysShort(true)[i]
             })
             currentDate = currentDate.add(1, 'day')
         }

@@ -58,7 +58,6 @@ export type CalendarViews = 'month' | 'week'
 export interface DashboardSidebarLinks {
     path: string
     icon: React.ReactNode
-    iconActive: React.ReactNode
 }
 
 export interface DasboardTimelineCheckEvents {
