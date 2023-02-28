@@ -27,6 +27,7 @@ interface Props {
     tasks: Task[]
     hours: number[]
     col: number
+    needlePos: number
 }
 
 const DashboardCalendarWeekViewTimeline: React.FC<Props> = ({
@@ -34,7 +35,8 @@ const DashboardCalendarWeekViewTimeline: React.FC<Props> = ({
     events,
     tasks,
     hours,
-    col
+    col,
+    needlePos
 }) => {
     const { classes } = useStyles()
     const theme = useMantineTheme()
@@ -179,6 +181,13 @@ const DashboardCalendarWeekViewTimeline: React.FC<Props> = ({
             {hours.map((_, hour) => (
                 <div className={classes.timeBox} key={hour}></div>
             ))}
+
+            {checkRenderBox(dayjs()) && (
+                <Box
+                    className={classes.needle}
+                    sx={{ top: needlePos, left: col * containerWidth + col, width: containerWidth }}
+                />
+            )}
         </div>
     )
 }
@@ -215,6 +224,12 @@ const useStyles = createStyles((theme) => {
             color: '#fff',
             padding: '2px',
             cursor: 'pointer'
+        },
+        needle: {
+            position: 'absolute',
+            right: 0,
+            height: '1px',
+            backgroundColor: colors.red[6]
         }
     }
 })
