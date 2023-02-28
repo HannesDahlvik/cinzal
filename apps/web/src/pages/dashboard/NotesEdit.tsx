@@ -1,20 +1,15 @@
 import { useEffect, useState } from 'react'
 
-import { useLocation, useNavigate, useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 
-import { Box, Button, Group, TextInput } from '@mantine/core'
+import { Box, Button, Group } from '@mantine/core'
 import { openConfirmModal } from '@mantine/modals'
-import { RichTextEditor, Link } from '@mantine/tiptap'
-import { useEditor } from '@tiptap/react'
-import Highlight from '@tiptap/extension-highlight'
-import StarterKit from '@tiptap/starter-kit'
-import Underline from '@tiptap/extension-underline'
-import TextAlign from '@tiptap/extension-text-align'
-import Superscript from '@tiptap/extension-superscript'
-import SubScript from '@tiptap/extension-subscript'
 import { ArrowLeft } from 'phosphor-react'
 
+import DashboardNotesEditor from '../../components/dashboard/notes/Editor'
+
 import { errorHandler, trpc } from '../../utils'
+import LoadingPage from '../Loading'
 
 const DashboardNotesEditPage: React.FC = () => {
     const tu = trpc.useContext()
@@ -22,37 +17,27 @@ const DashboardNotesEditPage: React.FC = () => {
     const notesDeleteMutation = trpc.notes.delete.useMutation()
 
     const navigate = useNavigate()
-    const location = useLocation()
     const params = useParams()
 
     const [noteID, setNoteID] = useState('')
-    const [title, setTitle] = useState('')
-    const [value, setValue] = useState('')
+    const [title, setTitle] = useState<string | null>(null)
+    const [value, setValue] = useState<string | null>(null)
     const [loading, setLoading] = useState(false)
+
+    const noteGetQuery = trpc.notes.get.useQuery(
+        { noteID },
+        {
+            enabled: !!noteID,
+            onSuccess: (data) => {
+                setValue(data.data)
+                setTitle(data.title)
+            }
+        }
+    )
 
     useEffect(() => {
         if (params.note_id) setNoteID(params.note_id)
     }, [params.note_id])
-
-    useEffect(() => {
-        if (location.state.note) {
-            setTitle(location.state.note.title)
-            setValue(location.state.note.data)
-        }
-    }, [location])
-
-    const editor = useEditor({
-        extensions: [
-            StarterKit,
-            Underline,
-            Link,
-            Superscript,
-            SubScript,
-            Highlight,
-            TextAlign.configure({ types: ['heading', 'paragraph'] })
-        ],
-        content: location.state.note.data
-    })
 
     const handleSave = () => {
         setLoading(true)
@@ -60,8 +45,8 @@ const DashboardNotesEditPage: React.FC = () => {
         notesSaveMutation.mutate(
             {
                 noteID,
-                data: value,
-                title
+                data: value as string,
+                title: title as string
             },
             {
                 onError: (err) => {
@@ -98,6 +83,8 @@ const DashboardNotesEditPage: React.FC = () => {
         })
     }
 
+    if (noteGetQuery.isLoading) return <LoadingPage />
+
     return (
         <Box p="xl">
             <Group mb="lg" spacing="xs">
@@ -112,61 +99,14 @@ const DashboardNotesEditPage: React.FC = () => {
                 </Button>
             </Group>
 
-            <TextInput
-                label="Title"
-                placeholder="My note"
-                mb="lg"
-                value={title}
-                onChange={(ev) => setTitle(ev.target.value)}
-            />
-
-            <RichTextEditor
-                editor={editor}
-                onInput={(ev: any) => setValue(ev.target.innerHTML)}
-                onPaste={(ev: any) => setValue(ev.target.parentElement.innerHTML)}
-            >
-                <RichTextEditor.Toolbar sticky>
-                    <RichTextEditor.ControlsGroup>
-                        <RichTextEditor.Bold />
-                        <RichTextEditor.Italic />
-                        <RichTextEditor.Underline />
-                        <RichTextEditor.Strikethrough />
-                        <RichTextEditor.ClearFormatting />
-                        <RichTextEditor.Highlight />
-                        <RichTextEditor.Code />
-                    </RichTextEditor.ControlsGroup>
-
-                    <RichTextEditor.ControlsGroup>
-                        <RichTextEditor.H1 />
-                        <RichTextEditor.H2 />
-                        <RichTextEditor.H3 />
-                        <RichTextEditor.H4 />
-                    </RichTextEditor.ControlsGroup>
-
-                    <RichTextEditor.ControlsGroup>
-                        <RichTextEditor.Blockquote />
-                        <RichTextEditor.Hr />
-                        <RichTextEditor.BulletList />
-                        <RichTextEditor.OrderedList />
-                        <RichTextEditor.Subscript />
-                        <RichTextEditor.Superscript />
-                    </RichTextEditor.ControlsGroup>
-
-                    <RichTextEditor.ControlsGroup>
-                        <RichTextEditor.Link />
-                        <RichTextEditor.Unlink />
-                    </RichTextEditor.ControlsGroup>
-
-                    <RichTextEditor.ControlsGroup>
-                        <RichTextEditor.AlignLeft />
-                        <RichTextEditor.AlignCenter />
-                        <RichTextEditor.AlignJustify />
-                        <RichTextEditor.AlignRight />
-                    </RichTextEditor.ControlsGroup>
-                </RichTextEditor.Toolbar>
-
-                <RichTextEditor.Content />
-            </RichTextEditor>
+            {(title && value) !== null && (
+                <DashboardNotesEditor
+                    data={value}
+                    title={title}
+                    setTitle={(val) => setTitle(val)}
+                    setValue={(val) => setValue(val)}
+                />
+            )}
         </Box>
     )
 }

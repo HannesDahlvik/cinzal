@@ -27,9 +27,7 @@ const DashboardNotesPage: React.FC = () => {
     }
 
     const handleOpenNote = (note: Note) => {
-        navigate(`${note.id}`, {
-            state: { note }
-        })
+        navigate(note.id)
     }
 
     if (!notes) return <LoadingPage />

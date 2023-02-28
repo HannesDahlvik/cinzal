@@ -39,7 +39,8 @@ const notesRouter = t.router({
                     throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: err.message })
                 })
 
-            return note
+            if (note) return note
+            else throw new TRPCError({ code: 'NOT_FOUND', message: 'Note not found' })
         }),
     create: ap
         .input(
