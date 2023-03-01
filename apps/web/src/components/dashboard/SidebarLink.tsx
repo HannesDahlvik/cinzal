@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom'
 
 import { createStyles } from '@mantine/core'
+import { IconContext } from 'phosphor-react'
 
 interface Props {
     icon: React.ReactNode
@@ -29,9 +30,13 @@ const DashboardSidebarLink: React.FC<Props> = (props) => {
             }`}
             onClick={onClick}
         >
-            <div className={classes.sidebarLinkIcon}>
-                {props.active ? props.iconActive : props.icon}
-            </div>
+            <IconContext.Provider
+                value={{
+                    weight: props.active ? 'fill' : 'regular'
+                }}
+            >
+                <div className={classes.sidebarLinkIcon}>{props.icon}</div>
+            </IconContext.Provider>
         </div>
     )
 }

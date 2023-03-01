@@ -88,7 +88,7 @@ const DashboardCalendarWeekView: React.FC<Props> = ({ events, tasks }) => {
         for (let i = 0; i < 7; i++) {
             week.push({
                 date: currentDate,
-                name: dayjs.weekdaysShort()[i]
+                name: dayjs.weekdaysShort(true)[i]
             })
             currentDate = currentDate.add(1, 'day')
         }
@@ -183,11 +183,10 @@ const DashboardCalendarWeekView: React.FC<Props> = ({ events, tasks }) => {
                             hours={hours}
                             col={i}
                             key={row.date.date()}
+                            needlePos={needlePos}
                         />
                     ))}
                 </div>
-
-                <Box className={classes.needle} sx={{ top: needlePos }} />
             </div>
         </div>
     )
@@ -258,17 +257,6 @@ const useStyles = createStyles((theme) => {
             position: 'relative',
             display: 'grid',
             gridTemplateColumns: 'repeat(7, 1fr)'
-        },
-        needle: {
-            position: 'absolute',
-            right: 0,
-            width: 'calc(100% - 75px)',
-            height: '1px',
-            backgroundColor: colors.red[6],
-
-            [`@media (max-width: ${theme.breakpoints.md}px)`]: {
-                width: 'calc(100% - 50px)'
-            }
         }
     }
 })

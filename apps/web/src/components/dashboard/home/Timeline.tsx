@@ -63,8 +63,9 @@ const DashboardHomeTimeline: React.FC<Props> = ({ events, hours, needlePos, task
                     const startDate = dayjs(event.start)
                     const endDate = dayjs(event.end)
                     const start = startDate.hour() * 60 + 60 / (60 / startDate.minute())
-                    let minute = endDate.diff(startDate, 'minute')
-                    const end = start + minute
+                    const minute = endDate.diff(startDate, 'minute')
+                    let end = start + minute
+                    if (startDate.isSame(endDate)) end += 50
 
                     return {
                         start: Math.floor(start),

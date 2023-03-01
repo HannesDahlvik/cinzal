@@ -2,12 +2,14 @@ import { useEffect, useState } from 'react'
 
 import { useNavigate, useParams } from 'react-router-dom'
 
-import { Box, Button, Group, TextInput } from '@mantine/core'
-import RichTextEditor from '@mantine/rte'
+import { Box, Button, Group } from '@mantine/core'
+import { openConfirmModal } from '@mantine/modals'
+import { ArrowLeft } from 'phosphor-react'
+
+import DashboardNotesEditor from '../../components/dashboard/notes/Editor'
 
 import { errorHandler, trpc } from '../../utils'
 import LoadingPage from '../Loading'
-import { openConfirmModal } from '@mantine/modals'
 
 const DashboardNotesEditPage: React.FC = () => {
     const tu = trpc.useContext()
@@ -17,45 +19,41 @@ const DashboardNotesEditPage: React.FC = () => {
     const navigate = useNavigate()
     const params = useParams()
 
-    const [noteID, setNoteID] = useState(0)
-    const [title, setTitle] = useState('')
-    const [value, setValue] = useState('')
+    const [noteID, setNoteID] = useState('')
+    const [title, setTitle] = useState<string | null>(null)
+    const [value, setValue] = useState<string | null>(null)
     const [loading, setLoading] = useState(false)
 
-    useEffect(() => {
-        if (params.note_id) {
-            setNoteID(parseInt(params.note_id))
-        }
-    }, [params.note_id])
-
-    const { isLoading } = trpc.notes.get.useQuery(
-        { noteID: noteID },
+    const noteGetQuery = trpc.notes.get.useQuery(
+        { noteID },
         {
             enabled: !!noteID,
-            onSuccess: (note) => {
-                if (note) {
-                    setTitle(note.title)
-                    setValue(note.data)
-                }
+            onSuccess: (data) => {
+                setValue(data.data)
+                setTitle(data.title)
             }
         }
     )
+
+    useEffect(() => {
+        if (params.note_id) setNoteID(params.note_id)
+    }, [params.note_id])
 
     const handleSave = () => {
         setLoading(true)
 
         notesSaveMutation.mutate(
             {
-                noteID: noteID,
-                data: value,
-                title
+                noteID,
+                data: value as string,
+                title: title as string
             },
             {
                 onError: (err) => {
                     errorHandler(err.message)
                     setLoading(false)
                 },
-                onSuccess: (data) => {
+                onSuccess: () => {
                     setLoading(false)
                 }
             }
@@ -75,7 +73,7 @@ const DashboardNotesEditPage: React.FC = () => {
                         onError: (err) => {
                             errorHandler(err.message)
                         },
-                        onSuccess: (data) => {
+                        onSuccess: () => {
                             tu.notes.all.invalidate()
                             navigate('/dashboard/notes')
                         }
@@ -85,11 +83,14 @@ const DashboardNotesEditPage: React.FC = () => {
         })
     }
 
-    if (isLoading) return <LoadingPage />
+    if (noteGetQuery.isLoading) return <LoadingPage />
 
     return (
         <Box p="xl">
-            <Group mb="lg">
+            <Group mb="lg" spacing="xs">
+                <Button onClick={() => navigate('/dashboard/notes')}>
+                    <ArrowLeft />
+                </Button>
                 <Button loading={loading} onClick={handleSave}>
                     Save
                 </Button>
@@ -98,15 +99,14 @@ const DashboardNotesEditPage: React.FC = () => {
                 </Button>
             </Group>
 
-            <TextInput
-                label="Title"
-                placeholder="My note"
-                mb="lg"
-                value={title}
-                onChange={(ev) => setTitle(ev.target.value)}
-            />
-
-            <RichTextEditor value={value} onChange={setValue} />
+            {(title && value) !== null && (
+                <DashboardNotesEditor
+                    data={value}
+                    title={title}
+                    setTitle={(val) => setTitle(val)}
+                    setValue={(val) => setValue(val)}
+                />
+            )}
         </Box>
     )
 }

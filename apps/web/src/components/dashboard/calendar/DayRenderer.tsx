@@ -79,6 +79,7 @@ const useStyles = createStyles((theme) => {
             overflow: 'hidden'
         },
         event: {
+            paddingTop: '4px',
             paddingLeft: '4px',
             marginBottom: '2px',
             height: '20px',

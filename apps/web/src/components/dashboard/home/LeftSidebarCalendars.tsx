@@ -56,7 +56,7 @@ const HomeLeftSidebarCalendars: React.FC<Props> = ({ calendars }) => {
         })
     }
 
-    const handleDeleteCalendar = (calendar: any) => {
+    const handleDeleteCalendar = (calendar: Calendar) => {
         openConfirmModal({
             title: 'Are you sure you want to delete',
             labels: { cancel: 'Cancel', confirm: 'Delete' },
@@ -85,6 +85,12 @@ const HomeLeftSidebarCalendars: React.FC<Props> = ({ calendars }) => {
                 <Text weight="bold">Calendars</Text>
                 <Plus cursor="pointer" size={20} onClick={handleAddCalendar} />
             </Box>
+
+            {calendars.length === 0 && (
+                <Text align="center" mt="md">
+                    You have not added any calendars
+                </Text>
+            )}
 
             {calendars.map((row, i) => (
                 <Box sx={{ display: 'flex', justifyContent: 'space-between' }} key={i}>

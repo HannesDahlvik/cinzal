@@ -22,7 +22,7 @@ const notesRouter = t.router({
     get: ap
         .input(
             z.object({
-                noteID: z.number()
+                noteID: z.string()
             })
         )
         .query(async ({ ctx, input }) => {
@@ -39,7 +39,8 @@ const notesRouter = t.router({
                     throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: err.message })
                 })
 
-            return note
+            if (note) return note
+            else throw new TRPCError({ code: 'NOT_FOUND', message: 'Note not found' })
         }),
     create: ap
         .input(
@@ -65,7 +66,7 @@ const notesRouter = t.router({
     save: ap
         .input(
             z.object({
-                noteID: z.number(),
+                noteID: z.string(),
                 title: z.string(),
                 data: z.string()
             })
@@ -88,7 +89,7 @@ const notesRouter = t.router({
     delete: ap
         .input(
             z.object({
-                noteID: z.number()
+                noteID: z.string()
             })
         )
         .mutation(async ({ input }) => {

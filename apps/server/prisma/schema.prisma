@@ -59,7 +59,7 @@ model Calendar {
 }
 
 model Note {
-  id                Int               @id @default(autoincrement())
+  id                String            @id @default(cuid())
   title             String
   data              String
   uuid              String

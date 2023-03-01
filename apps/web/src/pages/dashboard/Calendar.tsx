@@ -81,6 +81,7 @@ export default DashboardCalendarPage
 const useStyles = createStyles((theme) => {
     const colors = theme.colors
     const spacing = theme.spacing
+    const breakpoints = theme.breakpoints
 
     return {
         calendar: {
@@ -98,7 +99,13 @@ const useStyles = createStyles((theme) => {
             paddingRight: spacing.md,
             backgroundColor: colors.dark[7],
             borderBottom: '1px solid',
-            borderBottomColor: theme.colors.dark[5]
+            borderBottomColor: theme.colors.dark[5],
+
+            [`@media (max-width: ${breakpoints.xs}px)`]: {
+                display: 'flex',
+                paddingLeft: spacing.xs,
+                paddingRight: spacing.xs
+            }
         }
     }
 })

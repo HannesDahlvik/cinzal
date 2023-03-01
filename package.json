@@ -1,6 +1,6 @@
 {
     "name": "cinzal",
-    "version": "0.0.0",
+    "version": "0.1.0",
     "private": true,
     "workspaces": [
         "apps/*",
@@ -17,6 +17,6 @@
     "devDependencies": {
         "prettier": "2.7.1",
         "rimraf": "^3.0.2",
-        "turbo": "^1.4.7"
+        "turbo": "^1.8.3"
     }
 }

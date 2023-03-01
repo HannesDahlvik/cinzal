@@ -32,30 +32,27 @@ const DashboardHomeRightSidebar: React.FC<Props> = ({ events, tasks }) => {
     const now = dayjs()
 
     useEffect(() => {
-        const itemsArr: Items[] = []
-        const itemArr: Item[] = []
+        const itemsArr: Item[] = []
+        const items: Items[] = []
 
-        for (let i = 1; i <= 3; i++) {
-            itemsArr.push({
-                date: now.add(i, 'd'),
-                items: []
-            })
-        }
+        const tomorrow = dayjs().add(1, 'd').set('h', 0).set('m', 0).set('s', 0)
+        const threeDaysFromToday = dayjs().add(3, 'd').set('h', 23).set('m', 59).set('s', 59)
 
         events.map((event) => {
             const eventStart = dayjs(event.start)
-            if (eventStart.isBetween(now, now.add(3, 'd')))
-                itemArr.push({
+            if (eventStart.isBetween(tomorrow, threeDaysFromToday)) {
+                itemsArr.push({
                     title: event.summary || event.title,
                     description: event.description,
                     color: 'blue',
                     deadline: eventStart
                 })
+            }
         })
         tasks.map((task) => {
             const taskDeadline = dayjs(task.deadline)
-            if (taskDeadline.isBetween(now, now.add(3, 'day')))
-                itemArr.push({
+            if (taskDeadline.isBetween(tomorrow, threeDaysFromToday))
+                itemsArr.push({
                     title: task.title,
                     description: task.description,
                     color: task.color,
@@ -63,27 +60,38 @@ const DashboardHomeRightSidebar: React.FC<Props> = ({ events, tasks }) => {
                 })
         })
 
-        itemArr.map((item) => {
+        for (let i = 1; i <= 3; i++) {
+            items.push({
+                date: now.add(i, 'd'),
+                items: []
+            })
+        }
+
+        itemsArr.map((item) => {
             const deadline = item.deadline
-            if (deadline.isAfter(now) && deadline.isBefore(now.add(1, 'd')))
-                itemsArr[0].items.push(item)
-            if (deadline.isAfter(now.add(1, 'd')) && deadline.isBefore(now.add(2, 'd')))
-                itemsArr[1].items.push(item)
-            if (deadline.isAfter(now.add(2, 'd')) && deadline.isBefore(now.add(3, 'd')))
-                itemsArr[2].items.push(item)
+            const beforeChecker = now.add(1, 'd').set('h', 23).set('m', 59).set('s', 59)
+            if (deadline.isAfter(tomorrow) && deadline.isBefore(beforeChecker))
+                items[0].items.push(item)
+            if (
+                deadline.isAfter(tomorrow.add(1, 'd')) &&
+                deadline.isBefore(beforeChecker.add(1, 'd'))
+            )
+                items[1].items.push(item)
+            if (
+                deadline.isAfter(tomorrow.add(2, 'd')) &&
+                deadline.isBefore(beforeChecker.add(2, 'd'))
+            )
+                items[2].items.push(item)
         })
 
         const checks = [false, false, false]
-        itemsArr.map((item, i) => {
-            if (item.items.length === 0) checks[i] = true
-            else checks[i] = false
-        })
         let counter = 0
+        items.map((item, i) => (item.items.length === 0 ? (checks[i] = true) : (checks[i] = false)))
         checks.map((row) => (row ? counter++ : counter--))
         if (counter === 3) setNothingToShow(true)
         else setNothingToShow(false)
 
-        setItems(itemsArr)
+        setItems(items)
     }, [events, tasks])
 
     return (

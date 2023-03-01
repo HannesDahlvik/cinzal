@@ -1,6 +1,6 @@
 import { Box, Center, createStyles, MantineColor, Text, useMantineTheme } from '@mantine/core'
 
-import dayjs, { Dayjs } from 'dayjs'
+import { Dayjs } from 'dayjs'
 
 interface Props {
     title: string
@@ -31,7 +31,8 @@ const DashboardHomeRightSidebarItem: React.FC<Props> = ({
             <Center
                 sx={{
                     alignItems: 'flex-start',
-                    flexDirection: 'column'
+                    flexDirection: 'column',
+                    marginLeft: theme.spacing.sm
                 }}
             >
                 <Text weight="bold" lineClamp={1}>
@@ -41,8 +42,6 @@ const DashboardHomeRightSidebarItem: React.FC<Props> = ({
                     {description}
                 </Text>
             </Center>
-
-            <Box sx={{ marginLeft: 'auto', cursor: 'pointer' }}></Box>
         </div>
     )
 }
@@ -52,7 +51,8 @@ export default DashboardHomeRightSidebarItem
 const useStyles = createStyles((theme) => {
     return {
         box: {
-            display: 'flex',
+            display: 'grid',
+            gridTemplateColumns: '1fr 6px 4fr',
             alignItems: 'center',
             height: '60px',
             marginBottom: theme.spacing.md
@@ -60,8 +60,6 @@ const useStyles = createStyles((theme) => {
         divider: {
             height: '100%',
             width: '6px',
-            marginLeft: theme.spacing.sm,
-            marginRight: theme.spacing.sm,
             borderRadius: theme.radius.xl
         }
     }
