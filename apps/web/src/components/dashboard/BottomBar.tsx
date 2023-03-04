@@ -9,28 +9,23 @@ import DashboardBottomBarLink from './BottomBarLink'
 const links: DashboardSidebarLinks[] = [
     {
         path: 'tasks',
-        icon: <ListChecks weight="regular" />,
-        iconActive: <ListChecks weight="fill" />
+        icon: <ListChecks />
     },
     {
         path: 'calendar',
-        icon: <CalendarBlank weight="regular" />,
-        iconActive: <CalendarBlank weight="fill" />
+        icon: <CalendarBlank />
     },
     {
         path: 'home',
-        icon: <House weight="regular" />,
-        iconActive: <House weight="fill" />
+        icon: <House />
     },
     {
         path: 'notes',
-        icon: <Notebook weight="regular" />,
-        iconActive: <Notebook weight="fill" />
+        icon: <Notebook />
     },
     {
         path: 'profile',
-        icon: <User weight="regular" />,
-        iconActive: <User weight="fill" />
+        icon: <User />
     }
 ]
 
@@ -46,7 +41,6 @@ const DashboardBottomBar: React.FC = () => {
                     key={row.path}
                     to={row.path}
                     icon={row.icon}
-                    iconActive={row.iconActive}
                     active={location.pathname.includes(row.path)}
                 />
             ))}

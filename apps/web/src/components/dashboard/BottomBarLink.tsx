@@ -1,10 +1,10 @@
 import { Box, createStyles } from '@mantine/core'
+import { IconContext } from 'phosphor-react'
 
 import { useNavigate } from 'react-router-dom'
 
 interface Props {
     icon: React.ReactNode
-    iconActive?: React.ReactNode
     to?: string
     active?: boolean
     onClick?: () => void
@@ -35,7 +35,13 @@ const DashboardBottomBarLink: React.FC<Props> = (props) => {
                     }
                 }}
             >
-                {props.active ? props.iconActive : props.icon}
+                <IconContext.Provider
+                    value={{
+                        weight: props.active ? 'fill' : 'regular'
+                    }}
+                >
+                    {props.icon}
+                </IconContext.Provider>
             </Box>
         </div>
     )
@@ -59,6 +65,15 @@ const useStyles = createStyles((theme) => {
             cursor: 'pointer',
             transition: '.25s',
             color: colors.gray[5]
+        },
+        linkIcon: {
+            width: '28px',
+            height: '28px',
+
+            svg: {
+                width: '28px',
+                height: '28px'
+            }
         }
     }
 })

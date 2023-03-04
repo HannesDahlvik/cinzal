@@ -20,7 +20,7 @@ jobs:
           git checkout main
           git pull
           yarn install
-          yarn build-server
           cd apps/server
           yarn db:push
+          yarn build
           pm2 restart server

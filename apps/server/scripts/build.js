@@ -36,9 +36,9 @@ async function createPackageJson() {
     const newPackage = {
         name: packageJSON.name,
         version: packageJSON.version,
-        main: 'src/server.js',
+        main: 'server.js',
         scripts: {
-            start: 'node src/server.js',
+            start: 'node server.js',
             'db:pull': 'prisma db pull',
             'db:push': 'prisma db push'
         },
@@ -47,7 +47,7 @@ async function createPackageJson() {
             prisma: prismaVersion
         }
     }
-    fse.appendFile(buildPackageJSONPath, JSON.stringify(newPackage))
+    fse.writeJSON(buildPackageJSONPath, newPackage)
         .then(() => {
             createEnvFile()
         })
