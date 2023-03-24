@@ -97,51 +97,23 @@ const DashboardCalendarWeekView: React.FC<Props> = ({ events, tasks }) => {
 
     const createWeek = () => {
         let currentDate = globalDate.startOf('week')
-        const weekStart = globalDate.startOf('week')
-        const weekEnd = globalDate.endOf('week')
-        const weekData = createWeekData(weekStart, weekEnd)
         const data: IFormatedDate[] = []
         for (let i = 0; i < 7; i++) {
-            const formatted = formatDateObject(currentDate, weekData)
+            const formatted = formatDateObject(currentDate, {
+                events,
+                tasks
+            })
             data.push(formatted)
             currentDate = currentDate.add(1, 'day')
         }
         setWeek(data)
     }
 
-    const createWeekData = (start: Dayjs, end: Dayjs) => {
-        const obj: IWeekData = {
-            tasks: [],
-            events: []
-        }
-        tasks.map((task) => {
-            const taskDeadline = dayjs(task.deadline)
-            if (taskDeadline.year() === globalDate.year() && taskDeadline.isBetween(start, end))
-                obj.tasks.push(task)
-        })
-        events.map((event) => {
-            const eventStart = dayjs(event.start)
-            if (eventStart.year() === globalDate.year() && eventStart.isBetween(start, end))
-                obj.events.push(event)
-        })
-        return obj
-    }
-
     const formatDateObject = (date: Dayjs, data: IWeekData): IFormatedDate => {
         const formatedObj: IFormatedDate = {
             date: date,
-            tasks: data.tasks.filter(
-                (task) =>
-                    dayjs(task.deadline).year() === date.year() &&
-                    dayjs(task.deadline).date() === date.date() &&
-                    dayjs(task.deadline).month() === date.month()
-            ),
-            events: data.events.filter(
-                (event) =>
-                    dayjs(event.start).year() === date.year() &&
-                    dayjs(event.start).date() === date.date() &&
-                    dayjs(event.start).month() === date.month()
-            )
+            tasks: data.tasks.filter((task) => dayjs(task.deadline).isSame(date, 'day')),
+            events: data.events.filter((event) => dayjs(event.start).isSame(date, 'day'))
         }
         return formatedObj
     }
