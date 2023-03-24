@@ -1,7 +1,7 @@
 import { t } from '../router'
 import { TRPCError } from '@trpc/server'
 
-import verifyJwtToken from '../utils/verifyJwtToken'
+import { verifyJwtToken } from '../utils'
 
 const isAuthed = t.middleware(async ({ ctx, next }) => {
     const verifed = verifyJwtToken(ctx.token)

@@ -1,3 +1,3 @@
-import config from './config'
-
-export default config
+export * from './config'
+export * from './env'
+export * from './types'

@@ -1,10 +1,10 @@
-import config from '../config'
+import { config } from '../config'
 
 import { User } from '@prisma/client'
 import jwt from 'jsonwebtoken'
 import { TRPCError } from '@trpc/server'
 
-const genJwtToken = (user: User) => {
+export const genJwtToken = (user: User) => {
     const payload = {
         user: {
             id: user.id,
@@ -27,5 +27,3 @@ const genJwtToken = (user: User) => {
         ...payload
     }
 }
-
-export default genJwtToken

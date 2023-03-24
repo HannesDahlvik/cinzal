@@ -1,9 +1,5 @@
-const config = {
+export const config = {
     jwtSecret: process.env.JWT_SECRET as string,
-    certificate: {
-        key: process.env.CERTIFICATE_KEY as string,
-        cert: process.env.CERTIFICATE_CERT as string
-    } 
+    port: 8080,
+    wsPort: 8081
 }
-
-export default config

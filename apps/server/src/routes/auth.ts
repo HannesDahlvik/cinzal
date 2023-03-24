@@ -1,4 +1,4 @@
-import config from '../config'
+import { config } from '../config'
 import { VerifyDecoded } from '../config/types'
 
 import { t } from '../router'
@@ -9,7 +9,7 @@ import { TRPCError } from '@trpc/server'
 import bcrypt from 'bcryptjs'
 import { v4 as uuid } from 'uuid'
 import jwt from 'jsonwebtoken'
-import genJwtToken from '../utils/genJwtToken'
+import { genJwtToken } from '../utils'
 import { ap } from '../middleware/isAuthed'
 
 const authRouter = t.router({

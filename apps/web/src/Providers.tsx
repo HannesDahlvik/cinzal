@@ -9,8 +9,12 @@ import { NotificationsProvider } from '@mantine/notifications'
 import { IconContext } from 'phosphor-react'
 
 import { trpc } from './utils'
-import { httpBatchLink } from '@trpc/client'
+import { createWSClient, httpBatchLink, splitLink, wsLink } from '@trpc/client'
 import SuperJSON from 'superjson'
+
+const wsClient = createWSClient({
+    url: config.wsServerUrl
+})
 
 const queryClient = new QueryClient({
     defaultOptions: {
@@ -23,15 +27,23 @@ const queryClient = new QueryClient({
 const trpcClient = trpc.createClient({
     transformer: SuperJSON,
     links: [
-        httpBatchLink({
-            url: config.serverURL,
-            headers() {
-                if (localStorage.token)
-                    return {
-                        Authorization: localStorage.token
-                    }
-                else return {}
-            }
+        splitLink({
+            condition(op) {
+                return op.type === 'subscription'
+            },
+            true: wsLink({
+                client: wsClient
+            }),
+            false: httpBatchLink({
+                url: config.serverURL,
+                headers() {
+                    if (localStorage.token)
+                        return {
+                            Authorization: localStorage.token
+                        }
+                    else return {}
+                }
+            })
         })
     ]
 })

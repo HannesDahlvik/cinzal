@@ -1,9 +1,14 @@
 import express from 'express'
+import http from 'node:http'
+import { Server } from 'ws'
 import 'dotenv/config'
 
-import appRouter from './router'
+import { config } from './config'
+
+import appRouter, { AppRouter } from './router'
 import { createContext } from './context'
 import * as trpcExpress from '@trpc/server/adapters/express'
+import { applyWSSHandler } from '@trpc/server/adapters/ws'
 
 import { PrismaClient } from '@prisma/client'
 
@@ -14,7 +19,9 @@ import morgan from 'morgan'
 
 export const prisma = new PrismaClient()
 const app = express()
-const PORT = process.env.SERVER_PORT
+const server = http.createServer(app)
+const PORT = config.port
+const WS_PORT = config.wsPort
 
 /**
  * SERVER MIDDLEWARE
@@ -31,6 +38,16 @@ app.use(compression())
 app.use(morgan('tiny'))
 
 /**
+ * WEBSOCKET SETUP
+ */
+const wss = new Server({ port: WS_PORT })
+const wsHandle = applyWSSHandler<AppRouter>({
+    wss,
+    router: appRouter,
+    createContext
+})
+
+/**
  * ROUTES
  */
 app.use(
@@ -44,4 +61,13 @@ app.use(
 /**
  * START SERVER
  */
-app.listen(PORT, () => console.log(`Server running on port ${PORT} - DEV`))
+server.listen(PORT, () =>
+    console.log(`Server running on port ${PORT} \nWebSocket server running on port ${WS_PORT}`)
+)
+server.on('error', console.error)
+
+process.on('SIGTERM', () => {
+    wsHandle.broadcastReconnectNotification()
+    wss.close()
+    server.close()
+})
