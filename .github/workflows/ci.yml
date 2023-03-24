@@ -19,8 +19,8 @@ jobs:
           cd cinzal/
           git checkout main
           git pull
-          yarn install
+          pnpm i
           cd apps/server
-          yarn db:push
-          yarn build
+          pnpm db:push
+          pnpm build
           pm2 restart server

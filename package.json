@@ -15,8 +15,8 @@
         "docker:stop": "docker-compose stop"
     },
     "devDependencies": {
-        "prettier": "2.7.1",
+        "prettier": "2.8.7",
         "rimraf": "^3.0.2",
-        "turbo": "^1.8.3"
+        "turbo": "^1.8.5"
     }
 }
